@@ -14,7 +14,14 @@ A collection of utilities to work with PDFs.
 Run the following command to add `unpdf` to your project.
 
 ```bash
-pnpm install unpdf # or npm or yarn
+# pnpm
+pnpm add -D unpdf
+
+# npm
+npm install -D unpdf
+
+# yarn
+yarn add -D unpdf
 ```
 
 ## Usage
