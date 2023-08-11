@@ -1,0 +1,69 @@
+{
+  "name": "unpdf",
+  "type": "module",
+  "version": "0.1.0",
+  "packageManager": "pnpm@8.6.12",
+  "description": "Utilities to work with PDFs",
+  "author": "Johann Schopplich <pkg@johannschopplich.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/johannschopplich/unpdf#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/johannschopplich/unpdf.git"
+  },
+  "bugs": {
+    "url": "https://github.com/johannschopplich/unpdf/issues"
+  },
+  "keywords": [
+    "pdf",
+    "parse"
+  ],
+  "sideEffects": false,
+  "exports": {
+    "browser": "./dist/index.web.mjs",
+    "bun": "./dist/index.web.mjs",
+    "deno": "./dist/index.web.mjs",
+    "edge-light": "./dist/index.web.mjs",
+    "edge-routine": "./dist/index.web.mjs",
+    "lagon": "./dist/index.web.mjs",
+    "netlify": "./dist/index.web.mjs",
+    "react-native": "./dist/index.web.mjs",
+    "wintercg": "./dist/index.web.mjs",
+    "worker": "./dist/index.web.mjs",
+    "workerd": "./dist/index.web.mjs",
+    "node": {
+      "types": "./dist/index.node.d.ts",
+      "import": "./dist/index.node.mjs",
+      "require": "./dist/index.node.cjs"
+    },
+    "types": "./dist/index.web.d.ts",
+    "import": "./dist/index.web.mjs",
+    "require": "./dist/index.web.cjs"
+  },
+  "main": "./dist/index.node.cjs",
+  "module": "./dist/index.web.mjs",
+  "browser": "./dist/index.web.mjs",
+  "types": "./dist/index.web.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "unbuild",
+    "dev": "unbuild --stub",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "release": "bumpp --commit --push --tag",
+    "test:types": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "pdfjs-dist": "^3.9.179"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^0.40.2",
+    "bumpp": "^9.1.1",
+    "eslint": "^8.47.0",
+    "pdfjs-dist": "^3.9.179",
+    "typescript": "^5.1.6",
+    "unbuild": "^2.0.0-rc.0"
+  }
+}
