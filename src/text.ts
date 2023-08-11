@@ -1,5 +1,6 @@
 import type { PDFDocumentProxy } from 'pdfjs-dist'
 import type { TextItem } from 'pdfjs-dist/types/src/display/api'
+import { getPDFJSImports } from './utils'
 import type { PDFContent } from './types'
 
 export async function decodePDFText(
@@ -38,18 +39,4 @@ async function getPageText(pdf: PDFDocumentProxy, pageNumber: number) {
     return
 
   return items.map(({ str }) => str).join('\n')
-}
-
-async function getPDFJSImports() {
-  try {
-    const { default: mod } = await import('pdfjs-dist/legacy/build/pdf')
-    const { getDocument, version } = mod
-    return { getDocument, version }
-  }
-  catch (e) {
-    console.error(e)
-    throw new Error(
-      'PDF.js is not available. Please run `pnpm add -D pdfjs-dist` and try again.',
-    )
-  }
 }
