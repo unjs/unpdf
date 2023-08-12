@@ -10,7 +10,7 @@ This library is also intended as a modern alternative to the unmaintained [`pdf-
 
 - 🏗️ Conditional exports for Browser, Node and worker environments
 - 💬 Extract text from PDFs
-- 🧱 Use custom PDF.js build
+- 🧱 Opt-in to legacy PDF.js build
 
 ## Installation
 
@@ -32,11 +32,27 @@ yarn add -D unpdf
 ```ts
 import { decodePDFText } from 'unpdf'
 
-const pdfBuffer = await fetch('https://example.com/file.pdf').then(res => res.arrayBuffer())
+const pdfBuffer = await fetch('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf')
+  .then(res => res.arrayBuffer())
 
 const { totalPages, info, metadata, text } = await decodePDFText(
   new Uint8Array(pdfBuffer), { mergePages: true }
 )
+```
+
+### Use Legacy Or Custom PDF.js Build
+
+```ts
+// Before using any other methods, define the PDF.js module
+import { decodePDFText, defineUnPDFConfig } from 'unpdf'
+
+// Use the legacy build
+defineUnPDFConfig({
+  pdfjs: () => import('pdfjs-dist/legacy/build/pdf.js')
+})
+
+// Now, you can use the other methods
+// …
 ```
 
 ## Config
