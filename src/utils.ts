@@ -13,8 +13,7 @@ export async function getDocumentProxy(data: ArrayBuffer) {
 export async function getPDFJSImports() {
   try {
     const { default: mod } = await import('pdfjs-dist/legacy/build/pdf')
-    const { getDocument, version } = mod
-    return { getDocument, version }
+    return mod
   }
   catch (e) {
     console.error(e)
