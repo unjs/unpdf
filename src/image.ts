@@ -1,4 +1,4 @@
-import { getDocumentProxy, getResolvedPDFJSInstance } from './utils'
+import { getDocumentProxy, getResolvedPDFJS } from './utils'
 
 export async function getImagesFromPage(
   data: ArrayBuffer,
@@ -7,7 +7,7 @@ export async function getImagesFromPage(
   const pdf = await getDocumentProxy(data)
   const page = await pdf.getPage(pageNumber)
   const operatorList = await page.getOperatorList()
-  const { OPS } = getResolvedPDFJSInstance()
+  const { OPS } = getResolvedPDFJS()
 
   const images: ArrayBuffer[] = []
   for (const op of operatorList.fnArray) {
