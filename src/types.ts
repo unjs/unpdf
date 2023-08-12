@@ -4,3 +4,7 @@ export interface PDFContent {
   metadata?: any
   text: string | string[]
 }
+
+export type Prettify<T> = {
+  [K in keyof T]: T[K];
+} & Record<never, never>

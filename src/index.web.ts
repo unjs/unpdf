@@ -1,12 +1,13 @@
-import type {
-  decodePDFText as _decodePDFText,
-  getImagesFromPage as _getImagesFromPage,
-} from './index.node'
+import { decodePDFText as _decodePDFText } from './text'
+import { getImagesFromPage as _getImagesFromPage } from './image'
+import { resolvePDFJSWebImports } from './utils'
 
-export const decodePDFText: typeof _decodePDFText = async () => {
-  throw new Error('Not supported in browser context yet')
+export const decodePDFText: typeof _decodePDFText = async (...args) => {
+  await resolvePDFJSWebImports()
+  return await _decodePDFText(...args)
 }
 
-export const getImagesFromPage: typeof _getImagesFromPage = async () => {
-  throw new Error('Not supported in browser context yet')
+export const getImagesFromPage: typeof _getImagesFromPage = async (...args) => {
+  await resolvePDFJSWebImports()
+  return await _getImagesFromPage(...args)
 }

@@ -1,13 +1,15 @@
 # unpdf
 
-A collection of utilities to work with PDFs.
+A collection of utilities to work with PDFs. Uses Mozilla's [PDF.js](https://github.com/mozilla/pdf.js) under the hood.
 
-`unpdf` takes advantage of [export conditions](https://nodejs.org/api/packages.html#packages_conditional_exports) to provide a minimal bundle size for the browser. As of now, the available methods are only supported in Node contexts.
+`unpdf` takes advantage of [export conditions](https://nodejs.org/api/packages.html#packages_conditional_exports) to circumvent build issues in serverless environments. PDF.js depends on the optional `canvas` module, which [doesn't work inside worker threads](https://github.com/Automattic/node-canvas/issues/1394).
 
-**Why this package then?**
+This library is also intended as a modern alternative to the unmaintained [`pdf-parse`](https://www.npmjs.com/package/pdf-parse).
 
-- To circumvent build issues in serverless environments, where the `canvas` package used by `PDF.js` is not supported.
-- WIP and more to come.
+## Features
+
+- 🏗️ Conditional exports for Browser, Node and worker environments
+- 💬 Extract text from PDFs
 
 ## Installation
 
