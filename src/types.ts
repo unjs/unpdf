@@ -1,4 +1,4 @@
-import type * as PDFJS from 'pdfjs-dist'
+import type PDFJS from 'pdfjs-dist'
 
 export interface PDFContent {
   totalPages: number

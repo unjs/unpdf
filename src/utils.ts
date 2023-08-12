@@ -1,4 +1,4 @@
-import type * as PDFJS from 'pdfjs-dist'
+import type PDFJS from 'pdfjs-dist'
 import type { UnPDFConfiguration } from './types'
 
 let resolvedModule: typeof PDFJS | undefined
@@ -18,7 +18,9 @@ export async function getDocumentProxy(data: ArrayBuffer) {
 export async function defineUnPDFConfig({ pdfjs }: UnPDFConfiguration) {
   if (pdfjs) {
     try {
-      resolvedModule = await pdfjs()
+      // @ts-expect-error: CJS module needs to be transformed to ESM
+      const { default: mod } = await pdfjs()
+      resolvedModule = mod
     }
     catch (error) {
       throw new Error('Resolving the PDF.js module failed. Please check your configuration.')
