@@ -53,6 +53,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "release": "bumpp --commit --push --tag",
+    "test": "tsx test/index.ts",
     "test:types": "tsc --noEmit"
   },
   "peerDependencies": {
@@ -60,9 +61,11 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^0.40.2",
+    "@types/node": "^20.4.10",
     "bumpp": "^9.1.1",
     "eslint": "^8.47.0",
     "pdfjs-dist": "^3.9.179",
+    "tsx": "^3.12.7",
     "typescript": "^5.1.6",
     "unbuild": "^2.0.0-rc.0"
   }
