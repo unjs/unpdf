@@ -3,7 +3,7 @@ import type * as PDFJS from 'pdfjs-dist'
 let instance: typeof PDFJS | undefined
 
 export async function getDocumentProxy(data: ArrayBuffer) {
-  const { getDocument } = instance!
+  const { getDocument } = getResolvedPDFJSInstance()
   const pdf = await getDocument({
     data,
     useWorkerFetch: false,
