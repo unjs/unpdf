@@ -1,12 +1,5 @@
 import type PDFJS from 'pdfjs-dist'
 
-export interface PDFContent {
-  totalPages: number
-  info?: Record<string, any>
-  metadata?: any
-  text: string | string[]
-}
-
 export interface UnPDFConfiguration {
   /**
    * By default, UnPDF will use the latest version of PDF.js. If you want to

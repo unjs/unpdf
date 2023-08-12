@@ -1,12 +1,18 @@
-import { decodePDFText as _decodePDFText } from './text'
+import { getPDFMeta as _getPDFMeta } from './meta'
+import { extractPDFText as _extractPDFText } from './text'
 import { getImagesFromPage as _getImagesFromPage } from './image'
 import { resolvePDFJSImports } from './utils'
 
 export { defineUnPDFConfig } from './utils'
 
-export const decodePDFText: typeof _decodePDFText = async (...args) => {
+export const getPDFMeta: typeof _getPDFMeta = async (...args) => {
   await resolvePDFJSImports()
-  return await _decodePDFText(...args)
+  return await _getPDFMeta(...args)
+}
+
+export const extractPDFText: typeof _extractPDFText = async (...args) => {
+  await resolvePDFJSImports()
+  return await _extractPDFText(...args)
 }
 
 export const getImagesFromPage: typeof _getImagesFromPage = async (...args) => {

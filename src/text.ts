@@ -1,25 +1,20 @@
 import type { PDFDocumentProxy } from 'pdfjs-dist'
 import type { TextItem } from 'pdfjs-dist/types/src/display/api'
 import { getDocumentProxy } from './utils'
-import type { PDFContent } from './types'
 
-export async function decodePDFText(
+export async function extractPDFText(
   data: ArrayBuffer,
   { mergePages = false }: { mergePages?: boolean } = {},
-): Promise<PDFContent> {
+) {
   const pdf = await getDocumentProxy(data)
-  const meta = await pdf.getMetadata().catch(() => null)
 
   const texts = await Promise.all(
     Array.from({ length: pdf.numPages }, (_, i) => getPageText(pdf, i + 1)),
   )
-
   const filteredTexts = texts.filter(Boolean) as string[]
 
   return {
     totalPages: pdf.numPages,
-    info: meta?.info,
-    metadata: meta?.metadata?.getAll(),
     text: mergePages ? filteredTexts.join('\n\n') : filteredTexts,
   }
 }

@@ -1,15 +1,22 @@
 import { deepStrictEqual, strictEqual } from 'node:assert'
 import { describe, it } from 'node:test'
-import { decodePDFText, defineUnPDFConfig } from '../src/index.node'
+import { defineUnPDFConfig, extractPDFText, getPDFMeta } from '../src/index.node'
 import DummyPDFDataUri from './fixtures/dummy'
 
 describe('unpdf', () => {
   it('extracts text from a PDF', async () => {
     const pdf = await fetch(DummyPDFDataUri).then(res => res.arrayBuffer())
-    const { text, info, totalPages } = await decodePDFText(pdf)
+    const { text, totalPages } = await extractPDFText(pdf)
 
     strictEqual(text[0], 'Dummy PDF file')
     strictEqual(totalPages, 1)
+  })
+
+  it('extracts metadata from a PDF', async () => {
+    const pdf = await fetch(DummyPDFDataUri).then(res => res.arrayBuffer())
+    const { info, metadata } = await getPDFMeta(pdf)
+
+    strictEqual(metadata, undefined)
     deepStrictEqual(info, {
       PDFFormatVersion: '1.4',
       Language: null,
@@ -31,7 +38,7 @@ describe('unpdf', () => {
       pdfjs: () => import('pdfjs-dist/legacy/build/pdf.js'),
     })
     const pdf = await fetch(DummyPDFDataUri).then(res => res.arrayBuffer())
-    const { text } = await decodePDFText(pdf)
+    const { text } = await extractPDFText(pdf)
 
     strictEqual(text[0], 'Dummy PDF file')
   })

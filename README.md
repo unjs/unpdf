@@ -30,12 +30,12 @@ yarn add -D unpdf
 ## Usage
 
 ```ts
-import { decodePDFText } from 'unpdf'
+import { extractPDFText } from 'unpdf'
 
 const pdfBuffer = await fetch('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf')
   .then(res => res.arrayBuffer())
 
-const { totalPages, info, metadata, text } = await decodePDFText(
+const { totalPages, text } = await extractPDFText(
   new Uint8Array(pdfBuffer), { mergePages: true }
 )
 ```
@@ -44,7 +44,7 @@ const { totalPages, info, metadata, text } = await decodePDFText(
 
 ```ts
 // Before using any other methods, define the PDF.js module
-import { decodePDFText, defineUnPDFConfig } from 'unpdf'
+import { defineUnPDFConfig } from 'unpdf'
 
 // Use the legacy build
 defineUnPDFConfig({
@@ -79,20 +79,25 @@ interface UnPDFConfiguration {
 function defineUnPDFConfig({ pdfjs }: UnPDFConfiguration): Promise<void>
 ```
 
-### `decodePDFText`
+### `getPDFMeta`
 
 ```ts
-interface PDFContent {
-  totalPages: number
-  info?: Record<string, any>
-  metadata?: any
-  text: string | string[]
-}
+function getPDFMeta(data: ArrayBuffer): Promise<{
+  info: Record<string, any>
+  metadata: any
+}>
+```
 
-function decodePDFText(
+### `extractPDFText`
+
+```ts
+function extractPDFText(
   data: ArrayBuffer,
   { mergePages }?: { mergePages?: boolean }
-): Promise<PDFContent>
+): Promise<{
+  totalPages: number
+  text: string | string[]
+}>
 ```
 
 ### `getImagesFromPage`
