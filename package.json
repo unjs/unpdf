@@ -1,7 +1,7 @@
 {
   "name": "unpdf",
   "type": "module",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "packageManager": "pnpm@8.6.12",
   "description": "Utilities to work with PDFs, like extracting text",
   "author": "Johann Schopplich <pkg@johannschopplich.com>",
