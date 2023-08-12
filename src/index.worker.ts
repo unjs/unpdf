@@ -1,6 +1,8 @@
 import type { decodePDFText as _decodePDFText } from './text'
 import type { getImagesFromPage as _getImagesFromPage } from './image'
 
+export { defineUnPDFConfig } from './utils'
+
 export const decodePDFText: typeof _decodePDFText = async () => {
   throw new Error('Not implemented in worker context yet')
 }

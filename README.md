@@ -10,6 +10,7 @@ This library is also intended as a modern alternative to the unmaintained [`pdf-
 
 - 🏗️ Conditional exports for Browser, Node and worker environments
 - 💬 Extract text from PDFs
+- 🧱 Use custom PDF.js build
 
 ## Installation
 
@@ -38,7 +39,29 @@ const { totalPages, info, metadata, text } = await decodePDFText(
 )
 ```
 
+## Config
+
+```ts
+interface UnPDFConfiguration {
+  /**
+   * By default, UnPDF will use the latest version of PDF.js. If you want to
+   * use an older version or the legacy build, set a promise that resolves to
+   * the PDF.js module.
+   *
+   * @example
+   * () => import('pdfjs-dist/legacy/build/pdf.js')
+   */
+  pdfjs?: () => typeof PDFJS
+}
+```
+
 ## Methods
+
+### `defineUnPDFConfig`
+
+```ts
+function defineUnPDFConfig({ pdfjs }: UnPDFConfiguration): Promise<void>
+```
 
 ### `decodePDFText`
 
