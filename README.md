@@ -18,13 +18,13 @@ Run the following command to add `unpdf` to your project.
 
 ```bash
 # pnpm
-pnpm add -D unpdf
+pnpm add unpdf
 
 # npm
-npm install -D unpdf
+npm install unpdf
 
 # yarn
-yarn add -D unpdf
+yarn add unpdf
 ```
 
 ## Usage
