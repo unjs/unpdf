@@ -1,15 +1,32 @@
 import type PDFJS from 'pdfjs-dist'
+import type { BinaryData, DocumentInitParameters, PDFDocumentProxy } from 'pdfjs-dist/types/src/display/api'
 import type { UnPDFConfiguration } from './types'
 
 let resolvedModule: typeof PDFJS | undefined
 
-export async function getDocumentProxy(data: ArrayBuffer) {
+/**
+ * Returns a PDFDocumentProxy instance from a given binary data.
+ *
+ * Applies the following defaults:
+ * - `useWorkerFetch: false`
+ * - `isEvalSupported: false`
+ * - `useSystemFonts: true`
+ */
+export async function getDocumentProxy(data: BinaryData, options: DocumentInitParameters = {}) {
+  const {
+    useWorkerFetch = false,
+    isEvalSupported = false,
+    useSystemFonts = true,
+    ...rest
+  } = options
+
   const { getDocument } = await getResolvedPDFJS()
   const pdf = await getDocument({
     data,
-    useWorkerFetch: false,
-    useSystemFonts: true,
-    isEvalSupported: false,
+    useWorkerFetch,
+    useSystemFonts,
+    isEvalSupported,
+    ...rest,
   }).promise
 
   return pdf
@@ -46,4 +63,8 @@ export async function resolvePDFJSImports() {
   catch (error) {
     throw new Error('PDF.js is not available. Please add the package as a dependency.')
   }
+}
+
+export function isPDFDocumentProxy(data: unknown): data is PDFDocumentProxy {
+  return typeof data === 'object' && data !== null && '_pdfInfo' in data
 }
