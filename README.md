@@ -94,7 +94,7 @@ function defineUnPDFConfig({ pdfjs }: UnPDFConfiguration): Promise<void>
 Returns the resolved PDF.js module.
 
 ```ts
-function getResolvedPDFJS(): Promise<typeof PDFJS>
+function getResolvedPDFJS(): Promise<typeof import('pdfjs-dist')>
 ```
 
 ### `getPDFMeta`
