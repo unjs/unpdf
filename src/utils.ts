@@ -13,17 +13,14 @@ let resolvedModule: typeof PDFJS | undefined
  * - `useSystemFonts: true`
  */
 export async function getDocumentProxy(data: BinaryData, options: DocumentInitParameters = {}) {
-  const _options = Object.assign(
-    {
-      useWorkerFetch: false,
-      isEvalSupported: false,
-      useSystemFonts: true,
-    },
-    options,
-  )
-
   const { getDocument } = await getResolvedPDFJS()
-  const pdf = await getDocument(_options).promise
+  const pdf = await getDocument({
+    data,
+    useWorkerFetch: false,
+    isEvalSupported: false,
+    useSystemFonts: true,
+    ...options,
+  }).promise
 
   return pdf
 }
