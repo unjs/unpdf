@@ -32,11 +32,16 @@ yarn add unpdf
 ```ts
 import { extractPDFText } from 'unpdf'
 
-const pdfBuffer = await fetch('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf')
+// Fetch a PDF file from the web
+const pdf = await fetch('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf')
   .then(res => res.arrayBuffer())
 
+// Or load it from the filesystem
+const pdf = await readFile('./dummy.pdf')
+
+// Pass the PDF buffer to the relevant method
 const { totalPages, text } = await extractPDFText(
-  new Uint8Array(pdfBuffer), { mergePages: true }
+  new Uint8Array(pdf), { mergePages: true }
 )
 ```
 
