@@ -1,10 +1,10 @@
 # unpdf
 
-A collection of utilities to work with PDFs. Uses Mozilla's [PDF.js](https://github.com/mozilla/pdf.js) under the hood.
+A collection of utilities to work with PDFs. Uses Mozilla's [PDF.js](https://github.com/mozilla/pdf.js) under the hood and lazily initializes the library.
 
-`unpdf` takes advantage of [export conditions](https://nodejs.org/api/packages.html#packages_conditional_exports) to circumvent build issues in serverless environments. PDF.js depends on the optional `canvas` module, which [doesn't work inside worker threads](https://github.com/Automattic/node-canvas/issues/1394).
+`unpdf` takes advantage of [export conditions](https://nodejs.org/api/packages.html#packages_conditional_exports) to circumvent build issues in serverless environments. For example, PDF.js depends on the optional `canvas` module, which [doesn't work inside worker threads](https://github.com/Automattic/node-canvas/issues/1394).
 
-This library is also intended as a modern alternative to the unmaintained [`pdf-parse`](https://www.npmjs.com/package/pdf-parse).
+This library is also intended as a modern alternative to the unmaintained but still popular [`pdf-parse`](https://www.npmjs.com/package/pdf-parse).
 
 ## Features
 
@@ -55,6 +55,14 @@ defineUnPDFConfig({
 // …
 ```
 
+### Access the PDF.js Module
+
+```ts
+import { getResolvedPDFJS } from 'unpdf'
+
+const { version } = await getResolvedPDFJS()
+```
+
 ## Config
 
 ```ts
@@ -75,8 +83,18 @@ interface UnPDFConfiguration {
 
 ### `defineUnPDFConfig`
 
+Define a custom PDF.js module, like the legacy build.
+
 ```ts
 function defineUnPDFConfig({ pdfjs }: UnPDFConfiguration): Promise<void>
+```
+
+### `getResolvedPDFJS`
+
+Returns the resolved PDF.js module.
+
+```ts
+function getResolvedPDFJS(): Promise<typeof PDFJS>
 ```
 
 ### `getPDFMeta`

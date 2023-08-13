@@ -7,7 +7,7 @@ export async function getImagesFromPage(
   const pdf = await getDocumentProxy(data)
   const page = await pdf.getPage(pageNumber)
   const operatorList = await page.getOperatorList()
-  const { OPS } = getResolvedPDFJS()
+  const { OPS } = await getResolvedPDFJS()
 
   const images: ArrayBuffer[] = []
   for (const op of operatorList.fnArray) {

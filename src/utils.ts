@@ -4,7 +4,7 @@ import type { UnPDFConfiguration } from './types'
 let resolvedModule: typeof PDFJS | undefined
 
 export async function getDocumentProxy(data: ArrayBuffer) {
-  const { getDocument } = getResolvedPDFJS()
+  const { getDocument } = await getResolvedPDFJS()
   const pdf = await getDocument({
     data,
     useWorkerFetch: false,
@@ -28,11 +28,11 @@ export async function defineUnPDFConfig({ pdfjs }: UnPDFConfiguration) {
   }
 }
 
-export function getResolvedPDFJS() {
+export async function getResolvedPDFJS() {
   if (!resolvedModule)
-    throw new Error('PDF.js imports haven\t been resolved yet. Please call either "defineUnPDFConfig" or "resolvePDFJSImports" first.')
+    await resolvePDFJSImports()
 
-  return resolvedModule
+  return resolvedModule!
 }
 
 export async function resolvePDFJSImports() {
