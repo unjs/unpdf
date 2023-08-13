@@ -29,7 +29,10 @@ export async function defineUnPDFConfig({ pdfjs }: UnPDFConfiguration) {
 }
 
 export function getResolvedPDFJS() {
-  return resolvedModule!
+  if (!resolvedModule)
+    throw new Error('PDF.js imports haven\t been resolved yet. Please call either "defineUnPDFConfig" or "resolvePDFJSImports" first.')
+
+  return resolvedModule
 }
 
 export async function resolvePDFJSImports() {

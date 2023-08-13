@@ -3,7 +3,7 @@ import { extractPDFText as _extractPDFText } from './text'
 import { getImagesFromPage as _getImagesFromPage } from './image'
 import { resolvePDFJSImports } from './utils'
 
-export { defineUnPDFConfig } from './utils'
+export { defineUnPDFConfig, getDocumentProxy, getResolvedPDFJS, resolvePDFJSImports } from './utils'
 
 export const getPDFMeta: typeof _getPDFMeta = async (...args) => {
   await resolvePDFJSImports()
