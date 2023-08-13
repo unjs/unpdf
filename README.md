@@ -80,7 +80,7 @@ interface UnPDFConfiguration {
    * @example
    * () => import('pdfjs-dist/legacy/build/pdf.js')
    */
-  pdfjs?: () => typeof PDFJS
+  pdfjs?: () => Promise<typeof PDFJS>
 }
 ```
 
