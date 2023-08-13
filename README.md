@@ -86,7 +86,7 @@ interface UnPDFConfiguration {
 Define a custom PDF.js module, like the legacy build.
 
 ```ts
-function defineUnPDFConfig({ pdfjs }: UnPDFConfiguration): Promise<void>
+function defineUnPDFConfig(config: UnPDFConfiguration): Promise<void>
 ```
 
 ### `getResolvedPDFJS`
@@ -100,7 +100,9 @@ function getResolvedPDFJS(): Promise<typeof import('pdfjs-dist')>
 ### `getPDFMeta`
 
 ```ts
-function getPDFMeta(data: ArrayBuffer): Promise<{
+function getPDFMeta(
+  data: BinaryData | PDFDocumentProxy
+): Promise<{
   info: Record<string, any>
   metadata: Record<string, any>
 }>
@@ -110,7 +112,7 @@ function getPDFMeta(data: ArrayBuffer): Promise<{
 
 ```ts
 function extractPDFText(
-  data: ArrayBuffer,
+  data: BinaryData | PDFDocumentProxy,
   { mergePages }?: { mergePages?: boolean }
 ): Promise<{
   totalPages: number
@@ -122,7 +124,7 @@ function extractPDFText(
 
 ```ts
 function getImagesFromPage(
-  data: ArrayBuffer,
+  data: BinaryData | PDFDocumentProxy,
   pageNumber: number
 ): Promise<ArrayBuffer[]>
 ```

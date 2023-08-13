@@ -1,10 +1,11 @@
-import { getDocumentProxy, getResolvedPDFJS } from './utils'
+import type { BinaryData, PDFDocumentProxy } from 'pdfjs-dist/types/src/display/api'
+import { getDocumentProxy, getResolvedPDFJS, isPDFDocumentProxy } from './utils'
 
 export async function getImagesFromPage(
-  data: ArrayBuffer,
+  data: BinaryData | PDFDocumentProxy,
   pageNumber: number,
 ) {
-  const pdf = await getDocumentProxy(data)
+  const pdf = isPDFDocumentProxy(data) ? data : await getDocumentProxy(data)
   const page = await pdf.getPage(pageNumber)
   const operatorList = await page.getOperatorList()
   const { OPS } = await getResolvedPDFJS()

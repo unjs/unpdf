@@ -1,6 +1,12 @@
 import { deepStrictEqual, strictEqual } from 'node:assert'
 import { describe, it } from 'node:test'
-import { defineUnPDFConfig, extractPDFText, getPDFMeta, getResolvedPDFJS } from '../src/index.node'
+import {
+  defineUnPDFConfig,
+  extractPDFText,
+  getDocumentProxy,
+  getPDFMeta,
+  getResolvedPDFJS,
+} from '../src/index.node'
 import { getPDF } from './utils'
 
 describe('unpdf', () => {
@@ -29,6 +35,13 @@ describe('unpdf', () => {
       Producer: 'OpenOffice.org 2.1',
       CreationDate: 'D:20070223175637+02\'00\'',
     })
+  })
+
+  it('supports PDF passing PDFDocumentProxy', async () => {
+    const pdf = await getDocumentProxy(await getPDF())
+    const { info } = await getPDFMeta(pdf)
+
+    strictEqual(info.Creator, 'Writer')
   })
 
   it('provides the PDF.js module', async () => {

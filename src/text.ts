@@ -1,13 +1,11 @@
-import type { PDFDocumentProxy } from 'pdfjs-dist'
-import type { TextItem } from 'pdfjs-dist/types/src/display/api'
-import { getDocumentProxy } from './utils'
+import type { BinaryData, PDFDocumentProxy, TextItem } from 'pdfjs-dist/types/src/display/api'
+import { getDocumentProxy, isPDFDocumentProxy } from './utils'
 
 export async function extractPDFText(
-  data: ArrayBuffer,
+  data: BinaryData | PDFDocumentProxy,
   { mergePages = false }: { mergePages?: boolean } = {},
 ) {
-  const pdf = await getDocumentProxy(data)
-
+  const pdf = isPDFDocumentProxy(data) ? data : await getDocumentProxy(data)
   const texts = await Promise.all(
     Array.from({ length: pdf.numPages }, (_, i) => getPageText(pdf, i + 1)),
   )
