@@ -84,7 +84,7 @@ function defineUnPDFConfig({ pdfjs }: UnPDFConfiguration): Promise<void>
 ```ts
 function getPDFMeta(data: ArrayBuffer): Promise<{
   info: Record<string, any>
-  metadata: any
+  metadata: Record<string, any>
 }>
 ```
 
