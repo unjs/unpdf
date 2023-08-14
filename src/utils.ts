@@ -26,7 +26,7 @@ export async function getDocumentProxy(data: BinaryData, options: DocumentInitPa
 }
 
 export async function defineUnPDFConfig(options: UnPDFConfiguration) {
-  const { pdfjs } = options
+  const { pdfjs } = { ...options }
 
   if (pdfjs) {
     try {
