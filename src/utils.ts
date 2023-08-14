@@ -28,16 +28,8 @@ export async function getDocumentProxy(data: BinaryData, options: DocumentInitPa
 export async function defineUnPDFConfig(options: UnPDFConfiguration) {
   const { pdfjs } = { ...options }
 
-  if (pdfjs) {
-    try {
-      // @ts-expect-error: CJS module needs to be transformed to ESM
-      const { default: mod } = await pdfjs()
-      resolvedModule = mod
-    }
-    catch (error) {
-      throw new Error('Resolving the PDF.js module failed. Please check your configuration.')
-    }
-  }
+  if (pdfjs)
+    await resolvePDFJSImports(pdfjs)
 }
 
 export async function getResolvedPDFJS() {
@@ -56,9 +48,10 @@ export async function resolvePDFJSImports(pdfjs?: () => Promise<typeof PDFJS>) {
       // @ts-expect-error: CJS module needs to be transformed to ESM
       const { default: mod } = await pdfjs()
       resolvedModule = mod
+      return
     }
     catch (error) {
-      throw new Error('Resolving the PDF.js module failed. Please check your configuration.')
+      throw new Error('Resolving PDF.js failed. Please check the provided configuration.')
     }
   }
 
