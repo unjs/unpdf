@@ -88,7 +88,7 @@ interface UnPDFConfiguration {
 
 ### `defineUnPDFConfig`
 
-Define a custom PDF.js module, like the legacy build.
+Define a custom PDF.js module, like the legacy build. Make sure to call this method before using any other methods.
 
 ```ts
 function defineUnPDFConfig(config: UnPDFConfiguration): Promise<void>
@@ -96,7 +96,7 @@ function defineUnPDFConfig(config: UnPDFConfiguration): Promise<void>
 
 ### `getResolvedPDFJS`
 
-Returns the resolved PDF.js module.
+Returns the resolved PDF.js module. If no build is defined, the latest version will be initialized.
 
 ```ts
 function getResolvedPDFJS(): Promise<typeof import('pdfjs-dist')>

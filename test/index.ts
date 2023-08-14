@@ -6,6 +6,7 @@ import {
   getDocumentProxy,
   getPDFMeta,
   getResolvedPDFJS,
+  resolvePDFJSImports,
 } from '../src/index.node'
 import { getPDF } from './utils'
 
@@ -51,7 +52,14 @@ describe('unpdf', () => {
     strictEqual(version, '3.9.179')
   })
 
-  it('can use a custom PDF.js module', async () => {
+  it('can resolve a custom PDF.js module', async () => {
+    await resolvePDFJSImports(() => import('pdfjs-dist/legacy/build/pdf.js'))
+    const { text } = await extractPDFText(await getPDF())
+
+    strictEqual(text[0], 'Dummy PDF file')
+  })
+
+  it('can define a configuration', async () => {
     await defineUnPDFConfig({
       pdfjs: () => import('pdfjs-dist/legacy/build/pdf.js'),
     })

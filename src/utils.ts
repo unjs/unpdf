@@ -45,9 +45,20 @@ export async function getResolvedPDFJS() {
   return resolvedModule!
 }
 
-export async function resolvePDFJSImports() {
+export async function resolvePDFJSImports(pdfjs?: () => Promise<typeof PDFJS>) {
   if (resolvedModule)
     return
+
+  if (pdfjs) {
+    try {
+      // @ts-expect-error: CJS module needs to be transformed to ESM
+      const { default: mod } = await pdfjs()
+      resolvedModule = mod
+    }
+    catch (error) {
+      throw new Error('Resolving the PDF.js module failed. Please check your configuration.')
+    }
+  }
 
   try {
     const { default: mod } = await import('pdfjs-dist')
