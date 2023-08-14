@@ -25,7 +25,9 @@ export async function getDocumentProxy(data: BinaryData, options: DocumentInitPa
   return pdf
 }
 
-export async function defineUnPDFConfig({ pdfjs }: UnPDFConfiguration) {
+export async function defineUnPDFConfig(options: UnPDFConfiguration) {
+  const { pdfjs } = options
+
   if (pdfjs) {
     try {
       // @ts-expect-error: CJS module needs to be transformed to ESM
