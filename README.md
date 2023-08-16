@@ -8,7 +8,7 @@ This library is also intended as a modern alternative to the unmaintained but st
 
 ## Features
 
-- 🏗️ Conditional exports for Browser, Node and worker environments
+- 🏗️ Conditional exports for Node.js, worker and browser environments
 - 💬 Extract text and images from PDFs
 - 🧱 Opt-in to legacy PDF.js build
 
