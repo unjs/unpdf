@@ -52,15 +52,21 @@ describe('unpdf', () => {
     strictEqual(version, '3.9.179')
   })
 
-  it('can resolve a custom PDF.js module', async () => {
-    await resolvePDFJSImports(() => import('pdfjs-dist/legacy/build/pdf.js'))
+  it('can resolve the legacy PDF.js module', async () => {
+    await resolvePDFJSImports(
+      () => import('pdfjs-dist/legacy/build/pdf.js'),
+      { force: true },
+    )
     const { text } = await extractPDFText(await getPDF())
 
     strictEqual(text[0], 'Dummy PDF file')
   })
 
   it('supports pdfjs-serverless package', async () => {
-    await resolvePDFJSImports(() => import('pdfjs-serverless'))
+    await resolvePDFJSImports(
+      () => import('pdfjs-serverless'),
+      { force: true },
+    )
     const { text } = await extractPDFText(await getPDF())
 
     strictEqual(text[0], 'Dummy PDF file')

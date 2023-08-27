@@ -28,7 +28,7 @@ export async function defineUnPDFConfig(options: UnPDFConfiguration) {
   const { pdfjs } = { ...options }
 
   if (pdfjs)
-    await resolvePDFJSImports(pdfjs)
+    await resolvePDFJSImports(pdfjs, { force: true })
 }
 
 export async function getResolvedPDFJS() {
@@ -40,8 +40,9 @@ export async function getResolvedPDFJS() {
 
 export async function resolvePDFJSImports(
   pdfjsResolver?: () => Promise<typeof import('pdfjs-dist') | typeof import('pdfjs-serverless')>,
+  { force = false } = {},
 ) {
-  if (resolvedModule)
+  if (resolvedModule && !force)
     return
 
   if (pdfjsResolver) {
@@ -52,7 +53,7 @@ export async function resolvePDFJSImports(
       return
     }
     catch (error) {
-      throw new Error('Resolving PDF.js failed. Please check the provided configuration.')
+      throw new Error('Resolving failed. Please check the provided configuration.')
     }
   }
 
