@@ -60,7 +60,6 @@ describe('unpdf', () => {
   })
 
   it('supports pdfjs-serverless package', async () => {
-    // @ts-expect-error: pdfjs-serverless type is not compatible with pdfjs-dist somehow
     await resolvePDFJSImports(() => import('pdfjs-serverless'))
     const { text } = await extractPDFText(await getPDF())
 
