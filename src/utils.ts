@@ -45,9 +45,9 @@ export async function resolvePDFJSImports(pdfjs?: () => Promise<typeof PDFJS>) {
 
   if (pdfjs) {
     try {
-      // @ts-expect-error: CJS module needs to be transformed to ESM
-      const { default: mod } = await pdfjs()
-      resolvedModule = mod
+      const _import = await pdfjs()
+      // @ts-expect-error: Interop default export
+      resolvedModule = _import.default || _import
       return
     }
     catch (error) {
