@@ -2,7 +2,7 @@
   "name": "unpdf",
   "type": "module",
   "version": "0.5.4",
-  "packageManager": "pnpm@8.6.12",
+  "packageManager": "pnpm@8.7.0",
   "description": "Utilities to work with PDFs, like extracting text",
   "author": "Johann Schopplich <pkg@johannschopplich.com>",
   "license": "MIT",
@@ -56,7 +56,8 @@
     "test:types": "tsc --noEmit"
   },
   "peerDependencies": {
-    "pdfjs-dist": "^3.9.179"
+    "pdfjs-dist": "^3.9.179",
+    "pdfjs-serverless": "^0.2.1"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^0.41.0",
@@ -64,6 +65,7 @@
     "bumpp": "^9.2.0",
     "eslint": "^8.48.0",
     "pdfjs-dist": "^3.9.179",
+    "pdfjs-serverless": "^0.2.1",
     "tsx": "^3.12.7",
     "typescript": "^5.1.6",
     "unbuild": "^2.0.0"
