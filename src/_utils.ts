@@ -3,9 +3,9 @@ import type {
   DocumentInitParameters,
   PDFDocumentProxy,
 } from "pdfjs-dist/types/src/display/api";
-import type { UnPDFConfiguration } from "./types";
+import type { PDFJS, UnPDFConfiguration } from "./types";
 
-let resolvedModule: typeof import("pdfjs-dist") | undefined;
+let resolvedModule: PDFJS | undefined;
 
 /**
  * Returns a PDFDocumentProxy instance from a given binary data.
@@ -39,7 +39,7 @@ export async function defineUnPDFConfig(options: UnPDFConfiguration) {
   }
 }
 
-export async function getResolvedPDFJS() {
+export async function getResolvedPDFJS(): Promise<PDFJS> {
   if (!resolvedModule) {
     await resolvePDFJSImports();
   }
@@ -49,9 +49,7 @@ export async function getResolvedPDFJS() {
 }
 
 export async function resolvePDFJSImports(
-  pdfjsResolver?: () => Promise<
-    typeof import("pdfjs-dist") | typeof import("pdfjs-serverless")
-  >,
+  pdfjsResolver?: () => Promise<PDFJS>,
   { force = false } = {},
 ) {
   if (resolvedModule && !force) {
@@ -61,7 +59,6 @@ export async function resolvePDFJSImports(
   if (pdfjsResolver) {
     try {
       const _import = await pdfjsResolver();
-      // @ts-expect-error: Interop default export
       resolvedModule = _import.default || _import;
       return;
     } catch {
@@ -72,8 +69,7 @@ export async function resolvePDFJSImports(
   }
 
   try {
-    const _import = await import("pdfjs-dist");
-    resolvedModule = _import.default || _import;
+    resolvedModule = await import("unpdf/pdfjs");
   } catch {
     throw new Error(
       "PDF.js is not available. Please add the package as a dependency.",

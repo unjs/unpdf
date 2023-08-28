@@ -3,7 +3,7 @@ import type {
   PDFDocumentProxy,
   TextItem,
 } from "pdfjs-dist/types/src/display/api";
-import { getDocumentProxy, isPDFDocumentProxy } from "./utils";
+import { getDocumentProxy, isPDFDocumentProxy } from "./_utils";
 
 export async function extractPDFText(
   data: BinaryData | PDFDocumentProxy,
