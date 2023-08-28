@@ -1,4 +1,6 @@
-export type PDFJS = any;
+import type _PDFJS from "pdfjs-dist/types/src/pdf";
+
+export type PDFJS = typeof _PDFJS;
 
 export interface UnPDFConfiguration {
   /**

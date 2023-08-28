@@ -10,6 +10,8 @@ export {
   resolvePDFJSImports,
 } from "./_utils";
 
+// TODO: init official PDF.js build for web?
+
 export const getPDFMeta: typeof _getPDFMeta = async (...args) => {
   await resolvePDFJSImports();
   return await _getPDFMeta(...args);
