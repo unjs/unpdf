@@ -52,7 +52,7 @@ const { totalPages, text } = await extractPDFText(new Uint8Array(pdf), {
 
 ### Use Legacy Or Custom PDF.js Build
 
-Typically, you don't need to worry about the PDF.js build. `unpdf` ships with a serverless build of the latest PDF.js version. However, if you want to use an older version or the legacy build, you can define a custom PDF.js module.
+Generally, you don't need to worry about the PDF.js build. `unpdf` ships with a serverless build of the latest PDF.js version. However, if you want to use an older version or the legacy build, you can define a custom PDF.js module.
 
 ```ts
 // Before using any other methods, define the PDF.js module
@@ -107,9 +107,10 @@ interface UnPDFConfiguration {
    * the PDF.js module.
    *
    * @example
+   * // Use the legacy build
    * () => import('pdfjs-dist/legacy/build/pdf.js')
    */
-  pdfjs?: () => Promise<typeof PDFJS>;
+  pdfjs?: () => Promise<PDFJS>;
 }
 ```
 
@@ -128,7 +129,7 @@ function defineUnPDFConfig(config: UnPDFConfiguration): Promise<void>;
 Returns the resolved PDF.js module. If no build is defined, the latest version will be initialized.
 
 ```ts
-function getResolvedPDFJS(): Promise<typeof import("pdfjs-dist")>;
+function getResolvedPDFJS(): Promise<PDFJS>;
 ```
 
 ### `getPDFMeta`

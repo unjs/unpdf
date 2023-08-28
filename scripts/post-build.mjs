@@ -5,7 +5,7 @@ import fg from "fast-glob";
 const rootDir = new URL("..", import.meta.url).pathname;
 const targets = await fg.async(["dist/**/*.{d.cts,d.mts,d.ts}"], {
   rootDir,
-  ignore: ["types/**"],
+  ignore: ["**/types/**"],
 });
 
 for (const filename of targets) {
