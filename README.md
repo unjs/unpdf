@@ -30,31 +30,32 @@ yarn add unpdf
 ## Usage
 
 ```ts
-import { extractPDFText } from 'unpdf'
+import { extractPDFText } from "unpdf";
 
 // Fetch a PDF file from the web
-const pdf = await fetch('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf')
-  .then(res => res.arrayBuffer())
+const pdf = await fetch(
+  "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+).then((res) => res.arrayBuffer());
 
 // Or load it from the filesystem
-const pdf = await readFile('./dummy.pdf')
+const pdf = await readFile("./dummy.pdf");
 
 // Pass the PDF buffer to the relevant method
-const { totalPages, text } = await extractPDFText(
-  new Uint8Array(pdf), { mergePages: true }
-)
+const { totalPages, text } = await extractPDFText(new Uint8Array(pdf), {
+  mergePages: true,
+});
 ```
 
 ### Use Legacy Or Custom PDF.js Build
 
 ```ts
 // Before using any other methods, define the PDF.js module
-import { defineUnPDFConfig } from 'unpdf'
+import { defineUnPDFConfig } from "unpdf";
 
 // Use the legacy build
 defineUnPDFConfig({
-  pdfjs: () => import('pdfjs-dist/legacy/build/pdf.js')
-})
+  pdfjs: () => import("pdfjs-dist/legacy/build/pdf.js"),
+});
 
 // Now, you can use the other methods
 // …
@@ -63,9 +64,9 @@ defineUnPDFConfig({
 ### Access the PDF.js Module
 
 ```ts
-import { getResolvedPDFJS } from 'unpdf'
+import { getResolvedPDFJS } from "unpdf";
 
-const { version } = await getResolvedPDFJS()
+const { version } = await getResolvedPDFJS();
 ```
 
 ## Config
@@ -80,7 +81,7 @@ interface UnPDFConfiguration {
    * @example
    * () => import('pdfjs-dist/legacy/build/pdf.js')
    */
-  pdfjs?: () => Promise<typeof PDFJS>
+  pdfjs?: () => Promise<typeof PDFJS>;
 }
 ```
 
@@ -91,7 +92,7 @@ interface UnPDFConfiguration {
 Define a custom PDF.js module, like the legacy build. Make sure to call this method before using any other methods.
 
 ```ts
-function defineUnPDFConfig(config: UnPDFConfiguration): Promise<void>
+function defineUnPDFConfig(config: UnPDFConfiguration): Promise<void>;
 ```
 
 ### `getResolvedPDFJS`
@@ -99,18 +100,16 @@ function defineUnPDFConfig(config: UnPDFConfiguration): Promise<void>
 Returns the resolved PDF.js module. If no build is defined, the latest version will be initialized.
 
 ```ts
-function getResolvedPDFJS(): Promise<typeof import('pdfjs-dist')>
+function getResolvedPDFJS(): Promise<typeof import("pdfjs-dist")>;
 ```
 
 ### `getPDFMeta`
 
 ```ts
-function getPDFMeta(
-  data: BinaryData | PDFDocumentProxy
-): Promise<{
-  info: Record<string, any>
-  metadata: Record<string, any>
-}>
+function getPDFMeta(data: BinaryData | PDFDocumentProxy): Promise<{
+  info: Record<string, any>;
+  metadata: Record<string, any>;
+}>;
 ```
 
 ### `extractPDFText`
@@ -118,11 +117,11 @@ function getPDFMeta(
 ```ts
 function extractPDFText(
   data: BinaryData | PDFDocumentProxy,
-  { mergePages }?: { mergePages?: boolean }
+  { mergePages }?: { mergePages?: boolean },
 ): Promise<{
-  totalPages: number
-  text: string | string[]
-}>
+  totalPages: number;
+  text: string | string[];
+}>;
 ```
 
 ### `getImagesFromPage`
@@ -130,8 +129,8 @@ function extractPDFText(
 ```ts
 function getImagesFromPage(
   data: BinaryData | PDFDocumentProxy,
-  pageNumber: number
-): Promise<ArrayBuffer[]>
+  pageNumber: number,
+): Promise<ArrayBuffer[]>;
 ```
 
 ## License

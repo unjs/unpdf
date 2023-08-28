@@ -1,5 +1,5 @@
-import { deepStrictEqual, strictEqual } from 'node:assert'
-import { describe, it } from 'node:test'
+import { deepStrictEqual, strictEqual } from "node:assert";
+import { describe, it } from "node:test";
 import {
   defineUnPDFConfig,
   extractPDFText,
@@ -7,77 +7,77 @@ import {
   getPDFMeta,
   getResolvedPDFJS,
   resolvePDFJSImports,
-} from '../src/index.node'
-import { getPDF } from './utils'
+} from "../src/index.node";
+import { getPDF } from "./utils";
 
-describe('unpdf', () => {
-  it('extracts text from a PDF', async () => {
-    const { text, totalPages } = await extractPDFText(await getPDF())
+describe("unpdf", () => {
+  it("extracts text from a PDF", async () => {
+    const { text, totalPages } = await extractPDFText(await getPDF());
 
-    strictEqual(text[0], 'Dummy PDF file')
-    strictEqual(totalPages, 1)
-  })
+    strictEqual(text[0], "Dummy PDF file");
+    strictEqual(totalPages, 1);
+  });
 
-  it('extracts metadata from a PDF', async () => {
-    const { info, metadata } = await getPDFMeta(await getPDF())
+  it("extracts metadata from a PDF", async () => {
+    const { info, metadata } = await getPDFMeta(await getPDF());
 
-    strictEqual(Object.keys(metadata).length, 0)
+    strictEqual(Object.keys(metadata).length, 0);
     deepStrictEqual(info, {
-      PDFFormatVersion: '1.4',
+      PDFFormatVersion: "1.4",
+      // eslint-disable-next-line unicorn/no-null
       Language: null,
+      // eslint-disable-next-line unicorn/no-null
       EncryptFilterName: null,
       IsLinearized: false,
       IsAcroFormPresent: false,
       IsXFAPresent: false,
       IsCollectionPresent: false,
       IsSignaturesPresent: false,
-      Author: 'Evangelos Vlachogiannis',
-      Creator: 'Writer',
-      Producer: 'OpenOffice.org 2.1',
-      CreationDate: 'D:20070223175637+02\'00\'',
-    })
-  })
+      Author: "Evangelos Vlachogiannis",
+      Creator: "Writer",
+      Producer: "OpenOffice.org 2.1",
+      CreationDate: "D:20070223175637+02'00'",
+    });
+  });
 
-  it('supports PDF passing PDFDocumentProxy', async () => {
-    const pdf = await getDocumentProxy(await getPDF())
-    const { info } = await getPDFMeta(pdf)
+  it("supports PDF passing PDFDocumentProxy", async () => {
+    const pdf = await getDocumentProxy(await getPDF());
+    const { info } = await getPDFMeta(pdf);
 
-    strictEqual(info.Creator, 'Writer')
-  })
+    strictEqual(info.Creator, "Writer");
+  });
 
-  it('provides the PDF.js module', async () => {
-    const PDFJS = await getResolvedPDFJS()
-    const { version } = PDFJS
+  it("provides the PDF.js module", async () => {
+    const PDFJS = await getResolvedPDFJS();
+    const { version } = PDFJS;
 
-    strictEqual(version, '3.9.179')
-  })
+    strictEqual(version, "3.9.179");
+  });
 
-  it('can resolve the legacy PDF.js module', async () => {
-    await resolvePDFJSImports(
-      () => import('pdfjs-dist/legacy/build/pdf.js'),
-      { force: true },
-    )
-    const { text } = await extractPDFText(await getPDF())
+  it("can resolve the legacy PDF.js module", async () => {
+    await resolvePDFJSImports(() => import("pdfjs-dist/legacy/build/pdf.js"), {
+      force: true,
+    });
+    const { text } = await extractPDFText(await getPDF());
 
-    strictEqual(text[0], 'Dummy PDF file')
-  })
+    strictEqual(text[0], "Dummy PDF file");
+  });
 
-  it('supports pdfjs-serverless package', async () => {
-    await resolvePDFJSImports(
-      () => import('pdfjs-serverless'),
-      { force: true },
-    )
-    const { text } = await extractPDFText(await getPDF())
+  it("supports pdfjs-serverless package", async () => {
+    await resolvePDFJSImports(() => import("pdfjs-serverless"), {
+      force: true,
+    });
+    const { text } = await extractPDFText(await getPDF());
 
-    strictEqual(text[0], 'Dummy PDF file')
-  })
+    strictEqual(text[0], "Dummy PDF file");
+  });
 
-  it('can define a configuration', async () => {
+  it("can define a configuration", async () => {
     await defineUnPDFConfig({
-      pdfjs: () => import('pdfjs-dist/legacy/build/pdf.js'),
-    })
-    const { text } = await extractPDFText(await getPDF())
+      pdfjs: () => import("pdfjs-dist/legacy/build/pdf.js"),
+    });
+    const { text } = await extractPDFText(await getPDF());
 
-    strictEqual(text[0], 'Dummy PDF file')
-  })
-})
+    strictEqual(text[0], "Dummy PDF file");
+  });
+});

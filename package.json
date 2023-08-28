@@ -49,8 +49,10 @@
   "scripts": {
     "build": "unbuild",
     "dev": "unbuild --stub",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
+    "lint": "eslint \"**/*.ts\" --ignore-path .gitignore",
+    "lint:fix": "npm run lint -- --fix",
+    "format": "prettier \"**/*.{css,html,json,md,mjs,ts,vue,yml}\" --write",
+    "format:check": "prettier \"**/*.{css,html,json,md,mjs,ts,vue,yml}\" --check",
     "release": "bumpp --commit --push --tag",
     "test": "tsx test/index.ts",
     "test:types": "tsc --noEmit"
@@ -60,12 +62,13 @@
     "pdfjs-serverless": "^0.2.1"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^0.41.0",
     "@types/node": "^20.5.6",
     "bumpp": "^9.2.0",
     "eslint": "^8.48.0",
+    "eslint-config-unjs": "^0.2.1",
     "pdfjs-dist": "^3.9.179",
     "pdfjs-serverless": "^0.2.1",
+    "prettier": "^3.0.2",
     "tsx": "^3.12.7",
     "typescript": "^5.1.6",
     "unbuild": "^2.0.0"

@@ -1,4 +1,4 @@
-import type PDFJS from 'pdfjs-dist'
+import type PDFJS from "pdfjs-dist";
 
 export interface UnPDFConfiguration {
   /**
@@ -9,5 +9,5 @@ export interface UnPDFConfiguration {
    * @example
    * () => import('pdfjs-dist/legacy/build/pdf.js')
    */
-  pdfjs?: () => Promise<typeof PDFJS>
+  pdfjs?: () => Promise<typeof PDFJS>;
 }
