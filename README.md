@@ -52,8 +52,8 @@ const { totalPages, text } = await extractPDFText(new Uint8Array(pdf), {
 // Before using any other methods, define the PDF.js module
 import { defineUnPDFConfig } from "unpdf";
 
-// Use the legacy build
 defineUnPDFConfig({
+  // Use the legacy build
   pdfjs: () => import("pdfjs-dist/legacy/build/pdf.js"),
 });
 
