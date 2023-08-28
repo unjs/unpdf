@@ -3,7 +3,7 @@
   "type": "module",
   "version": "0.5.4",
   "packageManager": "pnpm@8.7.0",
-  "description": "Utilities to work with PDFs, like extracting text",
+  "description": "Utilities to work with PDFs in Node.js, browser and workers",
   "author": "Johann Schopplich <pkg@johannschopplich.com>",
   "license": "MIT",
   "homepage": "https://github.com/unjs/unpdf#readme",
