@@ -1,3 +1,4 @@
+import { readFile } from "node:fs/promises";
 import { describe, expect, it } from "vitest";
 import {
   extractPDFText,
@@ -6,7 +7,6 @@ import {
   getResolvedPDFJS,
   resolvePDFJSImports,
 } from "../src/index.node";
-import { getPDF } from "./utils";
 
 describe("unpdf", () => {
   it("can resolve a custom PDF.js version", async () => {
@@ -47,3 +47,9 @@ describe("unpdf", () => {
     expect(info.Creator).toEqual("Writer");
   });
 });
+
+export async function getPDF() {
+  // https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf
+  const pdf = await readFile(new URL("fixtures/dummy.pdf", import.meta.url));
+  return new Uint8Array(pdf);
+}
