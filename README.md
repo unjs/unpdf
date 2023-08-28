@@ -2,7 +2,7 @@
 
 A collection of utilities to work with PDFs. Designed specifically for Deno, workers and other nodeless environments.
 
-`unpdf` ships with a redistribution of Mozilla's [PDF.js](https://github.com/mozilla/pdf.js) for serverless environments. Apart from some string replacements and mocks, [`unenv`](https://github.com/unjs/unenv) does the heavy lifting by converting Node.js specific code to be platform-agnostic.
+`unpdf` ships with a serverless build/redistribution of Mozilla's [PDF.js](https://github.com/mozilla/pdf.js) for serverless environments. Apart from some string replacements and mocks, [`unenv`](https://github.com/unjs/unenv) does the heavy lifting by converting Node.js specific code to be platform-agnostic.
 
 This library is also intended as a modern alternative to the unmaintained but still popular [`pdf-parse`](https://www.npmjs.com/package/pdf-parse).
 
