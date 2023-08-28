@@ -38,6 +38,9 @@ devDependencies:
   eslint-config-unjs:
     specifier: ^0.2.1
     version: 0.2.1(eslint@8.48.0)(typescript@5.1.6)
+  fast-glob:
+    specifier: ^3.3.1
+    version: 3.3.1
   pdfjs-dist:
     specifier: ^3.10.111
     version: 3.10.111

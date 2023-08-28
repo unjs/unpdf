@@ -69,6 +69,7 @@ export async function resolvePDFJSImports(
   }
 
   try {
+    // @ts-ignore: Dynamic import of serverless PDF.js build
     resolvedModule = await import("unpdf/pdfjs");
   } catch {
     throw new Error(

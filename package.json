@@ -63,7 +63,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "unbuild",
+    "build": "unbuild && node scripts/post-build.mjs",
     "build:pdfjs": "rollup --config pdfjs.rollup.config.ts --configPlugin typescript && cp -R node_modules/pdfjs-dist/types dist",
     "dev": "unbuild --stub",
     "lint": "eslint \"**/*.ts\" --ignore-path .gitignore",
@@ -86,6 +86,7 @@
     "bumpp": "^9.2.0",
     "eslint": "^8.48.0",
     "eslint-config-unjs": "^0.2.1",
+    "fast-glob": "^3.3.1",
     "pdfjs-dist": "^3.10.111",
     "prettier": "^3.0.2",
     "rollup": "^3.28.1",

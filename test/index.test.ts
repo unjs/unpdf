@@ -10,6 +10,7 @@ import { getPDF } from "./utils";
 
 describe("unpdf", () => {
   it("can resolve a custom PDF.js version", async () => {
+    // @ts-ignore: Dynamic import of serverless PDF.js build
     await resolvePDFJSImports(() => import("../dist/pdfjs"), {
       force: true,
     });
