@@ -11,9 +11,7 @@ let resolvedModule: PDFJS | undefined;
  * Returns a PDFDocumentProxy instance from a given binary data.
  *
  * Applies the following defaults:
- * - `useWorkerFetch: false`
  * - `isEvalSupported: false`
- * - `useSystemFonts: true`
  */
 export async function getDocumentProxy(
   data: BinaryData,
@@ -22,9 +20,7 @@ export async function getDocumentProxy(
   const { getDocument } = await getResolvedPDFJS();
   const pdf = await getDocument({
     data,
-    useWorkerFetch: false,
     isEvalSupported: false,
-    useSystemFonts: true,
     ...options,
   }).promise;
 
@@ -59,6 +55,7 @@ export async function resolvePDFJSImports(
   if (pdfjsResolver) {
     try {
       const _import = await pdfjsResolver();
+      // @ts-ignore: Interop default export
       resolvedModule = _import.default || _import;
       return;
     } catch {
