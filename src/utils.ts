@@ -3,7 +3,7 @@ import type {
   DocumentInitParameters,
   PDFDocumentProxy,
 } from "pdfjs-dist/types/src/display/api";
-import type { PDFJS, UnPDFConfiguration } from "./types";
+import type { PDFJS } from "./types";
 
 let resolvedModule: PDFJS | undefined;
 
@@ -27,14 +27,6 @@ export async function getDocumentProxy(
   return pdf;
 }
 
-export async function defineUnPDFConfig(options: UnPDFConfiguration) {
-  const { pdfjs } = { ...options };
-
-  if (pdfjs) {
-    await resolvePDFJSImports(pdfjs, { force: true });
-  }
-}
-
 export async function getResolvedPDFJS(): Promise<PDFJS> {
   if (!resolvedModule) {
     await resolvePDFJSImports();
@@ -45,7 +37,7 @@ export async function getResolvedPDFJS(): Promise<PDFJS> {
 }
 
 export async function resolvePDFJSImports(
-  pdfjsResolver?: () => Promise<PDFJS>,
+  pdfjsResolver?: () => Promise<any>,
   { force = false } = {},
 ) {
   if (resolvedModule && !force) {

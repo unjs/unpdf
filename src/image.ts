@@ -6,7 +6,7 @@ import {
   getDocumentProxy,
   getResolvedPDFJS,
   isPDFDocumentProxy,
-} from "./_utils";
+} from "./utils";
 
 export async function getImagesFromPage(
   data: BinaryData | PDFDocumentProxy,

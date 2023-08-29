@@ -12,5 +12,5 @@ export interface UnPDFConfiguration {
    * // Use the legacy build
    * () => import('pdfjs-dist/legacy/build/pdf.js')
    */
-  pdfjs?: () => Promise<PDFJS>;
+  pdfjs?: () => Promise<any>;
 }

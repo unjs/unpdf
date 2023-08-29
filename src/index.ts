@@ -1,14 +1,14 @@
 import { getPDFMeta as _getPDFMeta } from "./meta";
 import { extractPDFText as _extractPDFText } from "./text";
 import { getImagesFromPage as _getImagesFromPage } from "./image";
-import { resolvePDFJSImports } from "./_utils";
+import { resolvePDFJSImports } from "./utils";
 
+export { defineUnPDFConfig } from "./config";
 export {
-  defineUnPDFConfig,
   getDocumentProxy,
   getResolvedPDFJS,
   resolvePDFJSImports,
-} from "./_utils";
+} from "./utils";
 
 export const getPDFMeta: typeof _getPDFMeta = async (...args) => {
   await resolvePDFJSImports();

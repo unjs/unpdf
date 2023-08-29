@@ -2,7 +2,7 @@ import type {
   BinaryData,
   PDFDocumentProxy,
 } from "pdfjs-dist/types/src/display/api";
-import { getDocumentProxy, isPDFDocumentProxy } from "./_utils";
+import { getDocumentProxy, isPDFDocumentProxy } from "./utils";
 
 export async function getPDFMeta(data: BinaryData | PDFDocumentProxy) {
   const pdf = isPDFDocumentProxy(data) ? data : await getDocumentProxy(data);
