@@ -34,20 +34,20 @@ yarn add unpdf
 ### Extract Text From PDF
 
 ```ts
-import { extractPDFText } from "unpdf";
+import { extractPDFText, getDocumentProxy } from "unpdf";
 
 // Fetch a PDF file from the web
-const pdf = await fetch(
+const buffer = await fetch(
   "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
 ).then((res) => res.arrayBuffer());
 
 // Or load it from the filesystem
-const pdf = await readFile("./dummy.pdf");
+const buffer = await readFile("./dummy.pdf");
 
-// Pass the PDF buffer to the relevant method
-const { totalPages, text } = await extractPDFText(new Uint8Array(pdf), {
-  mergePages: true,
-});
+// Load PDF from buffer
+const pdf = await getDocumentProxy(new Uint8Array(pdf));
+// Extract text from PDF
+const { totalPages, text } = await extractPDFText(pdf, { mergePages: true });
 ```
 
 ### Use Legacy Or Custom PDF.js Build
