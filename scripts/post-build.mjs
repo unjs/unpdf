@@ -9,10 +9,10 @@ const targets = await fg.async(["dist/**/*.{d.cts,d.mts,d.ts}"], {
 });
 
 for (const filename of targets) {
-  await fixTypePaths(filename);
+  await relativeTypePaths(filename);
 }
 
-async function fixTypePaths(filename) {
+async function relativeTypePaths(filename) {
   let content = await readFile(filename, "utf8");
   if (!content.includes("pdfjs-dist/types")) {
     return;
@@ -24,7 +24,7 @@ async function fixTypePaths(filename) {
   );
 
   // Replace `pdfjs-dist/types` import path with relative path
-  content = content.replace(/pdfjs-dist\/types/g, `${relativePath}`);
+  content = content.replace(/pdfjs-dist\/types/g, `./${relativePath}`);
 
   await writeFile(resolve(rootDir, filename), content, "utf8");
 }
