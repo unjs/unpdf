@@ -24,7 +24,10 @@ async function relativeTypePaths(filename) {
   );
 
   // Replace `pdfjs-dist/types` import path with relative path
-  content = content.replace(/pdfjs-dist\/types/g, `./${relativePath}`);
+  content = content.replace(
+    /pdfjs-dist\/types/g,
+    relativePath.startsWith(".") ? relativePath : `./${relativePath}`,
+  );
 
   await writeFile(resolve(rootDir, filename), content, "utf8");
 }
