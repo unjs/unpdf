@@ -1,7 +1,7 @@
 import { defineBuildConfig } from "unbuild";
 
 export default defineBuildConfig({
-  entries: ["src/index.web", "src/index.worker", "src/index.node"],
+  entries: ["src/index"],
   clean: false,
   declaration: true,
   externals: [

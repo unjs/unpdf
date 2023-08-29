@@ -6,7 +6,7 @@ import {
   getPDFMeta,
   getResolvedPDFJS,
   resolvePDFJSImports,
-} from "../src/index.node";
+} from "../src/index";
 
 describe("unpdf", () => {
   it("can resolve a custom PDF.js version", async () => {

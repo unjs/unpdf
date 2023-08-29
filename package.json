@@ -22,34 +22,18 @@
   "sideEffects": false,
   "exports": {
     ".": {
-      "browser": "./dist/index.web.mjs",
-      "bun": "./dist/index.worker.mjs",
-      "deno": "./dist/index.worker.mjs",
-      "edge-light": "./dist/index.worker.mjs",
-      "edge-routine": "./dist/index.worker.mjs",
-      "lagon": "./dist/index.worker.mjs",
-      "netlify": "./dist/index.worker.mjs",
-      "react-native": "./dist/index.worker.mjs",
-      "wintercg": "./dist/index.worker.mjs",
-      "worker": "./dist/index.worker.mjs",
-      "workerd": "./dist/index.worker.mjs",
-      "node": {
-        "types": "./dist/index.node.d.ts",
-        "import": "./dist/index.node.mjs",
-        "require": "./dist/index.node.cjs"
-      },
-      "types": "./dist/index.web.d.ts",
-      "import": "./dist/index.web.mjs",
-      "require": "./dist/index.web.cjs"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
     },
     "./pdfjs": {
       "types": "./dist/pdfjs.d.ts",
       "import": "./dist/pdfjs.mjs"
     }
   },
-  "main": "./dist/index.node.cjs",
-  "module": "./dist/index.web.mjs",
-  "types": "./dist/index.web.d.ts",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "typesVersions": {
     "*": {
       "*": [
