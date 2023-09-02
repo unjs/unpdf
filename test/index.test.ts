@@ -1,8 +1,10 @@
+import { join } from "node:path";
 import { readFile } from "node:fs/promises";
 import { describe, expect, it } from "vitest";
 import {
   extractPDFText,
   getDocumentProxy,
+  getImagesFromPage,
   getPDFMeta,
   getResolvedPDFJS,
   resolvePDFJSImports,
@@ -26,6 +28,13 @@ describe("unpdf", () => {
     expect(version).toMatchSnapshot();
   });
 
+  it("extracts metadata from a PDF", async () => {
+    const { info, metadata } = await getPDFMeta(await getPDF());
+
+    expect(Object.keys(metadata).length).toEqual(0);
+    expect(info).toMatchSnapshot();
+  });
+
   it("extracts text from a PDF", async () => {
     const { text, totalPages } = await extractPDFText(await getPDF());
 
@@ -33,11 +42,13 @@ describe("unpdf", () => {
     expect(totalPages).toEqual(1);
   });
 
-  it("extracts metadata from a PDF", async () => {
-    const { info, metadata } = await getPDFMeta(await getPDF());
-
-    expect(Object.keys(metadata).length).toEqual(0);
-    expect(info).toMatchSnapshot();
+  it("extracts images from a PDF", async () => {
+    const [image] = await getImagesFromPage(
+      await getPDF("image-sample.pdf"),
+      1,
+    );
+    const buffer = Buffer.from(image);
+    expect(buffer.length).toEqual(13_641_540);
   });
 
   it("supports PDF passing PDFDocumentProxy", async () => {
@@ -48,8 +59,9 @@ describe("unpdf", () => {
   });
 });
 
-export async function getPDF() {
-  // https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf
-  const pdf = await readFile(new URL("fixtures/dummy.pdf", import.meta.url));
+export async function getPDF(filename = "dummy.pdf") {
+  const pdf = await readFile(
+    new URL(join("fixtures", filename), import.meta.url),
+  );
   return new Uint8Array(pdf);
 }

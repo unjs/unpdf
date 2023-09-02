@@ -17,16 +17,18 @@ export async function getImagesFromPage(
   const operatorList = await page.getOperatorList();
   const { OPS } = await getResolvedPDFJS();
 
-  const images: ArrayBuffer[] = [];
-  for (const op of operatorList.fnArray) {
+  const images: Uint8ClampedArray[] = [];
+
+  for (let i = 0; i < operatorList.fnArray.length; i++) {
+    const op = operatorList.fnArray[i];
+
     if (op !== OPS.paintImageXObject) {
       continue;
     }
 
-    const image = await page.objs.get(operatorList.argsArray[op][0]);
-    if (image.data) {
-      images.push(image.data.buffer);
-    }
+    const imageKey = operatorList.argsArray[i][0];
+    const image = await page.objs.get(imageKey);
+    images.push(image.data);
   }
 
   return images;
