@@ -159,7 +159,7 @@ function extractPDFText(
 function getImagesFromPage(
   data: BinaryData | PDFDocumentProxy,
   pageNumber: number,
-): Promise<ArrayBuffer[]>;
+): Promise<Uint8ClampedArray[]>;
 ```
 
 ## FAQ
