@@ -2,7 +2,7 @@ import { join } from "node:path";
 import { readFile } from "node:fs/promises";
 import { describe, expect, it } from "vitest";
 import {
-  extractPDFText,
+  extractText,
   getDocumentProxy,
   getImagesFromPage,
   getPDFMeta,
@@ -16,7 +16,7 @@ describe("unpdf", () => {
     await resolvePDFJSImports(() => import("../dist/pdfjs"), {
       force: true,
     });
-    const { text } = await extractPDFText(await getPDF());
+    const { text } = await extractText(await getPDF());
 
     expect(text[0]).toEqual("Dummy PDF file");
   });
@@ -36,7 +36,7 @@ describe("unpdf", () => {
   });
 
   it("extracts text from a PDF", async () => {
-    const { text, totalPages } = await extractPDFText(await getPDF());
+    const { text, totalPages } = await extractText(await getPDF());
 
     expect(text[0]).toEqual("Dummy PDF file");
     expect(totalPages).toEqual(1);

@@ -5,7 +5,7 @@ import type {
 } from "pdfjs-dist/types/src/display/api";
 import { getDocumentProxy, isPDFDocumentProxy } from "./utils";
 
-export async function extractPDFText(
+export async function extractText(
   data: BinaryData | PDFDocumentProxy,
   options: { mergePages?: boolean } = {},
 ) {

@@ -34,7 +34,7 @@ yarn add unpdf
 ### Extract Text From PDF
 
 ```ts
-import { extractPDFText, getDocumentProxy } from "unpdf";
+import { extractText, getDocumentProxy } from "unpdf";
 
 // Fetch a PDF file from the web
 const buffer = await fetch(
@@ -47,7 +47,7 @@ const buffer = await readFile("./dummy.pdf");
 // Load PDF from buffer
 const pdf = await getDocumentProxy(new Uint8Array(pdf));
 // Extract text from PDF
-const { totalPages, text } = await extractPDFText(pdf, { mergePages: true });
+const { totalPages, text } = await extractText(pdf, { mergePages: true });
 ```
 
 ### Use Legacy Or Custom PDF.js Build
@@ -141,10 +141,10 @@ function getPDFMeta(data: BinaryData | PDFDocumentProxy): Promise<{
 }>;
 ```
 
-### `extractPDFText`
+### `extractText`
 
 ```ts
-function extractPDFText(
+function extractText(
   data: BinaryData | PDFDocumentProxy,
   { mergePages }?: { mergePages?: boolean },
 ): Promise<{
