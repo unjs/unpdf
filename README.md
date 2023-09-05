@@ -153,10 +153,10 @@ function extractText(
 }>;
 ```
 
-### `getImagesFromPage`
+### `extractImages`
 
 ```ts
-function getImagesFromPage(
+function extractImages(
   data: BinaryData | PDFDocumentProxy,
   pageNumber: number,
 ): Promise<Uint8ClampedArray[]>;

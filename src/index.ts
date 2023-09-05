@@ -1,6 +1,9 @@
 import { getPDFMeta as _getPDFMeta } from "./meta";
 import { extractText as _extractText } from "./text";
-import { getImagesFromPage as _getImagesFromPage } from "./image";
+import {
+  extractImages as _extractImages,
+  renderAsImage as _renderAsImage,
+} from "./image";
 import { resolvePDFJSImports } from "./utils";
 
 export { defineUnPDFConfig } from "./config";
@@ -23,7 +26,12 @@ export const extractText: typeof _extractText = async (...args) => {
 /** @deprecated Use `extractText` instead. */
 export const extractPDFText = extractText;
 
-export const getImagesFromPage: typeof _getImagesFromPage = async (...args) => {
+export const extractImages: typeof _extractImages = async (...args) => {
   await resolvePDFJSImports();
-  return await _getImagesFromPage(...args);
+  return await _extractImages(...args);
+};
+
+export const renderAsImage: typeof _renderAsImage = async (...args) => {
+  await resolvePDFJSImports();
+  return await _renderAsImage(...args);
 };
