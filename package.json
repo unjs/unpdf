@@ -86,5 +86,17 @@
     "unbuild": "^2.0.0",
     "unenv": "^1.7.4",
     "vitest": "^0.34.3"
+  },
+  "pnpm": {
+    "overrides": {
+      "array-includes": "npm:@nolyfill/array-includes@latest",
+      "array.prototype.findlastindex": "npm:@nolyfill/array.prototype.findlastindex@latest",
+      "array.prototype.flat": "npm:@nolyfill/array.prototype.flat@latest",
+      "array.prototype.flatmap": "npm:@nolyfill/array.prototype.flatmap@latest",
+      "has": "npm:@nolyfill/has@latest",
+      "object.fromentries": "npm:@nolyfill/object.fromentries@latest",
+      "object.groupby": "npm:@nolyfill/object.groupby@latest",
+      "object.values": "npm:@nolyfill/object.values@latest"
+    }
   }
 }
