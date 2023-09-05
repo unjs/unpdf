@@ -34,14 +34,14 @@ export default defineConfig({
       delimiters: ["", ""],
       preventAssignment: true,
       values: {
-        // Remove all references to the DOM
+        // Disable the `window` check (for requestAnimationFrame)
         "typeof window": '"undefined"',
-        "typeof document": '"undefined"',
-        // Imitate the Node.js environment, unenv will take care of the rest
-        "const isNodeJS = typeof": "const isNodeJS = true // typeof",
-        // Replace the `isNodeJS` check to tree-shake some code
-        "_util.isNodeJS": "true",
-        // Inline the PDF.js worker
+        // Imitate the Node.js environment for all serverless environments, unenv will
+        // take care of the remaining Node.js polyfills. Keep support for browsers.
+        "const isNodeJS = typeof":
+          'const isNodeJS = typeof document === "undefined" // typeof',
+        // Force inlining the PDF.js worker
+        '_util.isNodeJS && typeof require === "function"': "true",
         'GlobalWorkerOptions.workerSrc = ""':
           'GlobalWorkerOptions.workerSrc = require("pdfjs-dist/build/pdf.worker.js")',
         'eval("require")(this.workerSrc)':
