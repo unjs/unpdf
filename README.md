@@ -194,9 +194,9 @@ declare function renderPageAsImage(
   data: BinaryData | PDFDocumentProxy,
   pageNumber: number,
   options?: {
-    canvas?: () => Promise<typeof "canvas">;
+    canvas?: () => Promise<typeof import("canvas")>;
     /** @default 1 */
-    scale?: number
+    scale?: number;
     width?: number;
     height?: number;
   },
