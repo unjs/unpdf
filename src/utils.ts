@@ -7,6 +7,9 @@ import type { PDFJS } from "./types";
 
 let resolvedModule: PDFJS | undefined;
 
+export const isNode = globalThis.process?.release?.name === "node";
+export const isBrowser = typeof window !== "undefined";
+
 /**
  * Returns a PDFDocumentProxy instance from a given binary data.
  *

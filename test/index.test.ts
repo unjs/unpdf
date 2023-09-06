@@ -2,11 +2,12 @@ import { join } from "node:path";
 import { readFile } from "node:fs/promises";
 import { describe, expect, it } from "vitest";
 import {
+  extractImages,
   extractText,
   getDocumentProxy,
-  getImagesFromPage,
   getPDFMeta,
   getResolvedPDFJS,
+  renderPageAsImage,
   resolvePDFJSImports,
 } from "../src/index";
 
@@ -43,15 +44,28 @@ describe("unpdf", () => {
   });
 
   it("extracts images from a PDF", async () => {
-    const [image] = await getImagesFromPage(
-      await getPDF("image-sample.pdf"),
-      1,
-    );
+    const [image] = await extractImages(await getPDF("image-sample.pdf"), 1);
     const buffer = Buffer.from(image);
     expect(buffer.length).toEqual(13_641_540);
   });
 
-  it("supports PDF passing PDFDocumentProxy", async () => {
+  it("renders a PDF as image", async () => {
+    await resolvePDFJSImports(() => import("pdfjs-dist"), {
+      force: true,
+    });
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const result = (await renderPageAsImage(
+      await getPDF("image-sample.pdf"),
+      1,
+    ))!;
+    // await writeFile(
+    //   new URL("image-sample.png", import.meta.url),
+    //   Buffer.from(result),
+    // );
+    expect(result.byteLength).toEqual(119_708);
+  });
+
+  it("supports passing PDFDocumentProxy", async () => {
     const pdf = await getDocumentProxy(await getPDF());
     const { info } = await getPDFMeta(pdf);
 

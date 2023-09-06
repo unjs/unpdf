@@ -52,7 +52,7 @@ const { totalPages, text } = await extractText(pdf, { mergePages: true });
 
 ### Use Legacy Or Custom PDF.js Build
 
-Generally, you don't need to worry about the PDF.js build. `unpdf` ships with a serverless build of the latest PDF.js version. However, if you want to use an older version or the legacy build, you can define a custom PDF.js module.
+Generally, you don't need to worry about the PDF.js build. `unpdf` ships with a serverless build of the latest PDF.js version. However, if you want to use the official PDF.js version or the legacy build, you can define a custom PDF.js module.
 
 ```ts
 // Before using any other methods, define the PDF.js module
@@ -143,6 +143,8 @@ function getPDFMeta(data: BinaryData | PDFDocumentProxy): Promise<{
 
 ### `extractText`
 
+Extracts all text from a PDF. If `mergePages` is set to `true`, the text of all pages will be merged into a single string. Otherwise, an array of strings for each page will be returned.
+
 ```ts
 function extractText(
   data: BinaryData | PDFDocumentProxy,
@@ -151,6 +153,50 @@ function extractText(
   totalPages: number;
   text: string | string[];
 }>;
+```
+
+### `renderPageAsImage`
+
+> [!NOTE]
+> This method will only work in Node.js and browser environments.
+
+To render a PDF page as an image, you can use the `renderPageAsImage` method. This method will return an `ArrayBuffer` of the rendered image.
+
+In order to use this method, you have to meet the following requirements:
+
+- Use the official PDF.js build
+- Install the [`canvas`](https://www.npmjs.com/package/canvas) package in Node.js environments
+
+**Example**
+
+```ts
+import { defineUnPDFConfig, renderPageAsImage } from "unpdf";
+
+defineUnPDFConfig({
+  // Use the official PDF.js build
+  pdfjs: () => import("pdfjs-dist"),
+});
+
+const pdf = await readFile("./dummy.pdf");
+const buffer = new Uint8Array(pdf);
+
+const result = await renderPageAsImage(buffer, 1);
+await writeFile("dummy-page-1.png", Buffer.from(result));
+```
+
+**Type Declaration**
+
+```ts
+declare function renderPageAsImage(
+  data: BinaryData | PDFDocumentProxy,
+  pageNumber: number,
+  options?: {
+    /** @default 1 */
+    scale?: number;
+    width?: number;
+    height?: number;
+  },
+): Promise<ArrayBuffer>;
 ```
 
 ### `extractImages`

@@ -2,7 +2,7 @@ import { getPDFMeta as _getPDFMeta } from "./meta";
 import { extractText as _extractText } from "./text";
 import {
   extractImages as _extractImages,
-  renderAsImage as _renderAsImage,
+  renderPageAsImage as _renderPageAsImage,
 } from "./image";
 import { resolvePDFJSImports } from "./utils";
 
@@ -31,7 +31,7 @@ export const extractImages: typeof _extractImages = async (...args) => {
   return await _extractImages(...args);
 };
 
-export const renderAsImage: typeof _renderAsImage = async (...args) => {
+export const renderPageAsImage: typeof _renderPageAsImage = async (...args) => {
   await resolvePDFJSImports();
-  return await _renderAsImage(...args);
+  return await _renderPageAsImage(...args);
 };
