@@ -49,6 +49,7 @@ export async function renderPageAsImage(
   data: BinaryData | PDFDocumentProxy,
   pageNumber: number,
   options: {
+    canvas?: () => Promise<typeof import("canvas")>;
     /** @default 1 */
     scale?: number;
     width?: number;
@@ -78,7 +79,7 @@ export async function renderPageAsImage(
     viewport = page.getViewport({ scale: outputScale });
   }
 
-  const canvasFactory = await createIsomorphicCanvasFactory();
+  const canvasFactory = await createIsomorphicCanvasFactory(options.canvas);
   const ctx = canvasFactory.create(viewport.width, viewport.height);
 
   await page.render({
@@ -94,19 +95,10 @@ export async function renderPageAsImage(
   return await response.arrayBuffer();
 }
 
-async function createIsomorphicCanvasFactory() {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  let _canvas: typeof import("canvas") | undefined;
-
-  if (isNode) {
-    try {
-      _canvas = await import("canvas");
-    } catch {
-      throw new Error(
-        'The "canvas" package is required when running in Node.js.',
-      );
-    }
-  }
+async function createIsomorphicCanvasFactory(
+  canvas?: () => Promise<typeof import("canvas")>,
+) {
+  const _canvas = await canvas?.();
 
   return {
     _createCanvas(width: number, height: number) {
@@ -116,8 +108,11 @@ async function createIsomorphicCanvasFactory() {
         canvas.height = height;
         return canvas;
       } else if (isNode) {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        return _canvas!.createCanvas(width, height);
+        if (!_canvas) {
+          throw new Error('Failed to resolve "canvas" package.');
+        }
+
+        return _canvas.createCanvas(width, height);
       }
 
       throw new Error("Unsupported environment for canvas creation.");

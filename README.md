@@ -179,8 +179,11 @@ defineUnPDFConfig({
 
 const pdf = await readFile("./dummy.pdf");
 const buffer = new Uint8Array(pdf);
+const pageNumber = 1;
 
-const result = await renderPageAsImage(buffer, 1);
+const result = await renderPageAsImage(buffer, pageNumber, {
+  canvas: () => import("canvas"),
+});
 await writeFile("dummy-page-1.png", Buffer.from(result));
 ```
 
@@ -191,8 +194,9 @@ declare function renderPageAsImage(
   data: BinaryData | PDFDocumentProxy,
   pageNumber: number,
   options?: {
+    canvas?: () => Promise<typeof "canvas">;
     /** @default 1 */
-    scale?: number;
+    scale?: number
     width?: number;
     height?: number;
   },

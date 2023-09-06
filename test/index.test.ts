@@ -57,6 +57,7 @@ describe("unpdf", () => {
     const result = (await renderPageAsImage(
       await getPDF("image-sample.pdf"),
       1,
+      { canvas: () => import("canvas") },
     ))!;
     // await writeFile(
     //   new URL("image-sample.png", import.meta.url),
