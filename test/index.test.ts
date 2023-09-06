@@ -5,7 +5,7 @@ import {
   extractImages,
   extractText,
   getDocumentProxy,
-  getPDFMeta,
+  getMeta,
   getResolvedPDFJS,
   renderPageAsImage,
   resolvePDFJSImports,
@@ -30,7 +30,7 @@ describe("unpdf", () => {
   });
 
   it("extracts metadata from a PDF", async () => {
-    const { info, metadata } = await getPDFMeta(await getPDF());
+    const { info, metadata } = await getMeta(await getPDF());
 
     expect(Object.keys(metadata).length).toEqual(0);
     expect(info).toMatchSnapshot();
@@ -67,7 +67,7 @@ describe("unpdf", () => {
 
   it("supports passing PDFDocumentProxy", async () => {
     const pdf = await getDocumentProxy(await getPDF());
-    const { info } = await getPDFMeta(pdf);
+    const { info } = await getMeta(pdf);
 
     expect(info.Creator).toEqual("Writer");
   });

@@ -1,4 +1,4 @@
-import { getPDFMeta as _getPDFMeta } from "./meta";
+import { getMeta as _getMeta } from "./meta";
 import { extractText as _extractText } from "./text";
 import {
   extractImages as _extractImages,
@@ -13,9 +13,9 @@ export {
   resolvePDFJSImports,
 } from "./utils";
 
-export const getPDFMeta: typeof _getPDFMeta = async (...args) => {
+export const getMeta: typeof _getMeta = async (...args) => {
   await resolvePDFJSImports();
-  return await _getPDFMeta(...args);
+  return await _getMeta(...args);
 };
 
 export const extractText: typeof _extractText = async (...args) => {

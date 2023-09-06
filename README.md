@@ -132,10 +132,10 @@ Returns the resolved PDF.js module. If no build is defined, the latest version w
 function getResolvedPDFJS(): Promise<PDFJS>;
 ```
 
-### `getPDFMeta`
+### `getMeta`
 
 ```ts
-function getPDFMeta(data: BinaryData | PDFDocumentProxy): Promise<{
+function getMeta(data: BinaryData | PDFDocumentProxy): Promise<{
   info: Record<string, any>;
   metadata: Record<string, any>;
 }>;
