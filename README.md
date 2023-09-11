@@ -214,11 +214,11 @@ function extractImages(
 
 ## FAQ
 
-### Why Is `canvas` A Peer Dependency?
+### Why Is `canvas` An Optional Dependency?
 
 The official PDF.js library depends on the `canvas` module for Node.js environments, which [doesn't work inside worker threads](https://github.com/Automattic/node-canvas/issues/1394). That's why `unpdf` ships with a serverless build of PDF.js that mocks the `canvas` module.
 
-However, to render PDF pages as images, you need to install the `canvas` module in Node.js environments. That's why `canvas` is a peer dependency.
+However, to render PDF pages as images in Node.js environments, you need to install the `canvas` module. That's why it is a peer dependency.
 
 ## License
 
