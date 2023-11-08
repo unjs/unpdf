@@ -1,3 +1,15 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
+// These imports are needed in order to let unenv provide
+// shims before variable initialization.
+import fs from "node:fs";
+import http from "node:http";
+import https from "node:https";
+import url from "node:url";
+
+// Inline the PDF.js worker to avoid having to load it from a separate file.
+import * as __pdfjsWorker__ from "pdfjs-dist/build/pdf.worker.mjs";
+
 // Although we just need: `getDocument`, `OPS` and `version`, we export
 // everything, since the bundle size doesn't change, due to PDF.js's
 // bundle structure by webpack.
@@ -12,6 +24,7 @@ export {
   build,
   CMapCompressionType,
   createValidAbsoluteUrl,
+  DOMSVGFactory,
   FeatureTest,
   getDocument,
   getFilenameFromUrl,
@@ -22,8 +35,8 @@ export {
   InvalidPDFException,
   isDataScheme,
   isPdfFile,
-  loadScript,
   MissingPDFException,
+  noContextMenu,
   normalizeUnicode,
   OPS,
   PasswordResponses,
@@ -37,11 +50,10 @@ export {
   renderTextLayer,
   setLayerDimensions,
   shadow,
-  SVGGraphics,
   UnexpectedResponseException,
   updateTextLayer,
   Util,
   VerbosityLevel,
   version,
   XfaLayer,
-} from "pdfjs-dist/build/pdf.js";
+} from "pdfjs-dist/build/pdf.mjs";

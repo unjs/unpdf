@@ -1,5 +1,6 @@
 import { join } from "node:path";
-import { readFile } from "node:fs/promises";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { readFile, writeFile } from "node:fs/promises";
 import { describe, expect, it } from "vitest";
 import {
   extractImages,
@@ -26,20 +27,35 @@ describe("unpdf", () => {
     const PDFJS = await getResolvedPDFJS();
     const { version } = PDFJS;
 
-    expect(version).toMatchSnapshot();
+    expect(version).toMatchInlineSnapshot('"4.0.189"');
   });
 
   it("extracts metadata from a PDF", async () => {
     const { info, metadata } = await getMeta(await getPDF());
 
     expect(Object.keys(metadata).length).toEqual(0);
-    expect(info).toMatchSnapshot();
+    expect(info).toMatchInlineSnapshot(`
+      {
+        "Author": "Evangelos Vlachogiannis",
+        "CreationDate": "D:20070223175637+02'00'",
+        "Creator": "Writer",
+        "EncryptFilterName": null,
+        "IsAcroFormPresent": false,
+        "IsCollectionPresent": false,
+        "IsLinearized": false,
+        "IsSignaturesPresent": false,
+        "IsXFAPresent": false,
+        "Language": null,
+        "PDFFormatVersion": "1.4",
+        "Producer": "OpenOffice.org 2.1",
+      }
+    `);
   });
 
   it("extracts text from a PDF", async () => {
     const { text, totalPages } = await extractText(await getPDF());
 
-    expect(text[0]).toEqual("Dummy PDF file");
+    expect(text[0]).toMatchInlineSnapshot('"Dummy PDF file"');
     expect(totalPages).toEqual(1);
   });
 
@@ -70,7 +86,7 @@ describe("unpdf", () => {
     const pdf = await getDocumentProxy(await getPDF());
     const { info } = await getMeta(pdf);
 
-    expect(info.Creator).toEqual("Writer");
+    expect(info.Creator).toMatchInlineSnapshot('"Writer"');
   });
 });
 

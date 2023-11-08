@@ -14,6 +14,11 @@ This library is also intended as a modern alternative to the unmaintained but st
 - 🧱 Opt-in to legacy PDF.js build
 - 💨 Zero dependencies
 
+## PDF.js Compatibility
+
+> [!NOTE]
+> This package is currently using PDF.js v4.0.189.
+
 ## Installation
 
 Run the following command to add `unpdf` to your project.
@@ -201,15 +206,6 @@ declare function renderPageAsImage(
     height?: number;
   },
 ): Promise<ArrayBuffer>;
-```
-
-### `extractImages`
-
-```ts
-function extractImages(
-  data: BinaryData | PDFDocumentProxy,
-  pageNumber: number,
-): Promise<Uint8ClampedArray[]>;
 ```
 
 ## FAQ

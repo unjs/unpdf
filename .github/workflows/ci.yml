@@ -13,16 +13,15 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - run: corepack enable
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
-
-      - run: corepack enable
+          cache: pnpm
 
       - name: Install
-        run: pnpm i
+        run: pnpm install
 
       - name: Lint
         run: pnpm run lint
@@ -30,16 +29,15 @@ jobs:
   typecheck:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - run: corepack enable
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
-
-      - run: corepack enable
+          cache: pnpm
 
       - name: Install
-        run: pnpm i
+        run: pnpm install
 
       - name: Typecheck
         run: pnpm run test:types
@@ -54,16 +52,15 @@ jobs:
       fail-fast: false
 
     steps:
-      - uses: actions/checkout@v3
-
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - run: corepack enable
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
-
-      - run: corepack enable
+          cache: pnpm
 
       - name: Install
-        run: pnpm i
+        run: pnpm install
 
       - name: Build
         run: pnpm run build:pdfjs
