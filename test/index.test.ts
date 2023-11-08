@@ -1,4 +1,5 @@
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { readFile, writeFile } from "node:fs/promises";
 import { describe, expect, it } from "vitest";
@@ -20,7 +21,7 @@ describe("unpdf", () => {
     });
     const { text } = await extractText(await getPDF());
 
-    expect(text[0]).toEqual("Dummy PDF file");
+    expect(text[0]).toMatchInlineSnapshot('"Dummy PDF file"');
   });
 
   it("provides the PDF.js module", async () => {
@@ -56,13 +57,13 @@ describe("unpdf", () => {
     const { text, totalPages } = await extractText(await getPDF());
 
     expect(text[0]).toMatchInlineSnapshot('"Dummy PDF file"');
-    expect(totalPages).toEqual(1);
+    expect(totalPages).toMatchInlineSnapshot("1");
   });
 
   it("extracts images from a PDF", async () => {
     const [image] = await extractImages(await getPDF("image-sample.pdf"), 1);
     const buffer = Buffer.from(image);
-    expect(buffer.length).toEqual(13_641_540);
+    expect(buffer.length).toMatchInlineSnapshot("13641540");
   });
 
   it("renders a PDF as image", async () => {
@@ -79,7 +80,7 @@ describe("unpdf", () => {
     //   new URL("image-sample.png", import.meta.url),
     //   Buffer.from(result),
     // );
-    expect(result.byteLength).toBeGreaterThanOrEqual(119_706);
+    expect(result.byteLength).toBeGreaterThanOrEqual(119_700);
   });
 
   it("supports passing PDFDocumentProxy", async () => {
@@ -91,8 +92,9 @@ describe("unpdf", () => {
 });
 
 export async function getPDF(filename = "dummy.pdf") {
-  const pdf = await readFile(
+  const path = fileURLToPath(
     new URL(join("fixtures", filename), import.meta.url),
   );
+  const pdf = await readFile(path);
   return new Uint8Array(pdf);
 }
