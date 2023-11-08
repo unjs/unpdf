@@ -9,7 +9,7 @@ This library is also intended as a modern alternative to the unmaintained but st
 ## Features
 
 - 🏗️ Works in Node.js, browser and workers
-- 🪭 Includes serverless build of PDF.js ([`unpdf/pdfjs`](./package.json#L45))
+- 🪭 Includes serverless build of PDF.js ([`unpdf/pdfjs`](./package.json#L34))
 - 💬 Extract text and images from PDFs
 - 🧱 Opt-in to legacy PDF.js build
 - 💨 Zero dependencies
@@ -55,40 +55,20 @@ const pdf = await getDocumentProxy(new Uint8Array(pdf));
 const { totalPages, text } = await extractText(pdf, { mergePages: true });
 ```
 
-### Use Legacy Or Custom PDF.js Build
+### Access the PDF.js API
 
-Generally, you don't need to worry about the PDF.js build. `unpdf` ships with a serverless build of the latest PDF.js version. However, if you want to use the official PDF.js version or the legacy build, you can define a custom PDF.js module.
+This will return the resolved PDF.js module and gives full access to the PDF.js API, like:
 
-```ts
-// Before using any other methods, define the PDF.js module
-import { defineUnPDFConfig } from "unpdf";
+- `getDocument`
+- `version`
+- … and all other methods
 
-defineUnPDFConfig({
-  // Use the legacy build
-  pdfjs: () => import("pdfjs-dist/legacy/build/pdf.js"),
-});
-
-// Now, you can use the other methods
-// …
-```
-
-### Access the PDF.js Module
-
-This will return the resolved PDF.js module. If no build is defined, the serverless build bundled with `unpdf` will be initialized.
+Especially useful for platforms like 🦕 Deno or if you want to use the PDF.js API directly. If no custom build was defined beforehand, the serverless build bundled with `unpdf` will be initialized.
 
 ```ts
 import { getResolvedPDFJS } from "unpdf";
 
-const { version } = await getResolvedPDFJS();
-```
-
-### Use Serverless PDF.js Build In 🦕 Deno
-
-Instead of using the methods provided by `unpdf`, you can directly import the serverless PDF.js build in Deno. This is useful if you want to use the PDF.js API directly.
-
-```ts
-import { getDocument } from "https://esm.sh/unpdf/pdfjs";
-
+const { getDocument } = await getResolvedPDFJS();
 const data = Deno.readFileSync("dummy.pdf");
 const doc = await getDocument(data).promise;
 
@@ -102,18 +82,35 @@ for (let i = 1; i <= doc.numPages; i++) {
 }
 ```
 
+### Use Official or Legacy PDF.js Build
+
+Generally speaking, you don't need to worry about the PDF.js build. `unpdf` ships with a serverless build of the latest PDF.js version. However, if you want to use the official PDF.js version or the legacy build, you can define a custom PDF.js module.
+
+```ts
+// Before using any other methods, define the PDF.js module
+import { defineUnPDFConfig } from "unpdf";
+
+defineUnPDFConfig({
+  // Use the official PDF.js build (make sure to install it first)
+  pdfjs: () => import("pdfjs-dist"),
+});
+
+// Now, you can use the other methods
+// …
+```
+
 ## Config
 
 ```ts
 interface UnPDFConfiguration {
   /**
-   * By default, UnPDF will use the latest version of PDF.js. If you want to
-   * use an older version or the legacy build, set a promise that resolves to
-   * the PDF.js module.
+   * By default, UnPDF will use the latest version of PDF.js compiled for
+   * serverless environments. If you want to use a different version, you can
+   * provide a custom resolver function.
    *
    * @example
-   * // Use the legacy build
-   * () => import('pdfjs-dist/legacy/build/pdf.js')
+   * // Use the official PDF.js build (make sure to install it first)
+   * () => import('pdfjs-dist')
    */
   pdfjs?: () => Promise<PDFJS>;
 }

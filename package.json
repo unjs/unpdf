@@ -97,6 +97,9 @@
       "object.fromentries": "npm:@nolyfill/object.fromentries@latest",
       "object.groupby": "npm:@nolyfill/object.groupby@latest",
       "object.values": "npm:@nolyfill/object.values@latest"
+    },
+    "patchedDependencies": {
+      "pdfjs-dist@4.0.189": "patches/pdfjs-dist@4.0.189.patch"
     }
   }
 }

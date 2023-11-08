@@ -13,12 +13,12 @@ import {
   resolvePDFJSImports,
 } from "../src/index";
 
+const fixturesDir = fileURLToPath(new URL("fixtures", import.meta.url));
+
 describe("unpdf", () => {
   it("can resolve a custom PDF.js version", async () => {
     // @ts-ignore: Dynamic import of serverless PDF.js build
-    await resolvePDFJSImports(() => import("../dist/pdfjs"), {
-      force: true,
-    });
+    await resolvePDFJSImports(() => import("../dist/pdfjs"), { force: true });
     const { text } = await extractText(await getPDF());
 
     expect(text[0]).toMatchInlineSnapshot('"Dummy PDF file"');
@@ -67,15 +67,17 @@ describe("unpdf", () => {
   });
 
   it("renders a PDF as image", async () => {
-    await resolvePDFJSImports(() => import("pdfjs-dist"), {
+    // Technically, `import("pdfjs-dist")` would be enough here, but since we have
+    // patched the main entry point, we need to use the minified version.
+    // @ts-ignore: No declaration file
+    await resolvePDFJSImports(() => import("pdfjs-dist/build/pdf.min.mjs"), {
       force: true,
     });
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const result = (await renderPageAsImage(
+    const result = await renderPageAsImage(
       await getPDF("image-sample.pdf"),
       1,
       { canvas: () => import("canvas") },
-    ))!;
+    );
     // await writeFile(
     //   new URL("image-sample.png", import.meta.url),
     //   Buffer.from(result),
@@ -91,10 +93,7 @@ describe("unpdf", () => {
   });
 });
 
-export async function getPDF(filename = "dummy.pdf") {
-  const path = fileURLToPath(
-    new URL(join("fixtures", filename), import.meta.url),
-  );
-  const pdf = await readFile(path);
+async function getPDF(filename = "sample.pdf") {
+  const pdf = await readFile(join(fixturesDir, filename));
   return new Uint8Array(pdf);
 }

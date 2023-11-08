@@ -33,16 +33,16 @@ export default defineConfig({
       delimiters: ["", ""],
       preventAssignment: true,
       values: {
-        // Disable the `window` check (for requestAnimationFrame)
+        // Disable the `window` check (for requestAnimationFrame).
         "typeof window": '"undefined"',
         // Imitate the Node.js environment for all serverless environments, unenv will
         // take care of the remaining Node.js polyfills. Keep support for browsers.
         "const isNodeJS = typeof":
           'const isNodeJS = typeof document === "undefined" // typeof',
-        // Force inlining the PDF.js worker
+        // Force inlining the PDF.js worker.
         "await import(/* webpackIgnore: true */ this.workerSrc)":
           "__pdfjsWorker__",
-        // Tree-shake client worker initialization logic
+        // Tree-shake client worker initialization logic.
         "!PDFWorkerUtil.isWorkerDisabled && !PDFWorker.#mainThreadWorkerMessageHandler":
           "false",
       },

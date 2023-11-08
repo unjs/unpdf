@@ -50,6 +50,11 @@ export async function resolvePDFJSImports(
   if (pdfjsResolver) {
     try {
       const _import = await pdfjsResolver();
+      // Support passing `unpdf/pdfjs` as resolver target
+      if ("resolvePDFJS" in _import) {
+        resolvedModule = await _import.resolvePDFJS();
+        return;
+      }
       // @ts-ignore: Interop default export
       resolvedModule = _import.default || _import;
       return;
@@ -62,7 +67,9 @@ export async function resolvePDFJSImports(
 
   try {
     // @ts-ignore: Dynamic import of serverless PDF.js build
-    resolvedModule = await import("unpdf/pdfjs");
+    const { resolvePDFJS } = await import("unpdf/pdfjs");
+    // @ts-ignore: Type mismatch
+    resolvedModule = await resolvePDFJS();
   } catch {
     throw new Error(
       "PDF.js is not available. Please add the package as a dependency.",

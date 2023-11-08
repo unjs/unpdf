@@ -14,6 +14,11 @@ overrides:
   object.groupby: npm:@nolyfill/object.groupby@latest
   object.values: npm:@nolyfill/object.values@latest
 
+patchedDependencies:
+  pdfjs-dist@4.0.189:
+    hash: iaxdb4qtlbjqjoitzftidcbonq
+    path: patches/pdfjs-dist@4.0.189.patch
+
 optionalDependencies:
   canvas:
     specifier: ^2.11.2
@@ -58,7 +63,7 @@ devDependencies:
     version: 3.3.2
   pdfjs-dist:
     specifier: ^4.0.189
-    version: 4.0.189
+    version: 4.0.189(patch_hash=iaxdb4qtlbjqjoitzftidcbonq)
   prettier:
     specifier: ^3.0.3
     version: 3.0.3
@@ -3026,7 +3031,7 @@ packages:
     resolution: {integrity: sha512-Dp6zGqpTdETdR63lehJYPeIOqpiNBNtc7BpWSLrOje7UaIsE5aY92r/AunQA7rsXvet3lrJ3JnZX29UPTKXyKQ==}
     dev: true
 
-  /pdfjs-dist@4.0.189:
+  /pdfjs-dist@4.0.189(patch_hash=iaxdb4qtlbjqjoitzftidcbonq):
     resolution: {integrity: sha512-5IWbLRJjQJhk3cu3nNFAvIYoSzT8xRYlRkFCIV1tn7hK1eq9H+6vOP0ytJhZz9YI35IXlu33uQspvmYO6Oir4g==}
     engines: {node: '>=18'}
     optionalDependencies:
@@ -3036,6 +3041,7 @@ packages:
       - encoding
       - supports-color
     dev: true
+    patched: true
 
   /perfect-debounce@1.0.0:
     resolution: {integrity: sha512-xCy9V055GLEqoFaHoC1SoLIaLmWctgCUaBaWxDZ7/Zx4CTyX7cJQLJOok/orfjZAh9kEYpjJa4d0KcJmCbctZA==}

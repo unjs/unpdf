@@ -4,13 +4,13 @@ export type PDFJS = typeof _PDFJS;
 
 export interface UnPDFConfiguration {
   /**
-   * By default, UnPDF will use the latest version of PDF.js. If you want to
-   * use an older version or the legacy build, set a promise that resolves to
-   * the PDF.js module.
+   * By default, UnPDF will use the latest version of PDF.js compiled for
+   * serverless environments. If you want to use a different version, you can
+   * provide a custom resolver function.
    *
    * @example
-   * // Use the legacy build
-   * () => import('pdfjs-dist/legacy/build/pdf.js')
+   * // Use the official PDF.js build (make sure to install it first)
+   * () => import('pdfjs-dist')
    */
   pdfjs?: () => Promise<any>;
 }
