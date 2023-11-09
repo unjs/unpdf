@@ -87,10 +87,11 @@ for (let i = 1; i <= doc.numPages; i++) {
 Generally speaking, you don't need to worry about the PDF.js build. `unpdf` ships with a serverless build of the latest PDF.js version. However, if you want to use the official PDF.js version or the legacy build, you can define a custom PDF.js module.
 
 ```ts
-// Before using any other methods, define the PDF.js module
-import { defineUnPDFConfig } from "unpdf";
+// Before using any other method, define the PDF.js module
+// if you need another PDF.js build
+import { configureUnPDF } from "unpdf";
 
-defineUnPDFConfig({
+configureUnPDF({
   // Use the official PDF.js build (make sure to install it first)
   pdfjs: () => import("pdfjs-dist"),
 });
@@ -118,12 +119,12 @@ interface UnPDFConfiguration {
 
 ## Methods
 
-### `defineUnPDFConfig`
+### `configureUnPDF`
 
 Define a custom PDF.js module, like the legacy build. Make sure to call this method before using any other methods.
 
 ```ts
-function defineUnPDFConfig(config: UnPDFConfiguration): Promise<void>;
+function configureUnPDF(config: UnPDFConfiguration): Promise<void>;
 ```
 
 ### `getResolvedPDFJS`
@@ -172,9 +173,9 @@ In order to use this method, you have to meet the following requirements:
 **Example**
 
 ```ts
-import { defineUnPDFConfig, renderPageAsImage } from "unpdf";
+import { configureUnPDF, renderPageAsImage } from "unpdf";
 
-defineUnPDFConfig({
+configureUnPDF({
   // Use the official PDF.js build
   pdfjs: () => import("pdfjs-dist"),
 });

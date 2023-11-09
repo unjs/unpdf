@@ -1,7 +1,7 @@
 import { resolvePDFJSImports } from "./utils";
 import type { UnPDFConfiguration } from "./types";
 
-export async function defineUnPDFConfig(options: UnPDFConfiguration) {
+export async function configureUnPDF(options: UnPDFConfiguration) {
   const { pdfjs } = { ...options };
 
   if (pdfjs) {

@@ -5,13 +5,18 @@ import {
   renderPageAsImage as _renderPageAsImage,
 } from "./image";
 import { resolvePDFJSImports } from "./utils";
+import { configureUnPDF } from "./config";
 
-export { defineUnPDFConfig } from "./config";
 export {
   getDocumentProxy,
   getResolvedPDFJS,
   resolvePDFJSImports,
 } from "./utils";
+
+export { configureUnPDF } from "./config";
+/** @deprecated Use `configureUnPDF` instead */
+const defineUnPDFConfig = configureUnPDF;
+export { defineUnPDFConfig };
 
 export const getMeta: typeof _getMeta = async (...args) => {
   await resolvePDFJSImports();
