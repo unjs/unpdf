@@ -23,9 +23,6 @@ export const extractText: typeof _extractText = async (...args) => {
   return await _extractText(...args);
 };
 
-/** @deprecated Use `extractText` instead. */
-export const extractPDFText = extractText;
-
 export const extractImages: typeof _extractImages = async (...args) => {
   await resolvePDFJSImports();
   return await _extractImages(...args);
