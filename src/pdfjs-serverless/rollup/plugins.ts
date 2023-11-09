@@ -3,7 +3,7 @@ import type { Plugin } from "rollup";
 
 export function pdfjsTypes(): Plugin {
   return {
-    name: "pdfjs:types",
+    name: "pdfjs-serverless:types",
     async writeBundle() {
       const data = `
 import * as PDFJS from './types/src/pdf'

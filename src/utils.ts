@@ -15,6 +15,7 @@ export const isBrowser = typeof window !== "undefined";
  *
  * Applies the following defaults:
  * - `isEvalSupported: false`
+ * - `useSystemFonts: true`
  */
 export async function getDocumentProxy(
   data: BinaryData,
@@ -24,6 +25,8 @@ export async function getDocumentProxy(
   const pdf = await getDocument({
     data,
     isEvalSupported: false,
+    // See: https://github.com/mozilla/pdf.js/issues/4244#issuecomment-1479534301
+    useSystemFonts: true,
     ...options,
   }).promise;
 

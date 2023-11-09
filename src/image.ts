@@ -107,7 +107,9 @@ async function createIsomorphicCanvasFactory(
         canvas.width = width;
         canvas.height = height;
         return canvas;
-      } else if (isNode) {
+      }
+
+      if (isNode) {
         if (!_canvas) {
           throw new Error('Failed to resolve "canvas" package.');
         }
