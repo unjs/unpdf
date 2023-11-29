@@ -59,6 +59,8 @@ export async function resolvePDFJSImports(
         // @ts-expect-error: Return value is unknown
         resolvedModule = await resolvedModule.resolvePDFJS();
       }
+
+      return;
     } catch {
       throw new Error(
         "Resolving failed. Please check the provided configuration.",
