@@ -52,15 +52,13 @@ export async function resolvePDFJSImports(
 
   if (pdfjsResolver) {
     try {
-      const _import = await pdfjsResolver();
+      resolvedModule = await interopDefault(pdfjsResolver());
+
       // Support passing `unpdf/pdfjs` as resolver target
-      if ("resolvePDFJS" in _import) {
-        resolvedModule = await _import.resolvePDFJS();
-        return;
+      if (resolvedModule && "resolvePDFJS" in resolvedModule) {
+        // @ts-expect-error: Return value is unknown
+        resolvedModule = await resolvedModule.resolvePDFJS();
       }
-      // @ts-ignore: Interop default export
-      resolvedModule = _import.default || _import;
-      return;
     } catch {
       throw new Error(
         "Resolving failed. Please check the provided configuration.",
@@ -82,4 +80,11 @@ export async function resolvePDFJSImports(
 
 export function isPDFDocumentProxy(data: unknown): data is PDFDocumentProxy {
   return typeof data === "object" && data !== null && "_pdfInfo" in data;
+}
+
+export async function interopDefault<T>(
+  m: T | Promise<T>,
+): Promise<T extends { default: infer U } ? U : T> {
+  const resolved = await m;
+  return (resolved as any).default || resolved;
 }
