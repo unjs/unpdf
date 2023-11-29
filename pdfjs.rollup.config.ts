@@ -1,5 +1,7 @@
 // This rollup config is used to build PDF.js for serverless environments
 
+import { fileURLToPath } from "node:url";
+import { join } from "node:path";
 import { defineConfig } from "rollup";
 import alias from "@rollup/plugin-alias";
 import replace from "@rollup/plugin-replace";
@@ -11,9 +13,13 @@ import * as unenv from "unenv";
 import { resolveAliases } from "./src/pdfjs-serverless/rollup/utils";
 import { pdfjsTypes } from "./src/pdfjs-serverless/rollup/plugins";
 
+const mockDir = fileURLToPath(
+  new URL("src/pdfjs-serverless/mocks", import.meta.url),
+);
 const env = unenv.env(unenv.nodeless);
 
 export default defineConfig({
+  // @ts-expect-error: Rollup 4 type compatibility not yet available
   input: "src/pdfjs-serverless/index.mjs",
   output: {
     file: "dist/pdfjs.mjs",
@@ -49,8 +55,8 @@ export default defineConfig({
     }),
     alias({
       entries: resolveAliases({
-        canvas: "src/pdfjs-serverless/mock/canvas.mjs",
-        "path2d-polyfill": "src/pdfjs-serverless/mock/path2d-polyfill.mjs",
+        canvas: join(mockDir, "canvas.mjs"),
+        "path2d-polyfill": join(mockDir, "path2d-polyfill.mjs"),
         ...env.alias,
       }),
     }),

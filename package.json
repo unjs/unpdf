@@ -2,7 +2,7 @@
   "name": "unpdf",
   "type": "module",
   "version": "0.10.0",
-  "packageManager": "pnpm@8.10.2",
+  "packageManager": "pnpm@8.11.0",
   "description": "Utilities to work with PDFs in Node.js, browser and workers",
   "author": "Johann Schopplich <pkg@johannschopplich.com>",
   "license": "MIT",
@@ -67,37 +67,27 @@
     "canvas": "^2.11.2"
   },
   "devDependencies": {
-    "@rollup/plugin-alias": "^5.0.1",
+    "@rollup/plugin-alias": "^5.1.0",
     "@rollup/plugin-commonjs": "^25.0.7",
     "@rollup/plugin-inject": "^5.0.5",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-replace": "^5.0.5",
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^11.1.5",
-    "@types/node": "^20.9.0",
+    "@types/node": "^20.10.0",
     "bumpp": "^9.2.0",
-    "eslint": "^8.53.0",
+    "eslint": "^8.54.0",
     "eslint-config-unjs": "^0.2.1",
     "fast-glob": "^3.3.2",
     "pdfjs-dist": "^4.0.189",
-    "prettier": "^3.0.3",
-    "rollup": "^3.28.1",
-    "typescript": "^5.2.2",
+    "prettier": "^3.1.0",
+    "rollup": "^4.6.0",
+    "typescript": "^5.3.2",
     "unbuild": "^2.0.0",
-    "unenv": "^1.7.4",
-    "vitest": "^0.34.3"
+    "unenv": "^1.8.0",
+    "vitest": "^1.0.0-beta.6"
   },
   "pnpm": {
-    "overrides": {
-      "array-includes": "npm:@nolyfill/array-includes@latest",
-      "array.prototype.findlastindex": "npm:@nolyfill/array.prototype.findlastindex@latest",
-      "array.prototype.flat": "npm:@nolyfill/array.prototype.flat@latest",
-      "array.prototype.flatmap": "npm:@nolyfill/array.prototype.flatmap@latest",
-      "has": "npm:@nolyfill/has@latest",
-      "object.fromentries": "npm:@nolyfill/object.fromentries@latest",
-      "object.groupby": "npm:@nolyfill/object.groupby@latest",
-      "object.values": "npm:@nolyfill/object.values@latest"
-    },
     "patchedDependencies": {
       "pdfjs-dist@4.0.189": "patches/pdfjs-dist@4.0.189.patch"
     }
