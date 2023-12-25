@@ -7,6 +7,7 @@ import type {
 import {
   getDocumentProxy,
   getResolvedPDFJS,
+  interopDefault,
   isBrowser,
   isNode,
   isPDFDocumentProxy,
@@ -46,7 +47,7 @@ export async function extractImages(
 }
 
 export async function renderPageAsImage(
-  data: BinaryData | PDFDocumentProxy,
+  data: BinaryData,
   pageNumber: number,
   options: {
     canvas?: () => Promise<typeof import("canvas")>;
@@ -56,7 +57,8 @@ export async function renderPageAsImage(
     height?: number;
   } = {},
 ) {
-  const pdf = isPDFDocumentProxy(data) ? data : await getDocumentProxy(data);
+  const canvasFactory = await createIsomorphicCanvasFactory(options.canvas);
+  const pdf = await getDocumentProxy(data, { canvasFactory });
   const page = await pdf.getPage(pageNumber);
 
   if (pageNumber < 1 || pageNumber > pdf.numPages) {
@@ -79,7 +81,6 @@ export async function renderPageAsImage(
     viewport = page.getViewport({ scale: outputScale });
   }
 
-  const canvasFactory = await createIsomorphicCanvasFactory(options.canvas);
   const ctx = canvasFactory.create(viewport.width, viewport.height);
 
   await page.render({
@@ -98,7 +99,7 @@ export async function renderPageAsImage(
 async function createIsomorphicCanvasFactory(
   canvas?: () => Promise<typeof import("canvas")>,
 ) {
-  const _canvas = await canvas?.();
+  const _canvas = canvas ? await interopDefault(canvas()) : undefined;
 
   return {
     _createCanvas(width: number, height: number) {

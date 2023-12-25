@@ -194,7 +194,7 @@ await writeFile("dummy-page-1.png", Buffer.from(result));
 
 ```ts
 declare function renderPageAsImage(
-  data: BinaryData | PDFDocumentProxy,
+  data: BinaryData,
   pageNumber: number,
   options?: {
     canvas?: () => Promise<typeof import("canvas")>;
