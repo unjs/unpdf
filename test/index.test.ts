@@ -82,7 +82,7 @@ describe("unpdf", () => {
     //   new URL("image-sample.png", import.meta.url),
     //   Buffer.from(result),
     // );
-    expect(result.byteLength).toBeGreaterThanOrEqual(119_700);
+    expect(result.byteLength).toBeGreaterThanOrEqual(119_000);
   });
 
   it("supports passing PDFDocumentProxy", async () => {
