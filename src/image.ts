@@ -47,7 +47,7 @@ export async function extractImages(
 }
 
 export async function renderPageAsImage(
-  data: BinaryData,
+  data: BinaryData | PDFDocumentProxy,
   pageNumber: number,
   options: {
     canvas?: () => Promise<typeof import("canvas")>;
@@ -58,7 +58,9 @@ export async function renderPageAsImage(
   } = {},
 ) {
   const canvasFactory = await createIsomorphicCanvasFactory(options.canvas);
-  const pdf = await getDocumentProxy(data, { canvasFactory });
+  const pdf = isPDFDocumentProxy(data)
+    ? data
+    : await getDocumentProxy(data, { canvasFactory });
   const page = await pdf.getPage(pageNumber);
 
   if (pageNumber < 1 || pageNumber > pdf.numPages) {
@@ -96,7 +98,7 @@ export async function renderPageAsImage(
   return await response.arrayBuffer();
 }
 
-async function createIsomorphicCanvasFactory(
+export async function createIsomorphicCanvasFactory(
   canvas?: () => Promise<typeof import("canvas")>,
 ) {
   const _canvas = canvas ? await interopDefault(canvas()) : undefined;

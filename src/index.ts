@@ -7,6 +7,7 @@ import {
 import { resolvePDFJSImports } from "./utils";
 import { configureUnPDF } from "./config";
 
+export { createIsomorphicCanvasFactory } from "./image";
 export {
   getDocumentProxy,
   getResolvedPDFJS,
