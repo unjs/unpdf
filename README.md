@@ -50,7 +50,7 @@ const buffer = await fetch(
 const buffer = await readFile("./dummy.pdf");
 
 // Load PDF from buffer
-const pdf = await getDocumentProxy(new Uint8Array(pdf));
+const pdf = await getDocumentProxy(new Uint8Array(buffer));
 // Extract text from PDF
 const { totalPages, text } = await extractText(pdf, { mergePages: true });
 ```
