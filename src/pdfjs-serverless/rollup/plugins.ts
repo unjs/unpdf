@@ -9,6 +9,7 @@ export function pdfjsTypes(): Plugin {
 import * as PDFJS from './types/src/pdf'
 declare function resolvePDFJS(): Promise<typeof PDFJS>
 export { resolvePDFJS }
+export * from './types/src/pdf'
 `.trimStart();
 
       for (const filename of ["pdfjs.d.ts", "pdfjs.d.mts"]) {
