@@ -14,22 +14,22 @@ export async function extractText(
   const texts = await Promise.all(
     Array.from({ length: pdf.numPages }, (_, i) => getPageText(pdf, i + 1)),
   );
-  const filteredTexts = texts.filter(Boolean) as string[];
 
   return {
     totalPages: pdf.numPages,
-    text: mergePages ? filteredTexts.join("\n\n") : filteredTexts,
+    text: mergePages ? texts.join("\n").replace(/\s+/g, " ") : texts,
   };
 }
 
-async function getPageText(pdf: PDFDocumentProxy, pageNumber: number) {
-  const page = await pdf.getPage(pageNumber);
+async function getPageText(document: PDFDocumentProxy, pageNumber: number) {
+  const page = await document.getPage(pageNumber);
   const content = await page.getTextContent();
-  const items = content.items as TextItem[];
 
-  if (items.length === 0) {
-    return;
-  }
-
-  return items.map(({ str }) => str).join("\n");
+  return (
+    (content.items as TextItem[])
+      // eslint-disable-next-line unicorn/no-null
+      .filter((item) => item.str != null)
+      .map((item) => item.str)
+      .join(" ")
+  );
 }
