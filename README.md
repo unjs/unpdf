@@ -91,7 +91,7 @@ Generally speaking, you don't need to worry about the PDF.js build. `unpdf` ship
 // if you need another PDF.js build
 import { configureUnPDF } from "unpdf";
 
-configureUnPDF({
+await configureUnPDF({
   // Use the official PDF.js build (make sure to install it first)
   pdfjs: () => import("pdfjs-dist"),
 });
@@ -175,7 +175,7 @@ In order to use this method, you have to meet the following requirements:
 ```ts
 import { configureUnPDF, renderPageAsImage } from "unpdf";
 
-configureUnPDF({
+await configureUnPDF({
   // Use the official PDF.js build
   pdfjs: () => import("pdfjs-dist"),
 });
