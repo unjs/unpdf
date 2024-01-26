@@ -24,9 +24,7 @@ export default defineConfig({
   output: {
     file: "dist/pdfjs.mjs",
     format: "esm",
-    // exports: "named",
-    intro: "",
-    outro: "",
+    exports: "auto",
     inlineDynamicImports: true,
     generatedCode: {
       constBindings: true,
