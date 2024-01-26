@@ -2,7 +2,7 @@
   "name": "unpdf",
   "type": "module",
   "version": "0.10.1",
-  "packageManager": "pnpm@8.12.1",
+  "packageManager": "pnpm@8.14.3",
   "description": "Utilities to work with PDFs in Node.js, browser and workers",
   "author": "Johann Schopplich <pkg@johannschopplich.com>",
   "license": "MIT",
@@ -73,23 +73,23 @@
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-replace": "^5.0.5",
     "@rollup/plugin-terser": "^0.4.4",
-    "@rollup/plugin-typescript": "^11.1.5",
-    "@types/node": "^20.10.5",
-    "bumpp": "^9.2.1",
+    "@rollup/plugin-typescript": "^11.1.6",
+    "@types/node": "^20.11.7",
+    "bumpp": "^9.3.0",
     "eslint": "^8.56.0",
     "eslint-config-unjs": "^0.2.1",
     "fast-glob": "^3.3.2",
-    "pdfjs-dist": "^4.0.269",
-    "prettier": "^3.1.1",
-    "rollup": "^4.9.1",
+    "pdfjs-dist": "^4.0.379",
+    "prettier": "^3.2.4",
+    "rollup": "^4.9.6",
     "typescript": "^5.3.3",
     "unbuild": "^2.0.0",
-    "unenv": "^1.8.0",
-    "vitest": "^1.1.0"
+    "unenv": "^1.9.0",
+    "vitest": "^1.2.2"
   },
   "pnpm": {
     "patchedDependencies": {
-      "pdfjs-dist@4.0.269": "patches/pdfjs-dist@4.0.269.patch"
+      "pdfjs-dist@4.0.379": "patches/pdfjs-dist@4.0.379.patch"
     }
   }
 }

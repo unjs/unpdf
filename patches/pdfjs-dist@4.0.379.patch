@@ -1,0 +1,69 @@
+diff --git a/build/pdf.mjs b/build/pdf.mjs
+index 0eefce5301635b61d27a3159008c99d96667ebcc..dde6b87a44cebdaeeb9f3e93ab5d25e0e76c37ea 100644
+--- a/build/pdf.mjs
++++ b/build/pdf.mjs
+@@ -20,6 +20,7 @@
+  * JavaScript code in this page
+  */
+ 
++export async function initPDFJS() {
+ /******/ var __webpack_modules__ = ({
+ 
+ /***/ 640:
+@@ -18145,7 +18146,55 @@ const AnnotationPrefix = "pdfjs_internal_id_";
+ /******/ var __webpack_exports__shadow = __webpack_exports__.shadow;
+ /******/ var __webpack_exports__updateTextLayer = __webpack_exports__.updateTextLayer;
+ /******/ var __webpack_exports__version = __webpack_exports__.version;
+-/******/ export { __webpack_exports__AbortException as AbortException, __webpack_exports__AnnotationEditorLayer as AnnotationEditorLayer, __webpack_exports__AnnotationEditorParamsType as AnnotationEditorParamsType, __webpack_exports__AnnotationEditorType as AnnotationEditorType, __webpack_exports__AnnotationEditorUIManager as AnnotationEditorUIManager, __webpack_exports__AnnotationLayer as AnnotationLayer, __webpack_exports__AnnotationMode as AnnotationMode, __webpack_exports__CMapCompressionType as CMapCompressionType, __webpack_exports__ColorPicker as ColorPicker, __webpack_exports__DOMSVGFactory as DOMSVGFactory, __webpack_exports__DrawLayer as DrawLayer, __webpack_exports__FeatureTest as FeatureTest, __webpack_exports__GlobalWorkerOptions as GlobalWorkerOptions, __webpack_exports__ImageKind as ImageKind, __webpack_exports__InvalidPDFException as InvalidPDFException, __webpack_exports__MissingPDFException as MissingPDFException, __webpack_exports__OPS as OPS, __webpack_exports__Outliner as Outliner, __webpack_exports__PDFDataRangeTransport as PDFDataRangeTransport, __webpack_exports__PDFDateString as PDFDateString, __webpack_exports__PDFWorker as PDFWorker, __webpack_exports__PasswordResponses as PasswordResponses, __webpack_exports__PermissionFlag as PermissionFlag, __webpack_exports__PixelsPerInch as PixelsPerInch, __webpack_exports__PromiseCapability as PromiseCapability, __webpack_exports__RenderingCancelledException as RenderingCancelledException, __webpack_exports__UnexpectedResponseException as UnexpectedResponseException, __webpack_exports__Util as Util, __webpack_exports__VerbosityLevel as VerbosityLevel, __webpack_exports__XfaLayer as XfaLayer, __webpack_exports__build as build, __webpack_exports__createValidAbsoluteUrl as createValidAbsoluteUrl, __webpack_exports__fetchData as fetchData, __webpack_exports__getDocument as getDocument, __webpack_exports__getFilenameFromUrl as getFilenameFromUrl, __webpack_exports__getPdfFilenameFromUrl as getPdfFilenameFromUrl, __webpack_exports__getXfaPageViewport as getXfaPageViewport, __webpack_exports__isDataScheme as isDataScheme, __webpack_exports__isPdfFile as isPdfFile, __webpack_exports__noContextMenu as noContextMenu, __webpack_exports__normalizeUnicode as normalizeUnicode, __webpack_exports__renderTextLayer as renderTextLayer, __webpack_exports__setLayerDimensions as setLayerDimensions, __webpack_exports__shadow as shadow, __webpack_exports__updateTextLayer as updateTextLayer, __webpack_exports__version as version };
++/******/ return {
++  AbortException: __webpack_exports__AbortException,
++  AnnotationEditorLayer: __webpack_exports__AnnotationEditorLayer,
++  AnnotationEditorParamsType: __webpack_exports__AnnotationEditorParamsType,
++  AnnotationEditorType: __webpack_exports__AnnotationEditorType,
++  AnnotationEditorUIManager: __webpack_exports__AnnotationEditorUIManager,
++  AnnotationLayer: __webpack_exports__AnnotationLayer,
++  AnnotationMode: __webpack_exports__AnnotationMode,
++  CMapCompressionType: __webpack_exports__CMapCompressionType,
++  ColorPicker: __webpack_exports__ColorPicker,
++  DOMSVGFactory: __webpack_exports__DOMSVGFactory,
++  DrawLayer: __webpack_exports__DrawLayer,
++  FeatureTest: __webpack_exports__FeatureTest,
++  GlobalWorkerOptions: __webpack_exports__GlobalWorkerOptions,
++  ImageKind: __webpack_exports__ImageKind,
++  InvalidPDFException: __webpack_exports__InvalidPDFException,
++  MissingPDFException: __webpack_exports__MissingPDFException,
++  OPS: __webpack_exports__OPS,
++  Outliner: __webpack_exports__Outliner,
++  PDFDataRangeTransport: __webpack_exports__PDFDataRangeTransport,
++  PDFDateString: __webpack_exports__PDFDateString,
++  PDFWorker: __webpack_exports__PDFWorker,
++  PasswordResponses: __webpack_exports__PasswordResponses,
++  PermissionFlag: __webpack_exports__PermissionFlag,
++  PixelsPerInch: __webpack_exports__PixelsPerInch,
++  PromiseCapability: __webpack_exports__PromiseCapability,
++  RenderingCancelledException: __webpack_exports__RenderingCancelledException,
++  UnexpectedResponseException: __webpack_exports__UnexpectedResponseException,
++  Util: __webpack_exports__Util,
++  VerbosityLevel: __webpack_exports__VerbosityLevel,
++  XfaLayer: __webpack_exports__XfaLayer,
++  build: __webpack_exports__build,
++  createValidAbsoluteUrl: __webpack_exports__createValidAbsoluteUrl,
++  fetchData: __webpack_exports__fetchData,
++  getDocument: __webpack_exports__getDocument,
++  getFilenameFromUrl: __webpack_exports__getFilenameFromUrl,
++  getPdfFilenameFromUrl: __webpack_exports__getPdfFilenameFromUrl,
++  getXfaPageViewport: __webpack_exports__getXfaPageViewport,
++  isDataScheme: __webpack_exports__isDataScheme,
++  isPdfFile: __webpack_exports__isPdfFile,
++  noContextMenu: __webpack_exports__noContextMenu,
++  normalizeUnicode: __webpack_exports__normalizeUnicode,
++  renderTextLayer: __webpack_exports__renderTextLayer,
++  setLayerDimensions: __webpack_exports__setLayerDimensions,
++  shadow: __webpack_exports__shadow,
++  updateTextLayer: __webpack_exports__updateTextLayer,
++  version: __webpack_exports__version
++}
+ /******/ 
++}
+ 
+ //# sourceMappingURL=pdf.mjs.map
