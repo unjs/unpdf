@@ -5,10 +5,10 @@ index 0eefce5301635b61d27a3159008c99d96667ebcc..dde6b87a44cebdaeeb9f3e93ab5d25e0
 @@ -20,6 +20,7 @@
   * JavaScript code in this page
   */
- 
-+export async function initPDFJS() {
+
++export async function __main__() {
  /******/ var __webpack_modules__ = ({
- 
+
  /***/ 640:
 @@ -18145,7 +18146,55 @@ const AnnotationPrefix = "pdfjs_internal_id_";
  /******/ var __webpack_exports__shadow = __webpack_exports__.shadow;
@@ -63,7 +63,7 @@ index 0eefce5301635b61d27a3159008c99d96667ebcc..dde6b87a44cebdaeeb9f3e93ab5d25e0
 +  updateTextLayer: __webpack_exports__updateTextLayer,
 +  version: __webpack_exports__version
 +}
- /******/ 
+ /******/
 +}
- 
+
  //# sourceMappingURL=pdf.mjs.map

@@ -60,7 +60,7 @@ import * as __pdfjsWorker__ from "pdfjs-dist/build/pdf.worker.mjs";
 // } from "pdfjs-dist/build/pdf.mjs";
 
 // Wrap PDF.js exports to circumvent Cloudflare's top-level await limitation.
-import { initPDFJS } from "pdfjs-dist/build/pdf.mjs";
+import { __main__ } from "pdfjs-dist/build/pdf.mjs";
 export function resolvePDFJS() {
-  return initPDFJS();
+  return __main__();
 }
