@@ -5,6 +5,20 @@ import type {
 } from "pdfjs-dist/types/src/display/api";
 import { getDocumentProxy, isPDFDocumentProxy } from "./utils";
 
+export function extractText(
+  data: BinaryData | PDFDocumentProxy,
+  options?: { mergePages?: false }
+): Promise<{
+  totalPages: number;
+  text: string[];
+}>;
+export function extractText(
+  data: BinaryData | PDFDocumentProxy,
+  options: { mergePages: true }
+): Promise<{
+  totalPages: number;
+  text: string;
+}>
 export async function extractText(
   data: BinaryData | PDFDocumentProxy,
   options: { mergePages?: boolean } = {},
