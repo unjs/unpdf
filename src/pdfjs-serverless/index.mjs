@@ -7,6 +7,9 @@ import http from "node:http";
 import https from "node:https";
 import url from "node:url";
 
+// Inline the PDF.js worker to avoid having to load it from a separate file.
+import * as __pdfjsWorker__ from "pdfjs-dist/build/pdf.worker.mjs";
+
 // Polyfill for `Promise.withResolvers`
 Promise.withResolvers ??= function () {
   let resolve, reject;
@@ -16,9 +19,6 @@ Promise.withResolvers ??= function () {
   });
   return { promise, resolve, reject };
 };
-
-// Inline the PDF.js worker to avoid having to load it from a separate file.
-import * as __pdfjsWorker__ from "pdfjs-dist/build/pdf.worker.mjs";
 
 // Although we just need: `getDocument`, `OPS` and `version`, we export
 // everything, since the bundle size doesn't change, due to PDF.js's
