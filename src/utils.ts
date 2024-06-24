@@ -1,5 +1,4 @@
 import type {
-  BinaryData,
   DocumentInitParameters,
   PDFDocumentProxy,
 } from "pdfjs-dist/types/src/display/api";
@@ -18,7 +17,7 @@ export const isBrowser = typeof window !== "undefined";
  * - `useSystemFonts: true`
  */
 export async function getDocumentProxy(
-  data: BinaryData,
+  data: DocumentInitParameters["data"],
   options: DocumentInitParameters = {},
 ) {
   const { getDocument } = await getResolvedPDFJS();
@@ -38,7 +37,6 @@ export async function getResolvedPDFJS(): Promise<PDFJS> {
     await resolvePDFJSImports();
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   return resolvedModule!;
 }
 

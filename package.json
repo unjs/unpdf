@@ -2,7 +2,7 @@
   "name": "unpdf",
   "type": "module",
   "version": "0.10.1",
-  "packageManager": "pnpm@8.15.6",
+  "packageManager": "pnpm@9.4.0",
   "description": "Utilities to work with PDFs in Node.js, browser and workers",
   "author": "Johann Schopplich <pkg@johannschopplich.com>",
   "license": "MIT",
@@ -55,7 +55,7 @@
     "build": "unbuild && node scripts/post-build.mjs",
     "build:pdfjs": "rollup --config pdfjs.rollup.config.ts --configPlugin typescript && cp -R node_modules/pdfjs-dist/types dist",
     "dev": "unbuild --stub",
-    "lint": "eslint \"**/*.{cjs,mjs,ts}\" --ignore-path .gitignore",
+    "lint": "eslint \"**/*.{cjs,mjs,ts}\"",
     "lint:fix": "npm run lint -- --fix",
     "format": "prettier \"**/*.{json,md,cjs,mjs,ts,yml}\" --write",
     "format:check": "prettier \"**/*.{json,md,cjs,mjs,ts,yml}\" --check",
@@ -68,28 +68,28 @@
   },
   "devDependencies": {
     "@rollup/plugin-alias": "^5.1.0",
-    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-commonjs": "^26.0.1",
     "@rollup/plugin-inject": "^5.0.5",
     "@rollup/plugin-node-resolve": "^15.2.3",
-    "@rollup/plugin-replace": "^5.0.5",
+    "@rollup/plugin-replace": "^5.0.7",
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^11.1.6",
-    "@types/node": "^20.12.5",
-    "bumpp": "^9.4.0",
-    "eslint": "^8.57.0",
-    "eslint-config-unjs": "^0.2.1",
+    "@types/node": "^20.14.8",
+    "bumpp": "^9.4.1",
+    "eslint": "^9.5.0",
+    "eslint-config-unjs": "^0.3.2",
     "fast-glob": "^3.3.2",
-    "pdfjs-dist": "^4.0.379",
-    "prettier": "^3.2.5",
-    "rollup": "^4.14.0",
+    "pdfjs-dist": "^4.3.136",
+    "prettier": "^3.3.2",
+    "rollup": "^4.18.0",
     "typescript": "^5.4.4",
     "unbuild": "^2.0.0",
     "unenv": "^1.9.0",
-    "vitest": "^1.4.0"
+    "vitest": "^1.6.0"
   },
   "pnpm": {
     "patchedDependencies": {
-      "pdfjs-dist@4.0.379": "patches/pdfjs-dist@4.0.379.patch"
+      "pdfjs-dist@4.3.136": "patches/pdfjs-dist@4.3.136.patch"
     }
   }
 }
