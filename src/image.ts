@@ -1,7 +1,6 @@
-/* eslint-disable @typescript-eslint/consistent-type-imports */
 import type { Canvas } from "canvas";
 import type {
-  BinaryData,
+  DocumentInitParameters,
   PDFDocumentProxy,
 } from "pdfjs-dist/types/src/display/api";
 import {
@@ -14,7 +13,7 @@ import {
 } from "./utils";
 
 export async function extractImages(
-  data: BinaryData | PDFDocumentProxy,
+  data: DocumentInitParameters["data"] | PDFDocumentProxy,
   pageNumber: number,
 ) {
   const pdf = isPDFDocumentProxy(data) ? data : await getDocumentProxy(data);
@@ -47,7 +46,7 @@ export async function extractImages(
 }
 
 export async function renderPageAsImage(
-  data: BinaryData | PDFDocumentProxy,
+  data: DocumentInitParameters["data"] | PDFDocumentProxy,
   pageNumber: number,
   options: {
     canvas?: () => Promise<typeof import("canvas")>;

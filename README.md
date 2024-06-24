@@ -17,7 +17,7 @@ This library is also intended as a modern alternative to the unmaintained but st
 ## PDF.js Compatibility
 
 > [!NOTE]
-> This package is currently using PDF.js v4.0.189.
+> This package is currently using PDF.js v4.3.136.
 
 ## Installation
 
@@ -138,7 +138,9 @@ function getResolvedPDFJS(): Promise<PDFJS>;
 ### `getMeta`
 
 ```ts
-function getMeta(data: BinaryData | PDFDocumentProxy): Promise<{
+function getMeta(
+  data: DocumentInitParameters["data"] | PDFDocumentProxy,
+): Promise<{
   info: Record<string, any>;
   metadata: Record<string, any>;
 }>;
@@ -150,7 +152,7 @@ Extracts all text from a PDF. If `mergePages` is set to `true`, the text of all 
 
 ```ts
 function extractText(
-  data: BinaryData | PDFDocumentProxy,
+  data: DocumentInitParameters["data"] | PDFDocumentProxy,
   { mergePages }?: { mergePages?: boolean },
 ): Promise<{
   totalPages: number;
@@ -194,7 +196,7 @@ await writeFile("dummy-page-1.png", Buffer.from(result));
 
 ```ts
 declare function renderPageAsImage(
-  data: BinaryData,
+  data: DocumentInitParameters["data"],
   pageNumber: number,
   options?: {
     canvas?: () => Promise<typeof import("canvas")>;

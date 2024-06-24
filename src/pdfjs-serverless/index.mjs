@@ -7,6 +7,16 @@ import http from "node:http";
 import https from "node:https";
 import url from "node:url";
 
+// Polyfill for `Promise.withResolvers`
+Promise.withResolvers ??= function () {
+  let resolve, reject;
+  const promise = new Promise((res, rej) => {
+    resolve = res;
+    reject = rej;
+  });
+  return { promise, resolve, reject };
+};
+
 // Inline the PDF.js worker to avoid having to load it from a separate file.
 import * as __pdfjsWorker__ from "pdfjs-dist/build/pdf.worker.mjs";
 
@@ -22,42 +32,46 @@ import * as __pdfjsWorker__ from "pdfjs-dist/build/pdf.worker.mjs";
 //   AnnotationEditorUIManager,
 //   AnnotationLayer,
 //   AnnotationMode,
-//   build,
 //   CMapCompressionType,
-//   createValidAbsoluteUrl,
+//   ColorPicker,
 //   DOMSVGFactory,
+//   DrawLayer,
 //   FeatureTest,
+//   GlobalWorkerOptions,
+//   ImageKind,
+//   InvalidPDFException,
+//   MissingPDFException,
+//   OPS,
+//   Outliner,
+//   PDFDataRangeTransport,
+//   PDFDateString,
+//   PDFWorker,
+//   PasswordResponses,
+//   PermissionFlag,
+//   PixelsPerInch,
+//   RenderingCancelledException,
+//   TextLayer,
+//   UnexpectedResponseException,
+//   Util,
+//   VerbosityLevel,
+//   XfaLayer,
+//   build,
+//   createValidAbsoluteUrl,
+//   fetchData,
 //   getDocument,
 //   getFilenameFromUrl,
 //   getPdfFilenameFromUrl,
 //   getXfaPageViewport,
-//   GlobalWorkerOptions,
-//   ImageKind,
-//   InvalidPDFException,
 //   isDataScheme,
 //   isPdfFile,
-//   MissingPDFException,
 //   noContextMenu,
 //   normalizeUnicode,
-//   OPS,
-//   PasswordResponses,
-//   PDFDataRangeTransport,
-//   PDFDateString,
-//   PDFWorker,
-//   PermissionFlag,
-//   PixelsPerInch,
-//   PromiseCapability,
-//   RenderingCancelledException,
 //   renderTextLayer,
 //   setLayerDimensions,
 //   shadow,
-//   UnexpectedResponseException,
 //   updateTextLayer,
-//   Util,
-//   VerbosityLevel,
 //   version,
-//   XfaLayer,
-// } from "pdfjs-dist/build/pdf.mjs";
+// } from 'pdfjs-dist/build/pdf.mjs'
 
 // Wrap PDF.js exports to circumvent Cloudflare's top-level await limitation.
 import { __main__ } from "pdfjs-dist/build/pdf.mjs";
