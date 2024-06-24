@@ -43,7 +43,7 @@ async function getPageText(document: PDFDocumentProxy, pageNumber: number) {
     (content.items as TextItem[])
       // eslint-disable-next-line unicorn/no-null
       .filter((item) => item.str != null)
-      .map((item) => item.str)
-      .join(" ")
+      .map((item) => item.str + (item.hasEOL ? "\n" : ""))
+      .join("")
   );
 }
