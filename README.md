@@ -17,7 +17,7 @@ This library is also intended as a modern alternative to the unmaintained but st
 ## PDF.js Compatibility
 
 > [!NOTE]
-> This package is currently using PDF.js v4.0.189.
+> This package is currently using PDF.js v4.3.136.
 
 ## Installation
 
