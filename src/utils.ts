@@ -59,7 +59,8 @@ export async function resolvePDFJSImports(
       }
 
       return;
-    } catch {
+    } catch (error) {
+      console.error(error);
       throw new Error(
         "Resolving failed. Please check the provided configuration.",
       );
@@ -71,7 +72,8 @@ export async function resolvePDFJSImports(
     const { resolvePDFJS } = await import("unpdf/pdfjs");
     // @ts-ignore: Type mismatch
     resolvedModule = await resolvePDFJS();
-  } catch {
+  } catch (error) {
+    console.error(error);
     throw new Error(
       "PDF.js is not available. Please add the package as a dependency.",
     );
