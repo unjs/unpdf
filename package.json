@@ -32,7 +32,7 @@
       }
     },
     "./pdfjs": {
-      "types": "./dist/pdfjs.d.ts",
+      "types": "./dist/pdfjs.d.mts",
       "import": "./dist/pdfjs.mjs"
     }
   },
