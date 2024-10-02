@@ -19,7 +19,6 @@ const mockDir = fileURLToPath(
 const env = unenv.env(unenv.nodeless);
 
 export default defineConfig({
-  // @ts-expect-error: Rollup 4 type compatibility not yet available
   input: "src/pdfjs-serverless/index.mjs",
   output: {
     file: "dist/pdfjs.mjs",

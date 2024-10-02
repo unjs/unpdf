@@ -1,10 +1,12 @@
+// @ts-check
+import { fileURLToPath } from "node:url";
 import { relative, resolve } from "node:path";
 import { readFile, writeFile } from "node:fs/promises";
 import fg from "fast-glob";
 
-const rootDir = new URL("..", import.meta.url).pathname;
+const rootDir = fileURLToPath(new URL("..", import.meta.url));
 const targets = await fg.async(["dist/**/*.{d.cts,d.mts,d.ts}"], {
-  rootDir,
+  cwd: rootDir,
   ignore: ["**/types/**"],
 });
 
