@@ -1,7 +1,7 @@
 {
   "name": "unpdf",
   "type": "module",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "packageManager": "pnpm@9.11.0",
   "description": "Utilities to work with PDFs in Node.js, browser and workers",
   "author": "Johann Schopplich <hello@johannschopplich.com>",
