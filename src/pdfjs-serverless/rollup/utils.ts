@@ -3,18 +3,18 @@ export function resolveAliases(_aliases: Record<string, string>) {
   const aliases = Object.fromEntries(
     Object.entries(_aliases).sort(
       ([a], [b]) =>
-        b.split("/").length - a.split("/").length || b.length - a.length,
+        b.split('/').length - a.split('/').length || b.length - a.length,
     ),
-  );
+  )
 
   // Resolve alias values in relation to each other
   for (const key in aliases) {
     for (const alias in aliases) {
       if (aliases[key].startsWith(alias)) {
-        aliases[key] = aliases[alias] + aliases[key].slice(alias.length);
+        aliases[key] = aliases[alias] + aliases[key].slice(alias.length)
       }
     }
   }
 
-  return aliases;
+  return aliases
 }

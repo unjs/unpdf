@@ -1,13 +1,14 @@
 import type {
   DocumentInitParameters,
   PDFDocumentProxy,
-} from "pdfjs-dist/types/src/display/api";
-import type { PDFJS } from "./types";
+} from 'pdfjs-dist/types/src/display/api'
+import type { PDFJS } from './types'
 
-let resolvedModule: PDFJS | undefined;
+let resolvedModule: PDFJS | undefined
 
-export const isNode = globalThis.process?.release?.name === "node";
-export const isBrowser = typeof window !== "undefined";
+// eslint-disable-next-line node/prefer-global/process
+export const isNode = globalThis.process?.release?.name === 'node'
+export const isBrowser = typeof window !== 'undefined'
 
 /**
  * Returns a PDFDocumentProxy instance from a given binary data.
@@ -17,27 +18,27 @@ export const isBrowser = typeof window !== "undefined";
  * - `useSystemFonts: true`
  */
 export async function getDocumentProxy(
-  data: DocumentInitParameters["data"],
+  data: DocumentInitParameters['data'],
   options: DocumentInitParameters = {},
 ) {
-  const { getDocument } = await getResolvedPDFJS();
+  const { getDocument } = await getResolvedPDFJS()
   const pdf = await getDocument({
     data,
     isEvalSupported: false,
     // See: https://github.com/mozilla/pdf.js/issues/4244#issuecomment-1479534301
     useSystemFonts: true,
     ...options,
-  }).promise;
+  }).promise
 
-  return pdf;
+  return pdf
 }
 
 export async function getResolvedPDFJS(): Promise<PDFJS> {
   if (!resolvedModule) {
-    await resolvePDFJSImports();
+    await resolvePDFJSImports()
   }
 
-  return resolvedModule!;
+  return resolvedModule!
 }
 
 export async function resolvePDFJSImports(
@@ -45,48 +46,45 @@ export async function resolvePDFJSImports(
   { force = false } = {},
 ) {
   if (resolvedModule && !force) {
-    return;
+    return
   }
 
   if (pdfjsResolver) {
     try {
-      resolvedModule = await interopDefault(pdfjsResolver());
+      resolvedModule = await interopDefault(pdfjsResolver())
 
       // Support passing `unpdf/pdfjs` as resolver target
-      if (resolvedModule && "resolvePDFJS" in resolvedModule) {
+      if (resolvedModule && 'resolvePDFJS' in resolvedModule) {
         // @ts-expect-error: Return value is unknown
-        resolvedModule = await resolvedModule.resolvePDFJS();
+        resolvedModule = await resolvedModule.resolvePDFJS()
       }
 
-      return;
-    } catch (error) {
-      console.error(error);
-      throw new Error(
-        "Resolving failed. Please check the provided configuration.",
-      );
+      return
+    }
+    catch (error) {
+      console.error(error)
+      throw new Error('Resolving failed. Please check the provided configuration.')
     }
   }
 
   try {
-    // @ts-ignore: Dynamic import of serverless PDF.js build
-    const { resolvePDFJS } = await import("unpdf/pdfjs");
-    // @ts-ignore: Type mismatch
-    resolvedModule = await resolvePDFJS();
-  } catch (error) {
-    console.error(error);
-    throw new Error(
-      "PDF.js is not available. Please add the package as a dependency.",
-    );
+    const { resolvePDFJS } = await import('unpdf/pdfjs')
+    // @ts-expect-error: Type mismatch
+    resolvedModule = await resolvePDFJS()
+  }
+  catch (error) {
+    console.error(error)
+    throw new Error('PDF.js is not available. Please add the package as a dependency.')
   }
 }
 
 export function isPDFDocumentProxy(data: unknown): data is PDFDocumentProxy {
-  return typeof data === "object" && data !== null && "_pdfInfo" in data;
+  return typeof data === 'object' && data !== null && '_pdfInfo' in data
 }
 
 export async function interopDefault<T>(
   m: T | Promise<T>,
 ): Promise<T extends { default: infer U } ? U : T> {
-  const resolved = await m;
-  return (resolved as any).default || resolved;
+  const resolved = await m
+  return (resolved as any).default || resolved
 }

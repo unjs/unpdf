@@ -1,6 +1,6 @@
-import type * as _PDFJS from "pdfjs-dist/types/src/pdf";
+import type * as _PDFJS from 'pdfjs-dist/types/src/pdf'
 
-export type PDFJS = typeof _PDFJS;
+export type PDFJS = typeof _PDFJS
 
 export interface UnPDFConfiguration {
   /**
@@ -12,5 +12,5 @@ export interface UnPDFConfiguration {
    * // Use the official PDF.js build (make sure to install it first)
    * () => import('pdfjs-dist')
    */
-  pdfjs?: () => Promise<any>;
+  pdfjs?: () => Promise<any>
 }

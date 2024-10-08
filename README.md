@@ -38,20 +38,23 @@ yarn add unpdf
 ### Extract Text From PDF
 
 ```ts
-import { extractText, getDocumentProxy } from "unpdf";
+import { extractText, getDocumentProxy } from 'unpdf'
 
 // Fetch a PDF file from the web
 const buffer = await fetch(
-  "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
-).then((res) => res.arrayBuffer());
+  'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+).then(res => res.arrayBuffer())
 
 // Or load it from the filesystem
-const buffer = await readFile("./dummy.pdf");
+const buffer = await readFile('./dummy.pdf')
 
 // Load PDF from buffer
-const pdf = await getDocumentProxy(new Uint8Array(buffer));
+const pdf = await getDocumentProxy(new Uint8Array(buffer))
 // Extract text from PDF
-const { totalPages, text } = await extractText(pdf, { mergePages: true });
+const { totalPages, text } = await extractText(pdf, { mergePages: true })
+
+console.log(`Total pages: ${totalPages}`)
+console.log(text)
 ```
 
 ### Access the PDF.js API
@@ -65,19 +68,19 @@ This will return the resolved PDF.js module and gives full access to the PDF.js 
 Especially useful for platforms like 🦕 Deno or if you want to use the PDF.js API directly. If no custom build was defined beforehand, the serverless build bundled with `unpdf` will be initialized.
 
 ```ts
-import { getResolvedPDFJS } from "unpdf";
+import { getResolvedPDFJS } from 'unpdf'
 
-const { getDocument } = await getResolvedPDFJS();
-const data = Deno.readFileSync("dummy.pdf");
-const doc = await getDocument(data).promise;
+const { getDocument } = await getResolvedPDFJS()
+const data = Deno.readFileSync('dummy.pdf')
+const doc = await getDocument(data).promise
 
-console.log(await doc.getMetadata());
+console.log(await doc.getMetadata())
 
 for (let i = 1; i <= doc.numPages; i++) {
-  const page = await doc.getPage(i);
-  const textContent = await page.getTextContent();
-  const contents = textContent.items.map((item) => item.str).join(" ");
-  console.log(contents);
+  const page = await doc.getPage(i)
+  const textContent = await page.getTextContent()
+  const contents = textContent.items.map(item => item.str).join(' ')
+  console.log(contents)
 }
 ```
 
@@ -91,12 +94,12 @@ Generally speaking, you don't need to worry about the PDF.js build. `unpdf` ship
 ```ts
 // Before using any other method, define the PDF.js module
 // if you need another PDF.js build
-import { configureUnPDF } from "unpdf";
+import { configureUnPDF } from 'unpdf'
 
 await configureUnPDF({
   // Use the official PDF.js build (make sure to install it first)
-  pdfjs: () => import("pdfjs-dist"),
-});
+  pdfjs: () => import('pdfjs-dist'),
+})
 
 // Now, you can use the other methods
 // …
@@ -115,7 +118,7 @@ interface UnPDFConfiguration {
    * // Use the official PDF.js build (make sure to install it first)
    * () => import('pdfjs-dist')
    */
-  pdfjs?: () => Promise<PDFJS>;
+  pdfjs?: () => Promise<PDFJS>
 }
 ```
 
@@ -126,7 +129,7 @@ interface UnPDFConfiguration {
 Define a custom PDF.js module, like the legacy build. Make sure to call this method before using any other methods.
 
 ```ts
-function configureUnPDF(config: UnPDFConfiguration): Promise<void>;
+function configureUnPDF(config: UnPDFConfiguration): Promise<void>
 ```
 
 ### `getResolvedPDFJS`
@@ -134,18 +137,18 @@ function configureUnPDF(config: UnPDFConfiguration): Promise<void>;
 Returns the resolved PDF.js module. If no build is defined, the latest version will be initialized.
 
 ```ts
-function getResolvedPDFJS(): Promise<PDFJS>;
+function getResolvedPDFJS(): Promise<PDFJS>
 ```
 
 ### `getMeta`
 
 ```ts
 function getMeta(
-  data: DocumentInitParameters["data"] | PDFDocumentProxy,
+  data: DocumentInitParameters['data'] | PDFDocumentProxy,
 ): Promise<{
-  info: Record<string, any>;
-  metadata: Record<string, any>;
-}>;
+  info: Record<string, any>
+  metadata: Record<string, any>
+}>
 ```
 
 ### `extractText`
@@ -154,12 +157,12 @@ Extracts all text from a PDF. If `mergePages` is set to `true`, the text of all 
 
 ```ts
 function extractText(
-  data: DocumentInitParameters["data"] | PDFDocumentProxy,
+  data: DocumentInitParameters['data'] | PDFDocumentProxy,
   { mergePages }?: { mergePages?: boolean },
 ): Promise<{
-  totalPages: number;
-  text: string | string[];
-}>;
+  totalPages: number
+  text: string | string[]
+}>
 ```
 
 ### `renderPageAsImage`
@@ -177,37 +180,37 @@ In order to use this method, you have to meet the following requirements:
 **Example**
 
 ```ts
-import { configureUnPDF, renderPageAsImage } from "unpdf";
+import { configureUnPDF, renderPageAsImage } from 'unpdf'
 
 await configureUnPDF({
   // Use the official PDF.js build
-  pdfjs: () => import("pdfjs-dist"),
-});
+  pdfjs: () => import('pdfjs-dist'),
+})
 
-const pdf = await readFile("./dummy.pdf");
-const buffer = new Uint8Array(pdf);
-const pageNumber = 1;
+const pdf = await readFile('./dummy.pdf')
+const buffer = new Uint8Array(pdf)
+const pageNumber = 1
 
 const result = await renderPageAsImage(buffer, pageNumber, {
-  canvas: () => import("canvas"),
-});
-await writeFile("dummy-page-1.png", Buffer.from(result));
+  canvas: () => import('canvas'),
+})
+await writeFile('dummy-page-1.png', result)
 ```
 
 **Type Declaration**
 
 ```ts
 declare function renderPageAsImage(
-  data: DocumentInitParameters["data"],
+  data: DocumentInitParameters['data'],
   pageNumber: number,
   options?: {
-    canvas?: () => Promise<typeof import("canvas")>;
+    canvas?: () => Promise<typeof import('canvas')>
     /** @default 1 */
-    scale?: number;
-    width?: number;
-    height?: number;
+    scale?: number
+    width?: number
+    height?: number
   },
-): Promise<ArrayBuffer>;
+): Promise<ArrayBuffer>
 ```
 
 ## FAQ

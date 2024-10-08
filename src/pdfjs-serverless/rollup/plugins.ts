@@ -1,20 +1,20 @@
-import { writeFile } from "node:fs/promises";
-import type { Plugin } from "rollup";
+import type { Plugin } from 'rollup'
+import { writeFile } from 'node:fs/promises'
 
 export function pdfjsTypes(): Plugin {
   return {
-    name: "pdfjs-serverless:types",
+    name: 'pdfjs-serverless:types',
     async writeBundle() {
       const data = `
 import * as PDFJS from './types/src/pdf'
 declare function resolvePDFJS(): Promise<typeof PDFJS>
 export { resolvePDFJS }
 export * from './types/src/pdf'
-`.trimStart();
+`.trimStart()
 
-      for (const filename of ["pdfjs.d.ts", "pdfjs.d.mts"]) {
-        await writeFile(`dist/${filename}`, data, "utf8");
+      for (const filename of ['pdfjs.d.ts', 'pdfjs.d.mts']) {
+        await writeFile(`dist/${filename}`, data, 'utf8')
       }
     },
-  };
+  }
 }

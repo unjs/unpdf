@@ -1,4 +1,9 @@
-import unjs from "eslint-config-unjs";
+// @ts-check
+import antfu from '@antfu/eslint-config'
 
-// https://github.com/unjs/eslint-config
-export default unjs();
+export default antfu().append({
+  files: ['src/pdfjs-serverless/index.mjs'],
+  rules: {
+    'unused-imports/no-unused-imports': 'off',
+  },
+})

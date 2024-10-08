@@ -1,29 +1,29 @@
 // This rollup config is used to build PDF.js for serverless environments
 
-import { fileURLToPath } from "node:url";
-import { join } from "node:path";
-import { defineConfig } from "rollup";
-import alias from "@rollup/plugin-alias";
-import replace from "@rollup/plugin-replace";
-import { nodeResolve } from "@rollup/plugin-node-resolve";
-import commonjs from "@rollup/plugin-commonjs";
-import inject from "@rollup/plugin-inject";
-import terser from "@rollup/plugin-terser";
-import * as unenv from "unenv";
-import { resolveAliases } from "./src/pdfjs-serverless/rollup/utils";
-import { pdfjsTypes } from "./src/pdfjs-serverless/rollup/plugins";
+import { join } from 'node:path'
+import { fileURLToPath } from 'node:url'
+import alias from '@rollup/plugin-alias'
+import commonjs from '@rollup/plugin-commonjs'
+import inject from '@rollup/plugin-inject'
+import { nodeResolve } from '@rollup/plugin-node-resolve'
+import replace from '@rollup/plugin-replace'
+import terser from '@rollup/plugin-terser'
+import { defineConfig } from 'rollup'
+import * as unenv from 'unenv'
+import { pdfjsTypes } from './src/pdfjs-serverless/rollup/plugins'
+import { resolveAliases } from './src/pdfjs-serverless/rollup/utils'
 
 const mockDir = fileURLToPath(
-  new URL("src/pdfjs-serverless/mocks", import.meta.url),
-);
-const env = unenv.env(unenv.nodeless);
+  new URL('src/pdfjs-serverless/mocks', import.meta.url),
+)
+const env = unenv.env(unenv.nodeless)
 
 export default defineConfig({
-  input: "src/pdfjs-serverless/index.mjs",
+  input: 'src/pdfjs-serverless/index.mjs',
   output: {
-    file: "dist/pdfjs.mjs",
-    format: "esm",
-    exports: "auto",
+    file: 'dist/pdfjs.mjs',
+    format: 'esm',
+    exports: 'auto',
     inlineDynamicImports: true,
     generatedCode: {
       constBindings: true,
@@ -33,34 +33,34 @@ export default defineConfig({
   external: env.external,
   plugins: [
     replace({
-      delimiters: ["", ""],
+      delimiters: ['', ''],
       preventAssignment: true,
       values: {
         // Disable the `window` check (for requestAnimationFrame).
-        "typeof window": '"undefined"',
+        'typeof window': '"undefined"',
         // Imitate the Node.js environment for all serverless environments, unenv will
         // take care of the remaining Node.js polyfills. Keep support for browsers.
-        "const isNodeJS = typeof":
+        'const isNodeJS = typeof':
           'const isNodeJS = typeof document === "undefined" // typeof',
         // Force inlining the PDF.js worker.
-        "await import(/* webpackIgnore: true */ this.workerSrc)":
-          "__pdfjsWorker__",
+        'await import(/* webpackIgnore: true */ this.workerSrc)':
+          '__pdfjsWorker__',
         // Tree-shake client worker initialization logic.
-        "!PDFWorkerUtil.isWorkerDisabled && !PDFWorker.#mainThreadWorkerMessageHandler":
-          "false",
+        '!PDFWorkerUtil.isWorkerDisabled && !PDFWorker.#mainThreadWorkerMessageHandler':
+          'false',
       },
     }),
     alias({
       entries: resolveAliases({
-        canvas: join(mockDir, "canvas.mjs"),
-        "path2d-polyfill": join(mockDir, "path2d-polyfill.mjs"),
+        'canvas': join(mockDir, 'canvas.mjs'),
+        'path2d-polyfill': join(mockDir, 'path2d-polyfill.mjs'),
         ...env.alias,
       }),
     }),
     nodeResolve(),
     commonjs({
-      esmExternals: (id) => !id.startsWith("unenv/"),
-      requireReturnsDefault: "auto",
+      esmExternals: id => !id.startsWith('unenv/'),
+      requireReturnsDefault: 'auto',
     }),
     inject(env.inject),
     pdfjsTypes(),
@@ -74,4 +74,4 @@ export default defineConfig({
       },
     }),
   ],
-});
+})
