@@ -1,18 +1,19 @@
-import { defineBuildConfig } from "unbuild";
+import { fileURLToPath } from 'node:url'
+import { defineBuildConfig } from 'unbuild'
 
 export default defineBuildConfig({
-  entries: ["src/index"],
+  entries: ['src/index'],
   clean: false,
   declaration: true,
   externals: [
     // Exclude Node.js canvas dependency
-    "canvas",
+    'canvas',
     // Exclude serverless PDF.js build
-    "unpdf/pdfjs",
+    fileURLToPath(new URL('pdfjs', import.meta.url)),
     // Don't follow type imports
-    "pdfjs-dist",
+    'pdfjs-dist',
   ],
   rollup: {
     emitCJS: true,
   },
-});
+})
