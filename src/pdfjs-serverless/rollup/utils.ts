@@ -10,8 +10,8 @@ export function resolveAliases(_aliases: Record<string, string>) {
   // Resolve alias values in relation to each other
   for (const key in aliases) {
     for (const alias in aliases) {
-      if (aliases[key].startsWith(alias)) {
-        aliases[key] = aliases[alias] + aliases[key].slice(alias.length)
+      if (aliases[key]!.startsWith(alias)) {
+        aliases[key] = aliases[alias] + aliases[key]!.slice(alias.length)
       }
     }
   }
