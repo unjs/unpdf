@@ -12,21 +12,37 @@ import {
   isPDFDocumentProxy,
 } from './utils'
 
+export interface ExtractedImageObject {
+  data: Uint8ClampedArray
+  width: number
+  height: number
+  channels: 1 | 3 | 4
+  key: string
+}
+
+/**
+ * Extracts images from a specific page of a PDF document, including necessary metadata
+ * like width, height, and calculated color channels.
+ *
+ * This version calculates channels based on image data length, width, and height,
+ * as the 'kind' property provided by pdfjs-dist might not reliably indicate the
+ * actual channel count of the raw pixel data (e.g., returning RGBA data even when kind is 3).
+ */
 export async function extractImages(
   data: DocumentInitParameters['data'] | PDFDocumentProxy,
   pageNumber: number,
-) {
+): Promise<ExtractedImageObject[]> {
   const pdf = isPDFDocumentProxy(data) ? data : await getDocumentProxy(data)
-  const page = await pdf.getPage(pageNumber)
 
   if (pageNumber < 1 || pageNumber > pdf.numPages) {
     throw new Error(`Invalid page number. Must be between 1 and ${pdf.numPages}.`)
   }
 
+  const page = await pdf.getPage(pageNumber)
   const operatorList = await page.getOperatorList()
   const { OPS } = await getResolvedPDFJS()
 
-  const images: Uint8ClampedArray[] = []
+  const images: ExtractedImageObject[] = []
 
   for (let i = 0; i < operatorList.fnArray.length; i++) {
     const op = operatorList.fnArray[i]
@@ -37,7 +53,30 @@ export async function extractImages(
 
     const imageKey = operatorList.argsArray[i][0]
     const image = await page.objs.get(imageKey)
-    images.push(image.data)
+
+    if (!image || !image.data || !image.width || !image.height) {
+      // Missing required properties.
+      continue
+    }
+
+    const { width, height, data } = image
+
+    const calculatedChannels = data.length / (width * height)
+
+    if (![1, 3, 4].includes(calculatedChannels)) {
+        // Unexpected channel count
+        continue
+    }
+
+    const channels = calculatedChannels as 1 | 3 | 4
+
+    images.push({
+      data,
+      width,
+      height,
+      channels,
+      key: imageKey,
+    })
   }
 
   return images
