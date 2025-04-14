@@ -21,12 +21,12 @@ export interface ExtractedImageObject {
 }
 
 /**
- * Extracts images from a specific page of a PDF document, including necessary metadata
- * like width, height, and calculated color channels.
+ * Extracts images from a specific page of a PDF document, including necessary metadata,
+ * such as width, height, and calculated color channels.
  *
  * This version calculates channels based on image data length, width, and height,
- * as the 'kind' property provided by pdfjs-dist might not reliably indicate the
- * actual channel count of the raw pixel data (e.g., returning RGBA data even when kind is 3).
+ * as the `kind` property provided by PDF.js might not reliably indicate the actual
+ * channel count of the raw pixel data (e.g., returning RGBA data even when kind is 3).
  */
 export async function extractImages(
   data: DocumentInitParameters['data'] | PDFDocumentProxy,
@@ -55,12 +55,11 @@ export async function extractImages(
     const image = await page.objs.get(imageKey)
 
     if (!image || !image.data || !image.width || !image.height) {
-      // Missing required properties.
+      // Missing required properties
       continue
     }
 
     const { width, height, data } = image
-
     const calculatedChannels = data.length / (width * height)
 
     if (![1, 3, 4].includes(calculatedChannels)) {
@@ -68,7 +67,7 @@ export async function extractImages(
         continue
     }
 
-    const channels = calculatedChannels as 1 | 3 | 4
+    const channels = calculatedChannels as ExtractedImageObject['channels']
 
     images.push({
       data,
