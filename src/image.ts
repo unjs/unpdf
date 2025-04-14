@@ -20,6 +20,7 @@ export interface ExtractedImageObject {
   key: string
 }
 
+
 /**
  * Extracts images from a specific page of a PDF document, including necessary metadata,
  * such as width, height, and calculated color channels.
@@ -27,6 +28,18 @@ export interface ExtractedImageObject {
  * This version calculates channels based on image data length, width, and height,
  * as the `kind` property provided by PDF.js might not reliably indicate the actual
  * channel count of the raw pixel data (e.g., returning RGBA data even when kind is 3).
+ *
+ * @example
+ * const imagesData = await extractImages(pdf, pageNum)
+ *
+ * for (const imgData of imagesData) {
+ *   const imageIndex = totalImagesProcessed + 1;
+ *   await sharp(imgData.data, {
+ *     raw: { width: imgData.width, height: imgData.height, channels: imgData.channels }
+ *   })
+ *     .png()
+ *     .toFile(`${imageIndex}.png`);
+ * }
  */
 export async function extractImages(
   data: DocumentInitParameters['data'] | PDFDocumentProxy,
