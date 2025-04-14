@@ -62,7 +62,7 @@ describe('unpdf', () => {
 
   it('extracts images from a PDF', async () => {
     const [firstImage] = await extractImages(await getPDF('image-sample.pdf'), 1)
-    expect(firstImage!.byteLength).toMatchInlineSnapshot('13641540')
+    expect(firstImage!.key).toMatchInlineSnapshot('"img_p0_1"')
   })
 
   // TODO: Enable again for Node 22

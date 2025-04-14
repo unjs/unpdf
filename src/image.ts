@@ -20,7 +20,6 @@ export interface ExtractedImageObject {
   key: string
 }
 
-
 /**
  * Extracts images from a specific page of a PDF document, including necessary metadata,
  * such as width, height, and calculated color channels.
@@ -76,8 +75,8 @@ export async function extractImages(
     const calculatedChannels = data.length / (width * height)
 
     if (![1, 3, 4].includes(calculatedChannels)) {
-        // Unexpected channel count
-        continue
+      // Unexpected channel count
+      continue
     }
 
     const channels = calculatedChannels as ExtractedImageObject['channels']
