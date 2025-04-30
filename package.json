@@ -1,7 +1,7 @@
 {
   "name": "unpdf",
   "type": "module",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "packageManager": "pnpm@10.10.0",
   "description": "PDF handling for Node.js, browsers, and serverless environments",
   "author": "Johann Schopplich <hello@johannschopplich.com>",
