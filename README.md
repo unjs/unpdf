@@ -59,7 +59,7 @@ console.log(text)
 
 ### PDF.js API
 
-`unpdf` provides helpful methods to work with PDF files, such as `extractText` and `extractImages`, which should cover most use cases. However, if you need more control over the PDF.js API, you can use the `getResolvedPDFJS` method to get the resolved PDF.js module.
+`unpdf` provides helpful [methods](#api) to work with PDF files, such as `extractText` and `extractImages`, which should cover most use cases. However, if you need more control over the PDF.js API, you can use the `getResolvedPDFJS` method to get the resolved PDF.js module.
 
 Access the PDF.js API directly by calling `getResolvedPDFJS`:
 
@@ -110,24 +110,7 @@ await definePDFJSModule(() => import('pdfjs-dist'))
 const { text } = await extractText(pdf)
 ```
 
-## Config
-
-```ts
-interface UnPDFConfiguration {
-  /**
-   * By default, UnPDF will use the latest version of PDF.js compiled for
-   * serverless environments. If you want to use a different version, you can
-   * provide a custom resolver function.
-   *
-   * @example
-   * // Use the official PDF.js build (make sure to install it first)
-   * () => import('pdfjs-dist')
-   */
-  pdfjs?: () => Promise<PDFJS>
-}
-```
-
-## Methods
+## API
 
 ### `definePDFJSModule`
 
