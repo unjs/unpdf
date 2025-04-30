@@ -17,7 +17,8 @@
   "keywords": [
     "parse",
     "pdfjs-dist",
-    "pdf"
+    "pdf",
+    "serverless"
   ],
   "sideEffects": false,
   "exports": {
@@ -43,8 +44,7 @@
     "*": {
       "*": [
         "*",
-        "dist/*",
-        "dist/*.d.ts"
+        "dist/*"
       ]
     }
   },
