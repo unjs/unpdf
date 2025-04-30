@@ -1,4 +1,3 @@
-/* eslint-disable import/newline-after-import */
 /* eslint-disable import/first */
 /* eslint-disable no-unused-vars */
 
@@ -18,6 +17,8 @@ Promise.withResolvers ??= function () {
   })
   return { promise, resolve, reject }
 }
+
+import { __main__ } from 'pdfjs-dist/build/pdf.mjs'
 
 // Inline the PDF.js worker to avoid having to load it from a separate file.
 import * as __pdfjsWorker__ from 'pdfjs-dist/build/pdf.worker.mjs'
@@ -73,7 +74,6 @@ import * as __pdfjsWorker__ from 'pdfjs-dist/build/pdf.worker.mjs'
 // } from 'pdfjs-dist/build/pdf.mjs'
 
 // Wrap PDF.js exports to circumvent Cloudflare's top-level await limitation.
-import { __main__ } from 'pdfjs-dist/build/pdf.mjs'
 export function resolvePDFJS() {
   return __main__()
 }

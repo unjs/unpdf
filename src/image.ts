@@ -104,10 +104,10 @@ export async function renderPageAsImage(
     height?: number
   } = {},
 ) {
-  const canvasFactory = await createIsomorphicCanvasFactory(options.canvas)
+  const CanvasFactory = await createIsomorphicCanvasFactory(options.canvas)
   const pdf = isPDFDocumentProxy(data)
     ? data
-    : await getDocumentProxy(data, { canvasFactory })
+    : await getDocumentProxy(data, { CanvasFactory })
   const page = await pdf.getPage(pageNumber)
 
   if (pageNumber < 1 || pageNumber > pdf.numPages) {
@@ -129,7 +129,7 @@ export async function renderPageAsImage(
     viewport = page.getViewport({ scale: outputScale })
   }
 
-  const ctx = canvasFactory.create(viewport.width, viewport.height)
+  const ctx = CanvasFactory.create(viewport.width, viewport.height)
 
   await page.render({
     canvasContext: ctx.context,

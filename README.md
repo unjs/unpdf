@@ -16,7 +16,7 @@ This library is also intended as a modern alternative to the unmaintained but st
 
 ## PDF.js Compatibility
 
-The serverless build of PDF.js provided by `unpdf` is based on PDF.js v4.6.82. If you need a different version, you can [use another PDF.js build](#use-official-or-legacy-pdfjs-build).
+The serverless build of PDF.js provided by `unpdf` is based on PDF.js v4.10.38. If you need a different version, you can [use another PDF.js build](#use-official-or-legacy-pdfjs-build).
 
 ## Installation
 
@@ -89,7 +89,7 @@ for (let i = 1; i <= doc.numPages; i++) {
 Generally speaking, you don't need to worry about the PDF.js build. `unpdf` ships with a serverless build of the latest PDF.js version. However, if you want to use the official PDF.js version or the legacy build, you can define a custom PDF.js module.
 
 > [!WARNING]
-> The latest PDF.js v4.6.82 uses `Promise.withResolvers`, which may not be supported in all environments, such as Node < 22. Consider to use the bundled serverless build, which includes a polyfill, or use an older version of PDF.js.
+> The latest PDF.js v4.10.38 uses `Promise.withResolvers`, which may not be supported in all environments, such as Node < 22. Consider to use the bundled serverless build, which includes a polyfill, or use an older version of PDF.js.
 
 ```ts
 // Before using any other method, define the PDF.js module
