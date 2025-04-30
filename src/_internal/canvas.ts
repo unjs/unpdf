@@ -111,6 +111,8 @@ export async function resolveCanvasModule() {
  * global scope, they will not be overridden.
  */
 export function injectCanvasConstructors() {
-  globalThis.Path2D ??= canvasModule!.Path2D as unknown as typeof Path2D
-  globalThis.ImageData ??= canvasModule!.ImageData as unknown as typeof ImageData
+  if (!canvasModule)
+    return
+  globalThis.Path2D ??= canvasModule.Path2D as unknown as typeof Path2D
+  globalThis.ImageData ??= canvasModule.ImageData as unknown as typeof ImageData
 }
