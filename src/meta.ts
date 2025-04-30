@@ -12,6 +12,6 @@ export async function getMeta(
 
   return {
     info: (meta?.info ?? {}) as Record<string, any>,
-    metadata: (meta?.metadata?.getAll() ?? {}) as Record<string, any>,
+    metadata: ({ ...meta?.metadata }) as Record<string, any>,
   }
 }
