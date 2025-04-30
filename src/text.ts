@@ -23,7 +23,7 @@ export async function extractText(
   data: DocumentInitParameters['data'] | PDFDocumentProxy,
   options: { mergePages?: boolean } = {},
 ) {
-  const { mergePages = false } = { ...options }
+  const { mergePages = false } = options
   const pdf = isPDFDocumentProxy(data) ? data : await getDocumentProxy(data)
   const texts = await Promise.all(
     Array.from({ length: pdf.numPages }, (_, i) => getPageText(pdf, i + 1)),

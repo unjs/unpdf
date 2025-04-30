@@ -1,6 +1,8 @@
-patchedDependencies:
-  pdfjs-dist@4.10.38: patches/pdfjs-dist@4.10.38.patch
 onlyBuiltDependencies:
   - canvas
   - esbuild
+  - sharp
   - unrs-resolver
+  - workerd
+patchedDependencies:
+  pdfjs-dist@4.10.38: patches/pdfjs-dist@4.10.38.patch

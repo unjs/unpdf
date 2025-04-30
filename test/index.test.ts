@@ -66,12 +66,7 @@ describe('unpdf', () => {
   })
 
   it('renders a PDF as image', async () => {
-    // Technically, `import("pdfjs-dist")` would be enough here, but since we have
-    // patched the main entry point, we need to use the minified version.
-    const result = await renderPageAsImage(
-      await getPDF('pdflatex-image.pdf'),
-      1,
-    )
+    const result = await renderPageAsImage(await getPDF('pdflatex-image.pdf'), 1)
 
     await writeFile(
       new URL('artifacts/pdflatex-image.png', import.meta.url),

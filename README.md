@@ -43,9 +43,8 @@ yarn add -D unpdf
 import { extractText, getDocumentProxy } from 'unpdf'
 
 // Either fetch a PDF file from the web or load it from the file system
-const buffer = await fetch(
-  'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-).then(res => res.arrayBuffer())
+const buffer = await fetch('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf')
+  .then(res => res.arrayBuffer())
 const buffer = await readFile('./dummy.pdf')
 
 // Then, load the PDF file into a PDF.js document
