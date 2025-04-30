@@ -1,3 +1,4 @@
+.wrangler
 dist
 node_modules
 test/artifacts/*
