@@ -18,7 +18,7 @@ This library is also intended as a modern alternative to the unmaintained but st
 
 The serverless build of PDF.js provided by `unpdf` is based on PDF.js v4.10.38.
 
-If you want to use a different PDF.js version, you can configure `unpdf` to [use a official PDF.js build](#use-official-or-legacy-pdfjs-build).
+You can use an [official PDF.js build](#use-official-or-legacy-pdfjs-build) by using the [`definePDFJSModule`](#definepdfjsmodule) method. This is useful if you want to use a specific version or a custom build of PDF.js.
 
 ## Installation
 
@@ -102,12 +102,10 @@ Usually you don't need to worry about the PDF.js build. `unpdf` ships with a ser
 For example, if you want to use the official PDF.js build, you can do the following:
 
 ```ts
-import { configureUnPDF } from 'unpdf'
+import { definePDFJSModule } from 'unpdf'
 
 // Define the PDF.js build before using any other unpdf method
-await configureUnPDF({
-  pdfjs: () => import('pdfjs-dist'),
-})
+await definePDFJSModule(() => import('pdfjs-dist'))
 
 // Now, you can use all unpdf methods with the official PDF.js build
 const { text } = await extractText(pdf)
@@ -132,14 +130,14 @@ interface UnPDFConfiguration {
 
 ## Methods
 
-### `configureUnPDF`
+### `definePDFJSModule`
 
 Allows to define a custom PDF.js build. This method should be called before using any other method. If no custom build is defined, the serverless build will be used.
 
 **Type Declaration**
 
 ```ts
-function configureUnPDF(config: UnPDFConfiguration): Promise<void>
+function definePDFJSModule(pdfjs: () => Promise<PDFJS>): Promise<void>
 ```
 
 ### `getResolvedPDFJS`
@@ -291,12 +289,10 @@ declare function renderPageAsImage(
 **Example**
 
 ```ts
-import { configureUnPDF, renderPageAsImage } from 'unpdf'
+import { definePDFJSModule, renderPageAsImage } from 'unpdf'
 
 // Use the official PDF.js build
-await configureUnPDF({
-  pdfjs: () => import('pdfjs-dist'),
-})
+await definePDFJSModule(() => import('pdfjs-dist'))
 
 const pdf = await readFile('./dummy.pdf')
 const buffer = new Uint8Array(pdf)

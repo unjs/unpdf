@@ -35,17 +35,17 @@ export async function getDocumentProxy(
 
 export async function getResolvedPDFJS(): Promise<PDFJS> {
   if (!resolvedModule) {
-    await resolvePDFJSImports()
+    await resolvePDFJSImport()
   }
 
   return resolvedModule!
 }
 
-export async function resolvePDFJSImports(
+export async function resolvePDFJSImport(
   pdfjsResolver?: () => Promise<any>,
-  { force = false } = {},
+  { reload = false } = {},
 ) {
-  if (resolvedModule && !force) {
+  if (resolvedModule && !reload) {
     return
   }
 
@@ -63,7 +63,7 @@ export async function resolvePDFJSImports(
     }
     catch (error) {
       console.error(error)
-      throw new Error('Resolving failed. Please check the provided configuration.')
+      throw new Error('PDF.js could not be resolved. Please check the resolver function.')
     }
   }
 
@@ -74,7 +74,7 @@ export async function resolvePDFJSImports(
   }
   catch (error) {
     console.error(error)
-    throw new Error('PDF.js is not available. Please add the package as a dependency.')
+    throw new Error('PDF.js package not available. Please install it first.')
   }
 }
 

@@ -1,6 +1,6 @@
 # Fixtures
 
-PDF files have been added to the repository for testing purposes. These files are used to test the functionality of the UnPDF library.
+PDF files have been added to the repository for testing purposes. These files are used to test the functionality of the `unpdf` library.
 
 **Sources**:
 

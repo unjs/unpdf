@@ -23,10 +23,6 @@ class BaseCanvasFactory {
   }
 
   create(width: number, height: number) {
-    if (width <= 0 || height <= 0) {
-      throw new Error('Invalid canvas size')
-    }
-
     const canvas = this._createCanvas(width, height)
 
     return {
@@ -42,10 +38,6 @@ class BaseCanvasFactory {
       throw new Error('Canvas is not specified')
     }
 
-    if (width <= 0 || height <= 0) {
-      throw new Error('Invalid canvas size')
-    }
-
     canvas.width = width
     canvas.height = height
   }
@@ -54,6 +46,7 @@ class BaseCanvasFactory {
     if (!context.canvas) {
       throw new Error('Canvas is not specified')
     }
+
     // Zeroing the width and height cause Firefox to release graphics
     // resources immediately, which can greatly reduce memory consumption.
     context.canvas.width = 0

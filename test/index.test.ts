@@ -4,21 +4,21 @@ import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
 import {
+  definePDFJSModule,
   extractImages,
   extractText,
   getDocumentProxy,
   getMeta,
   getResolvedPDFJS,
   renderPageAsImage,
-  resolvePDFJSImports,
 } from '../src/index'
 
 const fixturesDir = fileURLToPath(new URL('fixtures', import.meta.url))
 
 describe('unpdf', () => {
   it('can resolve a custom PDF.js version', async () => {
-    // @ts-ignore: Dynamic import from distribution
-    await resolvePDFJSImports(() => import('../dist/pdfjs'), { force: true })
+    // @ts-ignore: Dynamic import from package build
+    await definePDFJSModule(() => import('../dist/pdfjs'))
     const { text } = await extractText(await getPDF())
 
     expect(text[0]).toMatchInlineSnapshot('"Dummy PDF file"')
