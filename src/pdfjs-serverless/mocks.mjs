@@ -4,18 +4,6 @@ if (typeof globalThis.DOMMatrix === 'undefined') {
   globalThis.DOMMatrix = class DOMMatrix {}
 }
 
-// Promise polyfill for Node.js < 22 and some browsers.
-if (typeof Promise.withResolvers === 'undefined') {
-  Promise.withResolvers = function () {
-    let resolve, reject
-    const promise = new Promise((res, rej) => {
-      resolve = res
-      reject = rej
-    })
-    return { promise, resolve, reject }
-  }
-}
-
 // Patch `FinalizationRegistry` constructor, since they are not available in Cloudflare Workers.
 globalThis.FinalizationRegistry = class FinalizationRegistry {
   #callbacks
@@ -33,5 +21,5 @@ globalThis.FinalizationRegistry = class FinalizationRegistry {
   }
 }
 
-// Export to ensure the polyfills are not removed by tree-shaking.
-export const polyfills = undefined
+// Export to ensure the mocks are not removed by tree-shaking.
+export const mocks = true
