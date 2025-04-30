@@ -53,9 +53,9 @@ export default defineConfig({
         'const isNodeJS = typeof': 'const isNodeJS = typeof document === "undefined" // typeof',
         // Force inlining the PDF.js worker.
         'await import(/*webpackIgnore: true*/this.workerSrc)': '__pdfjsWorker__',
-        // Tree-shake client worker initialization logic.
-        'PDFWorker.#isWorkerDisabled || PDFWorker.#mainThreadWorkerMessageHandler': 'true',
-        // Mock `@napi-rs/canvas` package.
+        // Force setting up fake PDF.js worker.
+        '#isWorkerDisabled = false': '#isWorkerDisabled = true',
+        // Mock the `@napi-rs/canvas` module import from the unused `NodeCanvasFactory` class.
         'require("@napi-rs/canvas")': canvasMock,
       },
     }),

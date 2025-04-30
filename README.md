@@ -1,6 +1,6 @@
 # unpdf
 
-A collection of utilities for working with PDF files. Designed specifically for Deno, workers and other nodeless environments. However, it also works in Node.js and the browser.
+A collection of utilities for working with PDF files. Designed specifically for Bun, Deno, and serverless environments. However, it also works in Node.js and the browser.
 
 `unpdf` ships with a serverless build/redistribution of Mozilla's [PDF.js](https://github.com/mozilla/pdf.js) for serverless environments. Apart from some string replacements and mocks, [`unenv`](https://github.com/unjs/unenv) does the heavy lifting by converting Node.js specific code to be platform-agnostic. See [`pdfjs.rollup.config.ts`](./pdfjs.rollup.config.ts) for all the details.
 
@@ -8,7 +8,7 @@ This library is also intended as a modern alternative to the unmaintained but st
 
 ## Features
 
-- 🏗️ Works in Node.js, browser and workers
+- 🏗️ Made for Node.js, browser and serverless environments
 - 🪭 Includes serverless build of PDF.js ([`unpdf/pdfjs`](./package.json#L34))
 - 💬 Extract [text](#extract-text-from-pdf) and [images](#extractimages) from PDF files
 - 🧱 Opt-in to legacy PDF.js build
@@ -16,7 +16,8 @@ This library is also intended as a modern alternative to the unmaintained but st
 
 ## PDF.js Compatibility
 
-The serverless build of PDF.js provided by `unpdf` is based on PDF.js v4.10.38.
+> [!Tip]
+> The serverless PDF.js bundle provided by `unpdf` is built from PDF.js v5.2.133.
 
 You can use an [official PDF.js build](#use-official-or-legacy-pdfjs-build) by using the [`definePDFJSModule`](#definepdfjsmodule) method. This is useful if you want to use a specific version or a custom build of PDF.js.
 

@@ -48,8 +48,8 @@ importers:
         specifier: ^3.3.3
         version: 3.3.3
       pdfjs-dist:
-        specifier: ~4.10.38
-        version: 4.10.38
+        specifier: ~5.2.133
+        version: 5.2.133
       rollup:
         specifier: ^4.40.1
         version: 4.40.1
@@ -2356,9 +2356,9 @@ packages:
     resolution: {integrity: sha512-vE7JKRyES09KiunauX7nd2Q9/L7lhok4smP9RZTDeD4MVs72Dp2qNFVz39Nz5a0FVEW0BJR6C0DYrq6unoziZA==}
     engines: {node: '>= 14.16'}
 
-  pdfjs-dist@4.10.38:
-    resolution: {integrity: sha512-/Y3fcFrXEAsMjJXeL9J8+ZG9U01LbuWaYypvDW2ycW1jL269L3js3DVBjDJ0Up9Np1uqDXsDrRihHANhZOlwdQ==}
-    engines: {node: '>=20'}
+  pdfjs-dist@5.2.133:
+    resolution: {integrity: sha512-abE6ZWDxztt+gGFzfm4bX2ggfxUk9wsDEoFzIJm9LozaY3JdXR7jyLK4Bjs+XLXplCduuWS1wGhPC4tgTn/kzg==}
+    engines: {node: '>=20.16.0 || >=22.3.0'}
 
   perfect-debounce@1.0.0:
     resolution: {integrity: sha512-xCy9V055GLEqoFaHoC1SoLIaLmWctgCUaBaWxDZ7/Zx4CTyX7cJQLJOok/orfjZAh9kEYpjJa4d0KcJmCbctZA==}
@@ -5378,7 +5378,7 @@ snapshots:
 
   pathval@2.0.0: {}
 
-  pdfjs-dist@4.10.38:
+  pdfjs-dist@5.2.133:
     optionalDependencies:
       '@napi-rs/canvas': 0.1.69
 

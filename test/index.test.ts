@@ -28,7 +28,7 @@ describe('unpdf', () => {
     const PDFJS = await getResolvedPDFJS()
     const { version } = PDFJS
 
-    expect(version).toMatchInlineSnapshot(`"4.10.38"`)
+    expect(version).toMatchInlineSnapshot(`"5.2.133"`)
   })
 
   it('extracts metadata from a PDF', async () => {
