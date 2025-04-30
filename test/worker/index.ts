@@ -1,4 +1,7 @@
 /* eslint-disable antfu/no-import-dist */
+
+// eslint-disable-next-line ts/ban-ts-comment
+// @ts-ignore: Dynamic import from package build
 import { definePDFJSModule, extractText, getDocumentProxy } from '../../dist/index.mjs'
 
 export default {
