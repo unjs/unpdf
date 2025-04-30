@@ -1,6 +1,6 @@
 # unpdf
 
-A collection of utilities to work with PDFs. Designed specifically for Deno, workers and other nodeless environments.
+A collection of utilities for working with PDF files. Designed specifically for Deno, workers and other nodeless environments. However, it also works in Node.js and the browser.
 
 `unpdf` ships with a serverless build/redistribution of Mozilla's [PDF.js](https://github.com/mozilla/pdf.js) for serverless environments. Apart from some string replacements and mocks, [`unenv`](https://github.com/unjs/unenv) does the heavy lifting by converting Node.js specific code to be platform-agnostic. See [`pdfjs.rollup.config.ts`](./pdfjs.rollup.config.ts) for all the details.
 
@@ -10,13 +10,15 @@ This library is also intended as a modern alternative to the unmaintained but st
 
 - 🏗️ Works in Node.js, browser and workers
 - 🪭 Includes serverless build of PDF.js ([`unpdf/pdfjs`](./package.json#L34))
-- 💬 Extract text and images from PDFs
+- 💬 Extract [text](#extract-text-from-pdf) and [images](#extractimages) from PDF files
 - 🧱 Opt-in to legacy PDF.js build
 - 💨 Zero dependencies
 
 ## PDF.js Compatibility
 
-The serverless build of PDF.js provided by `unpdf` is based on PDF.js v4.10.38. If you need a different version, you can [use another PDF.js build](#use-official-or-legacy-pdfjs-build).
+The serverless build of PDF.js provided by `unpdf` is based on PDF.js v4.10.38.
+
+If you want to use a different PDF.js version, you can configure `unpdf` to [use a official PDF.js build](#use-official-or-legacy-pdfjs-build).
 
 ## Installation
 
@@ -24,13 +26,13 @@ Run the following command to add `unpdf` to your project.
 
 ```bash
 # pnpm
-pnpm add unpdf
+pnpm add -D unpdf
 
 # npm
-npm install unpdf
+npm install -D unpdf
 
 # yarn
-yarn add unpdf
+yarn add -D unpdf
 ```
 
 ## Usage
@@ -40,32 +42,38 @@ yarn add unpdf
 ```ts
 import { extractText, getDocumentProxy } from 'unpdf'
 
-// Fetch a PDF file from the web
+// Either fetch a PDF file from the web or load it from the file system
 const buffer = await fetch(
   'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
 ).then(res => res.arrayBuffer())
-
-// Or load it from the filesystem
 const buffer = await readFile('./dummy.pdf')
 
-// Load PDF from buffer
+// Then, load the PDF file into a PDF.js document
 const pdf = await getDocumentProxy(new Uint8Array(buffer))
-// Extract text from PDF
+
+// Finally, extract the text from the PDF file
 const { totalPages, text } = await extractText(pdf, { mergePages: true })
 
 console.log(`Total pages: ${totalPages}`)
 console.log(text)
 ```
 
-### Access the PDF.js API
+### PDF.js API
 
-This will return the resolved PDF.js module and gives full access to the PDF.js API, like:
+`unpdf` provides helpful methods to work with PDF files, such as `extractText` and `extractImages`, which should cover most use cases. However, if you need more control over the PDF.js API, you can use the `getResolvedPDFJS` method to get the resolved PDF.js module.
 
-- `getDocument`
-- `version`
-- … and all other methods
+Access the PDF.js API directly by calling `getResolvedPDFJS`:
 
-Especially useful for platforms like 🦕 Deno or if you want to use the PDF.js API directly. If no custom build was defined beforehand, the serverless build bundled with `unpdf` will be initialized.
+```ts
+import { getResolvedPDFJS } from 'unpdf'
+
+const { version } = await getResolvedPDFJS()
+```
+
+> [!NOTE]
+> If no other PDF.js build was defined, the serverless build will always be used.
+
+For example, you can use the `getDocument` method to load a PDF file and then use the `getPage` method to get a specific page. You can also use the `getTextContent` method to extract the text from the page.
 
 ```ts
 import { getResolvedPDFJS } from 'unpdf'
@@ -86,23 +94,23 @@ for (let i = 1; i <= doc.numPages; i++) {
 
 ### Use Official or Legacy PDF.js Build
 
-Generally speaking, you don't need to worry about the PDF.js build. `unpdf` ships with a serverless build of the latest PDF.js version. However, if you want to use the official PDF.js version or the legacy build, you can define a custom PDF.js module.
+Usually you don't need to worry about the PDF.js build. `unpdf` ships with a serverless build of the latest PDF.js version. However, if you want to use the official PDF.js version or the legacy build, you can define a custom PDF.js module.
 
 > [!WARNING]
-> The latest PDF.js v4.10.38 uses `Promise.withResolvers`, which may not be supported in all environments, such as Node < 22. Consider to use the bundled serverless build, which includes a polyfill, or use an older version of PDF.js.
+> Later PDF.js v4.x versions uses `Promise.withResolvers`, which may not be supported in all environments, such as Node < 22. Consider to use the bundled serverless build, which includes a polyfill, or use an older version of PDF.js.
+
+For example, if you want to use the official PDF.js build, you can do the following:
 
 ```ts
-// Before using any other method, define the PDF.js module
-// if you need another PDF.js build
 import { configureUnPDF } from 'unpdf'
 
+// Define the PDF.js build before using any other unpdf method
 await configureUnPDF({
-  // Use the official PDF.js build (make sure to install it first)
   pdfjs: () => import('pdfjs-dist'),
 })
 
-// Now, you can use the other methods
-// …
+// Now, you can use all unpdf methods with the official PDF.js build
+const { text } = await extractText(pdf)
 ```
 
 ## Config
@@ -126,7 +134,9 @@ interface UnPDFConfiguration {
 
 ### `configureUnPDF`
 
-Define a custom PDF.js module, like the legacy build. Make sure to call this method before using any other methods.
+Allows to define a custom PDF.js build. This method should be called before using any other method. If no custom build is defined, the serverless build will be used.
+
+**Type Declaration**
 
 ```ts
 function configureUnPDF(config: UnPDFConfiguration): Promise<void>
@@ -134,13 +144,17 @@ function configureUnPDF(config: UnPDFConfiguration): Promise<void>
 
 ### `getResolvedPDFJS`
 
-Returns the resolved PDF.js module. If no build is defined, the latest version will be initialized.
+Returns the resolved PDF.js module. If no other PDF.js build was defined, the serverless build will be used. This method is useful if you want to use the PDF.js API directly.
+
+**Type Declaration**
 
 ```ts
 function getResolvedPDFJS(): Promise<PDFJS>
 ```
 
 ### `getMeta`
+
+**Type Declaration**
 
 ```ts
 function getMeta(
@@ -155,45 +169,109 @@ function getMeta(
 
 Extracts all text from a PDF. If `mergePages` is set to `true`, the text of all pages will be merged into a single string. Otherwise, an array of strings for each page will be returned.
 
+**Type Declaration**
+
 ```ts
 function extractText(
   data: DocumentInitParameters['data'] | PDFDocumentProxy,
-  { mergePages }?: { mergePages?: boolean },
+  options?: {
+    mergePages?: false
+  }
 ): Promise<{
   totalPages: number
-  text: string | string[]
+  text: string[]
+}>
+function extractText(
+  data: DocumentInitParameters['data'] | PDFDocumentProxy,
+  options: {
+    mergePages: true
+  }
+): Promise<{
+  totalPages: number
+  text: string
 }>
 ```
 
-### `renderPageAsImage`
+### `extractImages`
+
+Extracts images from a specific page of a PDF document, including necessary metadata such as width, height, and calculated color channels.
 
 > [!NOTE]
 > This method will only work in Node.js and browser environments.
 
-To render a PDF page as an image, you can use the `renderPageAsImage` method. This method will return an `ArrayBuffer` of the rendered image.
+In order to use this method, make sure to meet the following requirements:
 
-In order to use this method, you have to meet the following requirements:
-
-- Use the official PDF.js build
+- Use the official PDF.js build (see below for details).
 - Install the [`@napi-rs/canvas`](https://github.com/Brooooooklyn/canvas) package if you are using Node.js. This package is required to render the PDF page as an image.
+
+**Type Declaration**
+
+```ts
+interface ExtractedImageObject {
+  data: Uint8ClampedArray
+  width: number
+  height: number
+  channels: 1 | 3 | 4
+  key: string
+}
+
+function extractImages(
+  data: DocumentInitParameters['data'] | PDFDocumentProxy,
+  pageNumber: number,
+): Promise<ExtractedImageObject[]>
+```
 
 **Example**
 
+> [!NOTE]
+> The following example uses the [sharp](https://github.com/lovell/sharp) library to process and save the extracted images. You will need to install it with your preferred package manager.
+
 ```ts
-import { configureUnPDF, renderPageAsImage } from 'unpdf'
+import { readFile, writeFile } from 'node:fs/promises'
+import sharp from 'sharp'
+import { extractImages, getDocumentProxy } from 'unpdf'
 
-await configureUnPDF({
-  // Use the official PDF.js build
-  pdfjs: () => import('pdfjs-dist'),
-})
+async function extractPdfImages() {
+  const buffer = await readFile('./document.pdf')
+  const pdf = await getDocumentProxy(new Uint8Array(buffer))
 
-const pdf = await readFile('./dummy.pdf')
-const buffer = new Uint8Array(pdf)
-const pageNumber = 1
+  // Extract images from page 1
+  const imagesData = await extractImages(pdf, 1)
+  console.log(`Found ${imagesData.length} images on page 1`)
 
-const result = await renderPageAsImage(buffer, pageNumber)
-await writeFile('dummy-page-1.png', result)
+  // Process each image with sharp (optional)
+  let totalImagesProcessed = 0
+  for (const imgData of imagesData) {
+    const imageIndex = ++totalImagesProcessed
+
+    await sharp(imgData.data, {
+      raw: {
+        width: imgData.width,
+        height: imgData.height,
+        channels: imgData.channels
+      }
+    })
+      .png()
+      .toFile(`image-${imageIndex}.png`)
+
+    console.log(`Saved image ${imageIndex} (${imgData.width}x${imgData.height}, ${imgData.channels} channels)`)
+  }
+}
+
+extractPdfImages().catch(console.error)
 ```
+
+### `renderPageAsImage`
+
+To render a PDF page as an image, you can use the `renderPageAsImage` method. This method will return an `ArrayBuffer` of the rendered image.
+
+> [!NOTE]
+> This method will only work in Node.js and browser environments.
+
+In order to use this method, make sure to meet the following requirements:
+
+- Use the official PDF.js build (see below for details).
+- Install the [`@napi-rs/canvas`](https://github.com/Brooooooklyn/canvas) package if you are using Node.js. This package is required to render the PDF page as an image.
 
 **Type Declaration**
 
@@ -208,6 +286,24 @@ declare function renderPageAsImage(
     height?: number
   },
 ): Promise<ArrayBuffer>
+```
+
+**Example**
+
+```ts
+import { configureUnPDF, renderPageAsImage } from 'unpdf'
+
+// Use the official PDF.js build
+await configureUnPDF({
+  pdfjs: () => import('pdfjs-dist'),
+})
+
+const pdf = await readFile('./dummy.pdf')
+const buffer = new Uint8Array(pdf)
+const pageNumber = 1
+
+const result = await renderPageAsImage(buffer, pageNumber)
+await writeFile('dummy-page-1.png', new Uint8Array(result))
 ```
 
 ## License

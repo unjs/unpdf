@@ -1,4 +1,4 @@
-import { readFile } from 'node:fs/promises'
+import { readFile, writeFile } from 'node:fs/promises'
 /* eslint-disable ts/ban-ts-comment */
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -17,7 +17,7 @@ const fixturesDir = fileURLToPath(new URL('fixtures', import.meta.url))
 
 describe('unpdf', () => {
   it('can resolve a custom PDF.js version', async () => {
-    // @ts-ignore: Dynamic import of serverless PDF.js build
+    // @ts-ignore: Dynamic import from distribution
     await resolvePDFJSImports(() => import('../dist/pdfjs'), { force: true })
     const { text } = await extractText(await getPDF())
 
@@ -61,25 +61,26 @@ describe('unpdf', () => {
   })
 
   it('extracts images from a PDF', async () => {
-    const [firstImage] = await extractImages(await getPDF('image-sample.pdf'), 1)
+    const [firstImage] = await extractImages(await getPDF('pdflatex-image.pdf'), 1)
     expect(firstImage!.key).toMatchInlineSnapshot('"img_p0_1"')
   })
 
-  // TODO: Fix error `Path2D is not defined` - The `Path2D` API has to be
-  // imported from the `@napi-rs/canvas` package
-  it('renders a PDF as image', { skip: true }, async () => {
+  it('renders a PDF as image', async () => {
     // Technically, `import("pdfjs-dist")` would be enough here, but since we have
     // patched the main entry point, we need to use the minified version.
-    // @ts-ignore: No declaration file
     const result = await renderPageAsImage(
-      await getPDF('sample.pdf'),
+      await getPDF('pdflatex-image.pdf'),
       1,
     )
-    // await writeFile(
-    //   new URL("image-sample.png", import.meta.url),
-    //   result,
-    // );
-    expect(result.byteLength).toBeGreaterThanOrEqual(119_000)
+
+    await writeFile(
+      new URL('artifacts/pdflatex-image.png', import.meta.url),
+      new Uint8Array(result),
+    )
+
+    // Verify the buffer contains PNG header signature (first 8 bytes of a PNG file)
+    const headerBytes = new Uint8Array(result, 0, 8)
+    expect(Array.from(headerBytes)).toEqual([137, 80, 78, 71, 13, 10, 26, 10])
   })
 
   it('supports passing PDFDocumentProxy', async () => {

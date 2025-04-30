@@ -106,3 +106,18 @@ export class NodeCanvasFactory extends BaseCanvasFactory {
 export async function resolveCanvasModule() {
   canvasModule = await interopDefault(import('@napi-rs/canvas'))
 }
+
+/**
+ * Injects the global `Path2D` and `ImageData` constructors to use the
+ * `Path2D` and `ImageData` implementations from the `@napi-rs/canvas` package.
+ * This is necessary because the `Path2D` and `ImageData` APIs are not available
+ * in Node.js environments by default.
+ *
+ * @remarks
+ * If the `Path2D` or `ImageData` constructors are already defined in the
+ * global scope, they will not be overridden.
+ */
+export function injectCanvasConstructors() {
+  globalThis.Path2D ??= canvasModule!.Path2D as unknown as typeof Path2D
+  globalThis.ImageData ??= canvasModule!.ImageData as unknown as typeof ImageData
+}

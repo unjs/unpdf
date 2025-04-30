@@ -1,5 +1,5 @@
 import type { DocumentInitParameters, PDFDocumentProxy } from 'pdfjs-dist/types/src/display/api'
-import { DOMCanvasFactory, NodeCanvasFactory, resolveCanvasModule } from './_internal/canvas'
+import { DOMCanvasFactory, injectCanvasConstructors, NodeCanvasFactory, resolveCanvasModule } from './_internal/canvas'
 import {
   getDocumentProxy,
   getResolvedPDFJS,
@@ -20,20 +20,16 @@ export interface ExtractedImageObject {
  * Extracts images from a specific page of a PDF document, including necessary metadata,
  * such as width, height, and calculated color channels.
  *
- * This version calculates channels based on image data length, width, and height,
- * as the `kind` property provided by PDF.js might not reliably indicate the actual
- * channel count of the raw pixel data (e.g., returning RGBA data even when kind is 3).
- *
  * @example
  * const imagesData = await extractImages(pdf, pageNum)
  *
  * for (const imgData of imagesData) {
- *   const imageIndex = totalImagesProcessed + 1;
+ *   const imageIndex = totalImagesProcessed + 1
  *   await sharp(imgData.data, {
  *     raw: { width: imgData.width, height: imgData.height, channels: imgData.channels }
  *   })
  *     .png()
- *     .toFile(`${imageIndex}.png`);
+ *     .toFile(`${imageIndex}.png`)
  * }
  */
 export async function extractImages(
@@ -144,6 +140,7 @@ async function createIsomorphicCanvasFactory(
 
   if (isNode) {
     await resolveCanvasModule()
+    injectCanvasConstructors()
     return NodeCanvasFactory
   }
 
