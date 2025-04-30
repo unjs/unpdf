@@ -1,12 +1,8 @@
-import type { Canvas } from 'canvas'
-import type {
-  DocumentInitParameters,
-  PDFDocumentProxy,
-} from 'pdfjs-dist/types/src/display/api'
+import type { DocumentInitParameters, PDFDocumentProxy } from 'pdfjs-dist/types/src/display/api'
+import { DOMCanvasFactory, NodeCanvasFactory, resolveCanvasModule } from './_internal/canvas'
 import {
   getDocumentProxy,
   getResolvedPDFJS,
-  interopDefault,
   isBrowser,
   isNode,
   isPDFDocumentProxy,
@@ -97,14 +93,13 @@ export async function renderPageAsImage(
   data: DocumentInitParameters['data'] | PDFDocumentProxy,
   pageNumber: number,
   options: {
-    canvas?: () => Promise<typeof import('canvas')>
-    /** @default 1 */
+    /** @default 1.0 */
     scale?: number
     width?: number
     height?: number
   } = {},
 ) {
-  const CanvasFactory = await createIsomorphicCanvasFactory(options.canvas)
+  const CanvasFactory = await createIsomorphicCanvasFactory()
   const pdf = isPDFDocumentProxy(data)
     ? data
     : await getDocumentProxy(data, { CanvasFactory })
@@ -114,87 +109,44 @@ export async function renderPageAsImage(
     throw new Error(`Invalid page number. Must be between 1 and ${pdf.numPages}.`)
   }
 
-  // Create viewport of the page at required scale
-  let outputScale = options.scale || 1
-  let viewport = page.getViewport({ scale: outputScale })
+  // Create viewport of the page at default scale (1.0)
+  const defaultViewport = page.getViewport({ scale: 1.0 })
 
-  // Scale it up/down depending on the custom width/height passed
+  // Calculate appropriate scale based on provided options
+  let scale = options.scale || 1.0
+
   if (options.width) {
-    outputScale = options.width / viewport.width
+    scale = options.width / defaultViewport.width
   }
   else if (options.height) {
-    outputScale = options.height / viewport.height
-  }
-  if (outputScale !== 1 && outputScale > 0) {
-    viewport = page.getViewport({ scale: outputScale })
+    scale = options.height / defaultViewport.height
   }
 
-  const ctx = CanvasFactory.create(viewport.width, viewport.height)
+  // Create the correctly scaled viewport
+  const viewport = page.getViewport({ scale: Math.max(0, scale) })
+
+  const ctx = (new CanvasFactory()).create(viewport.width, viewport.height)
 
   await page.render({
-    canvasContext: ctx.context,
+    canvasContext: ctx.context as CanvasRenderingContext2D,
     viewport,
   }).promise
 
-  const dataUrl = isBrowser
-    ? ctx.canvas.toDataURL()
-    : (ctx.canvas as Canvas).toDataURL()
-
+  const dataUrl = ctx.canvas.toDataURL()
   const response = await fetch(dataUrl)
+
   return await response.arrayBuffer()
 }
 
 export async function createIsomorphicCanvasFactory(
-  canvas?: () => Promise<typeof import('canvas')>,
 ) {
-  const _canvas = canvas ? await interopDefault(canvas()) : undefined
+  if (isBrowser)
+    return DOMCanvasFactory
 
-  return {
-    _createCanvas(width: number, height: number) {
-      if (isBrowser) {
-        const canvas = document.createElement('canvas')
-        canvas.width = width
-        canvas.height = height
-        return canvas
-      }
-
-      if (isNode) {
-        if (!_canvas) {
-          throw new Error('Failed to resolve "canvas" package.')
-        }
-
-        return _canvas.createCanvas(width, height)
-      }
-
-      throw new Error('Unsupported environment for canvas creation.')
-    },
-    create(width: number, height: number) {
-      const _canvas = this._createCanvas(width, height)
-      const context = _canvas.getContext(
-        '2d',
-      ) as unknown as CanvasRenderingContext2D
-      return {
-        canvas: _canvas,
-        context,
-      }
-    },
-    reset(
-      ctx: { canvas?: Canvas, context?: CanvasRenderingContext2D },
-      width: number,
-      height: number,
-    ) {
-      if (ctx.canvas) {
-        ctx.canvas.width = width
-        ctx.canvas.height = height
-      }
-    },
-    destroy(ctx: { canvas?: Canvas, context?: CanvasRenderingContext2D }) {
-      if (ctx.canvas) {
-        ctx.canvas.width = 0
-        ctx.canvas.height = 0
-      }
-      ctx.canvas = undefined
-      ctx.context = undefined
-    },
+  if (isNode) {
+    await resolveCanvasModule()
+    return NodeCanvasFactory
   }
+
+  throw new Error('Unsupported environment for canvas creation.')
 }

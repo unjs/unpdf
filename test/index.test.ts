@@ -65,7 +65,7 @@ describe('unpdf', () => {
     expect(firstImage!.key).toMatchInlineSnapshot('"img_p0_1"')
   })
 
-  // TODO: Enable again for Node 22
+  // TODO: Fix error `ImageData is not defined`
   it('renders a PDF as image', { skip: true }, async () => {
     // Technically, `import("pdfjs-dist")` would be enough here, but since we have
     // patched the main entry point, we need to use the minified version.
@@ -76,7 +76,6 @@ describe('unpdf', () => {
     const result = await renderPageAsImage(
       await getPDF('image-sample.pdf'),
       1,
-      { canvas: () => import('canvas') },
     )
     // await writeFile(
     //   new URL("image-sample.png", import.meta.url),

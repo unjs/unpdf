@@ -7,7 +7,6 @@ import { extractText as _extractText } from './text'
 import { resolvePDFJSImports } from './utils'
 
 export { configureUnPDF } from './config'
-export { createIsomorphicCanvasFactory } from './image'
 
 export {
   getDocumentProxy,

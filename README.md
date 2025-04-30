@@ -191,9 +191,7 @@ const pdf = await readFile('./dummy.pdf')
 const buffer = new Uint8Array(pdf)
 const pageNumber = 1
 
-const result = await renderPageAsImage(buffer, pageNumber, {
-  canvas: () => import('canvas'),
-})
+const result = await renderPageAsImage(buffer, pageNumber)
 await writeFile('dummy-page-1.png', result)
 ```
 
@@ -204,8 +202,7 @@ declare function renderPageAsImage(
   data: DocumentInitParameters['data'],
   pageNumber: number,
   options?: {
-    canvas?: () => Promise<typeof import('canvas')>
-    /** @default 1 */
+    /** @default 1.0 */
     scale?: number
     width?: number
     height?: number
@@ -215,11 +212,11 @@ declare function renderPageAsImage(
 
 ## FAQ
 
-### Why Is `canvas` An Optional Dependency?
+### Why Is `canvas` A Peer Dependency?
 
 The official PDF.js library depends on the `canvas` module for Node.js environments, which [doesn't work inside worker threads](https://github.com/Automattic/node-canvas/issues/1394). That's why `unpdf` ships with a serverless build of PDF.js that mocks the `canvas` module.
 
-However, to render PDF pages as images in Node.js environments, you need to install the `canvas` module. That's why it is a peer dependency.
+However, to render PDF pages as images in Node.js environments, you need to install the `canvas` module. If you don't need this feature, you can ignore the peer dependency.
 
 ## License
 
