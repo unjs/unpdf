@@ -1,5 +1,5 @@
 dist
 node_modules
-test/artifacts
+test/artifacts/*
 !test/artifacts/.gitkeep
 .DS_Store
