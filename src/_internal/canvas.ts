@@ -99,10 +99,9 @@ export async function resolveCanvasModule() {
 }
 
 /**
- * Injects the global `Path2D` and `ImageData` constructors to use the
- * `Path2D` and `ImageData` implementations from the `@napi-rs/canvas` package.
- * This is necessary because the `Path2D` and `ImageData` APIs are not available
- * in Node.js environments by default.
+ * Injects `DOMMatrix`, `ImageData` and `Path2D` constructors from the
+ * `@napi-rs/canvas` package into the global scope. This is necessary for
+ * Node.js environments that do not support these constructors natively.
  *
  * @remarks
  * If the `Path2D` or `ImageData` constructors are already defined in the
@@ -111,6 +110,8 @@ export async function resolveCanvasModule() {
 export function injectCanvasConstructors() {
   if (!canvasModule)
     return
-  globalThis.Path2D ??= canvasModule.Path2D as unknown as typeof Path2D
+
+  globalThis.DOMMatrix ??= canvasModule.DOMMatrix as unknown as typeof DOMMatrix
   globalThis.ImageData ??= canvasModule.ImageData as unknown as typeof ImageData
+  globalThis.Path2D ??= canvasModule.Path2D as unknown as typeof Path2D
 }

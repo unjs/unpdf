@@ -1,21 +1,12 @@
-// This rollup config is used to build PDF.js for serverless environments
+// This rollup config builds a PDF.js bundle for serverless environments
 
-import { join } from 'node:path'
-import { fileURLToPath } from 'node:url'
-import alias from '@rollup/plugin-alias'
-import commonjs from '@rollup/plugin-commonjs'
 import inject from '@rollup/plugin-inject'
-import { nodeResolve } from '@rollup/plugin-node-resolve'
 import replace from '@rollup/plugin-replace'
 import terser from '@rollup/plugin-terser'
 import { defineConfig } from 'rollup'
 import * as unenv from 'unenv'
 import { pdfjsTypes } from './src/pdfjs-serverless/rollup/plugins'
-import { resolveAliases } from './src/pdfjs-serverless/rollup/utils'
 
-const mockDir = fileURLToPath(
-  new URL('src/pdfjs-serverless/mocks', import.meta.url),
-)
 const env = unenv.env(unenv.nodeless)
 
 export default defineConfig({
@@ -40,27 +31,12 @@ export default defineConfig({
         'typeof window': '"undefined"',
         // Imitate the Node.js environment for all serverless environments, unenv will
         // take care of the remaining Node.js polyfills. Keep support for browsers.
-        'const isNodeJS = typeof':
-          'const isNodeJS = typeof document === "undefined" // typeof',
+        'const isNodeJS = typeof': 'const isNodeJS = typeof document === "undefined" // typeof',
         // Force inlining the PDF.js worker.
-        'await import(/* webpackIgnore: true */ this.workerSrc)':
-          '__pdfjsWorker__',
+        'await import(/*webpackIgnore: true*/this.workerSrc)': '__pdfjsWorker__',
         // Tree-shake client worker initialization logic.
-        '!PDFWorkerUtil.isWorkerDisabled && !PDFWorker.#mainThreadWorkerMessageHandler':
-          'false',
+        'PDFWorker.#isWorkerDisabled || PDFWorker.#mainThreadWorkerMessageHandler': 'true',
       },
-    }),
-    alias({
-      entries: resolveAliases({
-        'canvas': join(mockDir, 'canvas.mjs'),
-        'path2d-polyfill': join(mockDir, 'path2d-polyfill.mjs'),
-        ...env.alias,
-      }),
-    }),
-    nodeResolve(),
-    commonjs({
-      esmExternals: id => !id.startsWith('unenv/'),
-      requireReturnsDefault: 'auto',
     }),
     inject(env.inject),
     pdfjsTypes(),
