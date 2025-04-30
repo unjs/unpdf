@@ -14,13 +14,4 @@ Promise.withResolvers ??= function () {
 // Inline the PDF.js worker to avoid having to load it from a separate file.
 import * as __pdfjsWorker__ from 'pdfjs-dist/build/pdf.worker.mjs'
 
-// TODO: Enable again when Cloudflare supports top-level await.
-// export * from 'pdfjs-dist/build/pdf.mjs'
-
-// eslint-disable-next-line perfectionist/sort-imports
-import { __main__ } from 'pdfjs-dist/build/pdf.mjs'
-
-// Wrap PDF.js exports to circumvent Cloudflare's top-level await limitation.
-export function resolvePDFJS() {
-  return __main__()
-}
+export * from 'pdfjs-dist/build/pdf.mjs'

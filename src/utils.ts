@@ -52,13 +52,6 @@ export async function resolvePDFJSImport(
   if (pdfjsResolver) {
     try {
       resolvedModule = await interopDefault(pdfjsResolver())
-
-      // Support passing `unpdf/pdfjs` as resolver target
-      if (resolvedModule && 'resolvePDFJS' in resolvedModule) {
-        // @ts-expect-error: Return value is unknown
-        resolvedModule = await resolvedModule.resolvePDFJS()
-      }
-
       return
     }
     catch (error) {

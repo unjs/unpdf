@@ -4,11 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-patchedDependencies:
-  pdfjs-dist@4.10.38:
-    hash: b3f58e5e32e31eb0a28157074293374950f15ba27d9904115ce37139d52580bc
-    path: patches/pdfjs-dist@4.10.38.patch
-
 importers:
 
   .:
@@ -54,7 +49,7 @@ importers:
         version: 3.3.3
       pdfjs-dist:
         specifier: ~4.10.38
-        version: 4.10.38(patch_hash=b3f58e5e32e31eb0a28157074293374950f15ba27d9904115ce37139d52580bc)
+        version: 4.10.38
       rollup:
         specifier: ^4.40.1
         version: 4.40.1
@@ -5383,7 +5378,7 @@ snapshots:
 
   pathval@2.0.0: {}
 
-  pdfjs-dist@4.10.38(patch_hash=b3f58e5e32e31eb0a28157074293374950f15ba27d9904115ce37139d52580bc):
+  pdfjs-dist@4.10.38:
     optionalDependencies:
       '@napi-rs/canvas': 0.1.69
 
