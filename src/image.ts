@@ -89,13 +89,14 @@ export async function renderPageAsImage(
   data: DocumentInitParameters['data'] | PDFDocumentProxy,
   pageNumber: number,
   options: {
+    canvasImport?: () => Promise<typeof import('@napi-rs/canvas')>
     /** @default 1.0 */
     scale?: number
     width?: number
     height?: number
   } = {},
 ) {
-  const CanvasFactory = await createIsomorphicCanvasFactory()
+  const CanvasFactory = await createIsomorphicCanvasFactory(options.canvasImport)
   const pdf = isPDFDocumentProxy(data)
     ? data
     : await getDocumentProxy(data, { CanvasFactory })
@@ -134,12 +135,17 @@ export async function renderPageAsImage(
 }
 
 async function createIsomorphicCanvasFactory(
+  canvasImport?: () => Promise<typeof import('@napi-rs/canvas')>,
 ) {
   if (isBrowser)
     return DOMCanvasFactory
 
   if (isNode) {
-    await resolveCanvasModule()
+    if (!canvasImport) {
+      throw new Error('Parameter "canvasImport" is required in Node.js environment.')
+    }
+
+    await resolveCanvasModule(canvasImport)
     injectCanvasConstructors()
     return NodeCanvasFactory
   }

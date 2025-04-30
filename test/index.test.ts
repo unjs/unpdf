@@ -66,7 +66,9 @@ describe('unpdf', () => {
   })
 
   it('renders a PDF as image', async () => {
-    const result = await renderPageAsImage(await getPDF('pdflatex-image.pdf'), 1)
+    const result = await renderPageAsImage(await getPDF('pdflatex-image.pdf'), 1, {
+      canvasImport: () => import('@napi-rs/canvas'),
+    })
 
     await writeFile(
       new URL('artifacts/pdflatex-image.png', import.meta.url),

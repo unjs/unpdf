@@ -277,6 +277,7 @@ declare function renderPageAsImage(
   data: DocumentInitParameters['data'],
   pageNumber: number,
   options?: {
+    canvasImport?: () => Promise<typeof import('@napi-rs/canvas')>
     /** @default 1.0 */
     scale?: number
     width?: number
@@ -297,7 +298,10 @@ const pdf = await readFile('./dummy.pdf')
 const buffer = new Uint8Array(pdf)
 const pageNumber = 1
 
-const result = await renderPageAsImage(buffer, pageNumber)
+const result = await renderPageAsImage(buffer, pageNumber, {
+  canvasImport: () => import('@napi-rs/canvas'),
+  scale: 2,
+})
 await writeFile('dummy-page-1.png', new Uint8Array(result))
 ```
 
