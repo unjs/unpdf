@@ -62,15 +62,16 @@
     "test:types": "tsc --noEmit"
   },
   "peerDependencies": {
-    "canvas": "^3"
+    "@napi-rs/canvas": "^0.1.69"
   },
   "peerDependenciesMeta": {
-    "canvas": {
+    "@napi-rs/canvas": {
       "optional": true
     }
   },
   "devDependencies": {
     "@antfu/eslint-config": "^4.12.0",
+    "@napi-rs/canvas": "^0.1.69",
     "@rollup/plugin-alias": "^5.1.1",
     "@rollup/plugin-commonjs": "^28.0.3",
     "@rollup/plugin-inject": "^5.0.5",
@@ -80,7 +81,6 @@
     "@rollup/plugin-typescript": "^12.1.2",
     "@types/node": "^22.15.3",
     "bumpp": "^10.1.0",
-    "canvas": "^3.1.0",
     "eslint": "^9.25.1",
     "fast-glob": "^3.3.3",
     "pdfjs-dist": "~4.10.38",

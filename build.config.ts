@@ -6,8 +6,8 @@ export default defineBuildConfig({
   clean: false,
   declaration: true,
   externals: [
-    // Exclude Node.js canvas dependency
-    'canvas',
+    // Exclude canvas dependency
+    '@napi-rs/canvas',
     // Exclude serverless PDF.js build
     fileURLToPath(new URL('pdfjs', import.meta.url)),
     // Don't follow type imports

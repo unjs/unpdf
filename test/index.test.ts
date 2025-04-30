@@ -66,13 +66,10 @@ describe('unpdf', () => {
   })
 
   // TODO: Fix error `ImageData is not defined`
-  it('renders a PDF as image', { skip: true }, async () => {
+  it('renders a PDF as image', async () => {
     // Technically, `import("pdfjs-dist")` would be enough here, but since we have
     // patched the main entry point, we need to use the minified version.
     // @ts-ignore: No declaration file
-    await resolvePDFJSImports(() => import('pdfjs-dist/build/pdf.min.mjs'), {
-      force: true,
-    })
     const result = await renderPageAsImage(
       await getPDF('image-sample.pdf'),
       1,

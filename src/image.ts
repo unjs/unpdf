@@ -124,21 +124,20 @@ export async function renderPageAsImage(
 
   // Create the correctly scaled viewport
   const viewport = page.getViewport({ scale: Math.max(0, scale) })
-
-  const ctx = (new CanvasFactory()).create(viewport.width, viewport.height)
+  const drawingContext = (new CanvasFactory()).create(viewport.width, viewport.height)
 
   await page.render({
-    canvasContext: ctx.context as CanvasRenderingContext2D,
+    canvasContext: drawingContext.context as CanvasRenderingContext2D,
     viewport,
   }).promise
 
-  const dataUrl = ctx.canvas.toDataURL()
+  const dataUrl = drawingContext.canvas.toDataURL()
   const response = await fetch(dataUrl)
 
   return await response.arrayBuffer()
 }
 
-export async function createIsomorphicCanvasFactory(
+async function createIsomorphicCanvasFactory(
 ) {
   if (isBrowser)
     return DOMCanvasFactory

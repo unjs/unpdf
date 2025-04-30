@@ -1,4 +1,4 @@
-import type { Canvas, CanvasRenderingContext2D } from 'canvas'
+import type { Canvas, CanvasRenderingContext2D } from '@napi-rs/canvas'
 import {
   interopDefault,
 } from '../utils'
@@ -8,7 +8,7 @@ interface CanvasFactoryContext {
   context?: CanvasRenderingContext2D | CanvasRenderingContext2D
 }
 
-let canvasModule: typeof import('canvas') | undefined
+let canvasModule: typeof import('@napi-rs/canvas') | undefined
 
 /**
  * Derived from the PDF.js project by the Mozilla Foundation.
@@ -32,7 +32,6 @@ class BaseCanvasFactory {
     return {
       canvas,
       context: canvas.getContext('2d', {
-        // @ts-expect-error: Only available in browser canvas contexts
         willReadFrequently: !this.#enableHWA,
       }),
     }
@@ -97,7 +96,7 @@ export class NodeCanvasFactory extends BaseCanvasFactory {
 
   _createCanvas(width: number, height: number) {
     if (!canvasModule) {
-      throw new Error('Canvas module is not resolved')
+      throw new Error('@napi-rs/canvas module is not resolved')
     }
 
     return canvasModule.createCanvas(width, height)
@@ -105,5 +104,5 @@ export class NodeCanvasFactory extends BaseCanvasFactory {
 }
 
 export async function resolveCanvasModule() {
-  canvasModule = await interopDefault(import('canvas'))
+  canvasModule = await interopDefault(import('@napi-rs/canvas'))
 }

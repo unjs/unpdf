@@ -175,7 +175,7 @@ To render a PDF page as an image, you can use the `renderPageAsImage` method. Th
 In order to use this method, you have to meet the following requirements:
 
 - Use the official PDF.js build
-- Install the [`canvas`](https://www.npmjs.com/package/canvas) package in Node.js environments
+- Install the [`@napi-rs/canvas`](https://github.com/Brooooooklyn/canvas) package if you are using Node.js. This package is required to render the PDF page as an image.
 
 **Example**
 
@@ -209,14 +209,6 @@ declare function renderPageAsImage(
   },
 ): Promise<ArrayBuffer>
 ```
-
-## FAQ
-
-### Why Is `canvas` A Peer Dependency?
-
-The official PDF.js library depends on the `canvas` module for Node.js environments, which [doesn't work inside worker threads](https://github.com/Automattic/node-canvas/issues/1394). That's why `unpdf` ships with a serverless build of PDF.js that mocks the `canvas` module.
-
-However, to render PDF pages as images in Node.js environments, you need to install the `canvas` module. If you don't need this feature, you can ignore the peer dependency.
 
 ## License
 
