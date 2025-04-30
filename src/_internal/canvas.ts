@@ -1,7 +1,5 @@
 import type { Canvas, CanvasRenderingContext2D } from '@napi-rs/canvas'
-import {
-  interopDefault,
-} from '../utils'
+import { interopDefault } from '../utils'
 
 interface CanvasFactoryContext {
   canvas?: HTMLCanvasElement | Canvas
@@ -97,7 +95,7 @@ export class NodeCanvasFactory extends BaseCanvasFactory {
 }
 
 export async function resolveCanvasModule() {
-  canvasModule = await interopDefault(import('@napi-rs/canvas'))
+  canvasModule ??= await interopDefault(import('@napi-rs/canvas'))
 }
 
 /**
