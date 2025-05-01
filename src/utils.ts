@@ -61,7 +61,7 @@ export async function resolvePDFJSImport(
     resolvedModule = await import('unpdf/pdfjs')
   }
   catch (error) {
-    throw new Error(`Built-in PDF.js module could not be resolved: ${error}`)
+    throw new Error(`Serverless PDF.js bundle could not be resolved: ${error}`)
   }
 }
 
