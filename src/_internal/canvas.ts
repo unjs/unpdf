@@ -6,7 +6,7 @@ interface CanvasFactoryContext {
   context?: CanvasRenderingContext2D | CanvasRenderingContext2D
 }
 
-let canvasModule: typeof import('@napi-rs/canvas') | undefined
+let resolvedCanvasModule: typeof import('@napi-rs/canvas') | undefined
 
 /**
  * Derived from the PDF.js project by the Mozilla Foundation.
@@ -86,16 +86,16 @@ export class NodeCanvasFactory extends BaseCanvasFactory {
   }
 
   _createCanvas(width: number, height: number) {
-    if (!canvasModule) {
+    if (!resolvedCanvasModule) {
       throw new Error('@napi-rs/canvas module is not resolved')
     }
 
-    return canvasModule.createCanvas(width, height)
+    return resolvedCanvasModule.createCanvas(width, height)
   }
 }
 
 export async function resolveCanvasModule(canvasImport: () => Promise<typeof import('@napi-rs/canvas')>) {
-  canvasModule ??= (await interopDefault(canvasImport()))
+  resolvedCanvasModule ??= (await interopDefault(canvasImport()))
 }
 
 /**
@@ -104,14 +104,19 @@ export async function resolveCanvasModule(canvasImport: () => Promise<typeof imp
  * Node.js environments that do not support these constructors natively.
  *
  * @remarks
- * If the `Path2D` or `ImageData` constructors are already defined in the
- * global scope, they will not be overridden.
+ * If a constructor is already defined in the global scope,
+ * it will not be overridden.
  */
 export function injectCanvasConstructors() {
-  if (!canvasModule)
+  if (!resolvedCanvasModule)
     return
 
-  globalThis.DOMMatrix ??= canvasModule.DOMMatrix as unknown as typeof DOMMatrix
-  globalThis.ImageData ??= canvasModule.ImageData as unknown as typeof ImageData
-  globalThis.Path2D ??= canvasModule.Path2D as unknown as typeof Path2D
+  if (typeof globalThis.DOMMatrix === 'undefined')
+    globalThis.DOMMatrix = resolvedCanvasModule.DOMMatrix as unknown as typeof DOMMatrix
+
+  if (typeof globalThis.ImageData === 'undefined')
+    globalThis.ImageData = resolvedCanvasModule.ImageData as unknown as typeof ImageData
+
+  if (typeof globalThis.Path2D === 'undefined')
+    globalThis.Path2D = resolvedCanvasModule.Path2D as unknown as typeof Path2D
 }
