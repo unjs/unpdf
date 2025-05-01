@@ -59,7 +59,6 @@
     "lint:fix": "eslint . --fix",
     "release": "bumpp",
     "test": "vitest",
-    "test:worker": "esbuild --bundle --platform=neutral --outfile=test/artifacts/worker.js test/worker/index.ts && wrangler dev test/artifacts/worker.js",
     "test:types": "tsc --noEmit"
   },
   "peerDependencies": {
@@ -81,7 +80,6 @@
     "@rollup/plugin-typescript": "^12.1.2",
     "@types/node": "^22.15.3",
     "bumpp": "^10.1.0",
-    "esbuild": "^0.25.3",
     "eslint": "^9.25.1",
     "fast-glob": "^3.3.3",
     "pdfjs-dist": "~5.2.133",
@@ -89,7 +87,6 @@
     "tslib": "^2.8.1",
     "typescript": "^5.8.3",
     "unbuild": "^3.5.0",
-    "vitest": "^3.1.2",
-    "wrangler": "^4.14.0"
+    "vitest": "^3.1.2"
   }
 }

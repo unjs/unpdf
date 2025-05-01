@@ -1,0 +1,11 @@
+{
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "esbuild --bundle --platform=neutral --outfile=build/index.js index.ts && wrangler dev build/index.js"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.3",
+    "wrangler": "^4.13.2"
+  }
+}

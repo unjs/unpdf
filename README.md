@@ -1,8 +1,8 @@
 # unpdf
 
-A collection of utilities for PDF extraction and rendering. Designed specifically for Bun, Deno, and serverless environments. However, it also works in Node.js and the browser.
+A collection of utilities for PDF extraction and rendering. Designed specifically for serverless environments, Deno and Bun. It also works in Node.js and the browser. `unpdf` is particularly useful for serverless AI applications, especially for summarizing PDF documents in efficient document analysis workflows in edge environments.
 
-`unpdf` ships with a serverless build/redistribution of Mozilla's [PDF.js](https://github.com/mozilla/pdf.js) for serverless environments. Some string replacements and inlining the PDF.js worker allow the browser code to become platform agnostic. See [`pdfjs.rollup.config.ts`](./pdfjs.rollup.config.ts) for all the details.
+This library ships with a serverless build/redistribution of Mozilla's [PDF.js](https://github.com/mozilla/pdf.js) specifically optimized for serverless environments. Some string replacements and inlining the PDF.js worker allow the browser code to become platform agnostic. See [`pdfjs.rollup.config.ts`](./pdfjs.rollup.config.ts) for all the details.
 
 This library is also intended as a modern alternative to the unmaintained but still popular [`pdf-parse`](https://www.npmjs.com/package/pdf-parse).
 
@@ -11,6 +11,7 @@ This library is also intended as a modern alternative to the unmaintained but st
 - 🏗️ Made for Node.js, browser and serverless environments
 - 🪭 Includes serverless build of PDF.js ([`unpdf/pdfjs`](./package.json#L34))
 - 💬 Extract [text](#extract-text-from-pdf) and [images](#extractimages) from PDF files
+- 🧠 Perfect for AI applications and PDF summarization
 - 🧱 Opt-in to legacy PDF.js build
 - 💨 Zero dependencies
 
@@ -99,12 +100,12 @@ import { getResolvedPDFJS } from 'unpdf'
 
 const { getDocument } = await getResolvedPDFJS()
 const data = Deno.readFileSync('dummy.pdf')
-const doc = await getDocument(data).promise
+const document = await getDocument(data).promise
 
-console.log(await doc.getMetadata())
+console.log(await document.getMetadata())
 
-for (let i = 1; i <= doc.numPages; i++) {
-  const page = await doc.getPage(i)
+for (let i = 1; i <= document.numPages; i++) {
+  const page = await document.getPage(i)
   const textContent = await page.getTextContent()
   const contents = textContent.items.map(item => item.str).join(' ')
   console.log(contents)

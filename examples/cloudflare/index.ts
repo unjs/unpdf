@@ -6,7 +6,9 @@ import { definePDFJSModule, extractText, getDocumentProxy } from '../../dist/ind
 
 export default {
   async fetch() {
+    // Remove this line for production. Only needed to test local PDF.js builds.
     await definePDFJSModule(() => import('../../dist/pdfjs.mjs'))
+
     const buffer = await fetch('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf')
       .then(res => res.arrayBuffer())
     const document = await getDocumentProxy(new Uint8Array(buffer))

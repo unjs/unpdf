@@ -1,6 +1,7 @@
 .wrangler
 dist
 node_modules
+examples/**/build
 test/artifacts/*
 !test/artifacts/.gitkeep
 .DS_Store
