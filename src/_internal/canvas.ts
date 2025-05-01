@@ -95,7 +95,7 @@ export class NodeCanvasFactory extends BaseCanvasFactory {
 }
 
 export async function resolveCanvasModule(canvasImport: () => Promise<typeof import('@napi-rs/canvas')>) {
-  canvasModule ??= await interopDefault(canvasImport())
+  canvasModule ??= (await interopDefault(canvasImport()))
 }
 
 /**
