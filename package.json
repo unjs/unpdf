@@ -3,7 +3,7 @@
   "type": "module",
   "version": "1.0.1",
   "packageManager": "pnpm@10.10.0",
-  "description": "PDF handling for Node.js, browsers, and serverless environments",
+  "description": "PDF extraction and rendering across all JavaScript runtimes",
   "author": "Johann Schopplich <hello@johannschopplich.com>",
   "license": "MIT",
   "homepage": "https://github.com/unjs/unpdf#readme",
@@ -89,7 +89,6 @@
     "tslib": "^2.8.1",
     "typescript": "^5.8.3",
     "unbuild": "^3.5.0",
-    "unenv": "^1.10.0",
     "vitest": "^3.1.2",
     "wrangler": "^4.14.0"
   }
