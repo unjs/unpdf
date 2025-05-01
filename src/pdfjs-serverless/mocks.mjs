@@ -1,23 +1,14 @@
-// PDF.js initializes a top-level `DOMMatrix` const, which is
-// not available in serverless environments.
+// PDF.js initializes a top-level constant from `DOMMatrix`,
+// which is not available in serverless environments.
 if (typeof globalThis.DOMMatrix === 'undefined') {
   globalThis.DOMMatrix = class DOMMatrix {}
 }
 
-// Patch `FinalizationRegistry` constructor, since they are not available in Cloudflare Workers.
-globalThis.FinalizationRegistry = class FinalizationRegistry {
-  #callbacks
-
-  constructor() {
-    this.#callbacks = new WeakMap()
-  }
-
-  register(value, callback) {
-    this.#callbacks.set(value, callback)
-  }
-
-  unregister(value) {
-    this.#callbacks.delete(value)
+// `FinalizationRegistry` is not not available in Cloudflare Workers.
+if (typeof globalThis.FinalizationRegistry === 'undefined') {
+  globalThis.FinalizationRegistry = class FinalizationRegistry {
+    register() {}
+    unregister() {}
   }
 }
 
