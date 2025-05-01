@@ -1,7 +1,4 @@
-import type {
-  DocumentInitParameters,
-  PDFDocumentProxy,
-} from 'pdfjs-dist/types/src/display/api'
+import type { DocumentInitParameters, PDFDocumentProxy } from 'pdfjs-dist/types/src/display/api'
 import { getDocumentProxy, isPDFDocumentProxy } from './utils'
 
 export async function getMeta(

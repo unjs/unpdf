@@ -1,8 +1,4 @@
-import type {
-  DocumentInitParameters,
-  PDFDocumentProxy,
-  TextItem,
-} from 'pdfjs-dist/types/src/display/api'
+import type { DocumentInitParameters, PDFDocumentProxy, TextItem } from 'pdfjs-dist/types/src/display/api'
 import { getDocumentProxy, isPDFDocumentProxy } from './utils'
 
 export function extractText(

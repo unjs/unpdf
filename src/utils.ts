@@ -1,10 +1,7 @@
-import type {
-  DocumentInitParameters,
-  PDFDocumentProxy,
-} from 'pdfjs-dist/types/src/display/api'
-import type { PDFJS } from './types'
+import type { DocumentInitParameters, PDFDocumentProxy } from 'pdfjs-dist/types/src/display/api'
+import type * as PDFJS from 'pdfjs-dist/types/src/pdf'
 
-let resolvedModule: PDFJS | undefined
+let resolvedModule: typeof PDFJS | undefined
 
 // eslint-disable-next-line node/prefer-global/process
 export const isNode = globalThis.process?.release?.name === 'node'
@@ -33,7 +30,7 @@ export async function getDocumentProxy(
   return pdf
 }
 
-export async function getResolvedPDFJS(): Promise<PDFJS> {
+export async function getResolvedPDFJS(): Promise<typeof PDFJS> {
   if (!resolvedModule) {
     await resolvePDFJSImport()
   }

@@ -1,12 +1,6 @@
 import type { DocumentInitParameters, PDFDocumentProxy } from 'pdfjs-dist/types/src/display/api'
 import { DOMCanvasFactory, injectCanvasConstructors, NodeCanvasFactory, resolveCanvasModule } from './_internal/canvas'
-import {
-  getDocumentProxy,
-  getResolvedPDFJS,
-  isBrowser,
-  isNode,
-  isPDFDocumentProxy,
-} from './utils'
+import { getDocumentProxy, getResolvedPDFJS, isBrowser, isNode, isPDFDocumentProxy } from './utils'
 
 export interface ExtractedImageObject {
   data: Uint8ClampedArray
