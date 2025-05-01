@@ -55,19 +55,16 @@ export async function resolvePDFJSImport(
       return
     }
     catch (error) {
-      console.error(error)
-      throw new Error('PDF.js could not be resolved. Please check the resolver function.')
+      throw new Error(`PDF.js could not be resolved: ${error}`)
     }
   }
 
   try {
-    const { resolvePDFJS } = await import('unpdf/pdfjs')
     // @ts-expect-error: Type mismatch
-    resolvedModule = await resolvePDFJS()
+    resolvedModule = await import('unpdf/pdfjs')
   }
   catch (error) {
-    console.error(error)
-    throw new Error('PDF.js package not available. Please install it first.')
+    throw new Error(`Built-in PDF.js module could not be resolved: ${error}`)
   }
 }
 

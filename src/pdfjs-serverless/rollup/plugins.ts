@@ -5,15 +5,12 @@ export function pdfjsTypes(): Plugin {
   return {
     name: 'pdfjs-serverless:types',
     async writeBundle() {
-      const data = `
-import * as PDFJS from './types/src/pdf'
-declare function resolvePDFJS(): Promise<typeof PDFJS>
-export { resolvePDFJS }
+      const typeExports = `
 export * from './types/src/pdf'
 `.trimStart()
 
       for (const filename of ['pdfjs.d.ts', 'pdfjs.d.mts']) {
-        await writeFile(`dist/${filename}`, data, 'utf8')
+        await writeFile(`dist/${filename}`, typeExports, 'utf8')
       }
     },
   }
