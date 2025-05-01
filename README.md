@@ -19,7 +19,7 @@ This library is also intended as a modern alternative to the unmaintained but st
 > [!Tip]
 > The serverless PDF.js bundle provided by `unpdf` is built from PDF.js v5.2.133.
 
-You can use an [official PDF.js build](#use-official-or-legacy-pdfjs-build) by using the [`definePDFJSModule`](#definepdfjsmodule) method. This is useful if you want to use a specific version or a custom build of PDF.js.
+You can use an [official PDF.js build](#official-or-legacy-pdfjs-build) by using the [`definePDFJSModule`](#definepdfjsmodule) method. This is useful if you want to use a specific version or a custom build of PDF.js.
 
 ## Installation
 
@@ -58,6 +58,25 @@ console.log(`Total pages: ${totalPages}`)
 console.log(text)
 ```
 
+### Official or Legacy PDF.js Build
+
+Usually you don't need to worry about the PDF.js build. `unpdf` ships with a serverless build of the latest PDF.js version. However, if you want to use the official PDF.js version or the legacy build, you can define a custom PDF.js module.
+
+> [!WARNING]
+> Later PDF.js v4.x versions uses `Promise.withResolvers`, which may not be supported in all environments, such as Node < 22. Consider to use the bundled serverless build, which includes a polyfill, or use an older version of PDF.js.
+
+For example, if you want to use the official PDF.js build, you can do the following:
+
+```ts
+import { definePDFJSModule } from 'unpdf'
+
+// Define the PDF.js build before using any other unpdf method
+await definePDFJSModule(() => import('pdfjs-dist'))
+
+// Now, you can use all unpdf methods with the official PDF.js build
+const { text } = await extractText(pdf)
+```
+
 ### PDF.js API
 
 `unpdf` provides helpful [methods](#api) to work with PDF files, such as `extractText` and `extractImages`, which should cover most use cases. However, if you need more control over the PDF.js API, you can use the `getResolvedPDFJS` method to get the resolved PDF.js module.
@@ -90,25 +109,6 @@ for (let i = 1; i <= doc.numPages; i++) {
   const contents = textContent.items.map(item => item.str).join(' ')
   console.log(contents)
 }
-```
-
-### Use Official or Legacy PDF.js Build
-
-Usually you don't need to worry about the PDF.js build. `unpdf` ships with a serverless build of the latest PDF.js version. However, if you want to use the official PDF.js version or the legacy build, you can define a custom PDF.js module.
-
-> [!WARNING]
-> Later PDF.js v4.x versions uses `Promise.withResolvers`, which may not be supported in all environments, such as Node < 22. Consider to use the bundled serverless build, which includes a polyfill, or use an older version of PDF.js.
-
-For example, if you want to use the official PDF.js build, you can do the following:
-
-```ts
-import { definePDFJSModule } from 'unpdf'
-
-// Define the PDF.js build before using any other unpdf method
-await definePDFJSModule(() => import('pdfjs-dist'))
-
-// Now, you can use all unpdf methods with the official PDF.js build
-const { text } = await extractText(pdf)
 ```
 
 ## API
