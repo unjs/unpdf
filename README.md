@@ -64,7 +64,7 @@ console.log(text)
 Usually you don't need to worry about the PDF.js build. `unpdf` ships with a serverless build of the latest PDF.js version. However, if you want to use the official PDF.js version or the legacy build, you can define a custom PDF.js module.
 
 > [!WARNING]
-> Later PDF.js v4.x versions uses `Promise.withResolvers`, which may not be supported in all environments, such as Node < 22. Consider to use the bundled serverless build, which includes a polyfill, or use an older version of PDF.js.
+> PDF.js v5.x uses `Promise.withResolvers`, which may not be supported in all environments, such as Node < 22. Consider to use the bundled serverless build, which includes a polyfill, or use an older version of PDF.js.
 
 For example, if you want to use the official PDF.js build, you can do the following:
 
