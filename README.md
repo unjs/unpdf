@@ -1,8 +1,8 @@
 # unpdf
 
-A collection of utilities for PDF extraction and rendering. Designed specifically for serverless environments, Deno and Bun. It also works in Node.js and the browser. `unpdf` is particularly useful for serverless AI applications, especially for summarizing PDF documents in efficient document analysis workflows in edge environments.
+A collection of utilities for PDF extraction and rendering. Designed specifically for serverless environments, but it also works in Node.js, Deno, Bun and the browser. `unpdf` is particularly useful for serverless AI applications, especially for summarizing PDF documents in document analysis workflows.
 
-This library ships with a serverless build/redistribution of Mozilla's [PDF.js](https://github.com/mozilla/pdf.js) specifically optimized for serverless environments. Some string replacements and inlining the PDF.js worker allow the browser code to become platform agnostic. See [`pdfjs.rollup.config.ts`](./pdfjs.rollup.config.ts) for all the details.
+This library ships with a serverless build/redistribution of Mozilla's [PDF.js](https://github.com/mozilla/pdf.js) that is optimized for edge environments. Some string replacements, global mocks and inlining the PDF.js worker allow the browser code to become platform agnostic. See [`pdfjs.rollup.config.ts`](./pdfjs.rollup.config.ts) for the details.
 
 This library is also intended as a modern alternative to the unmaintained but still popular [`pdf-parse`](https://www.npmjs.com/package/pdf-parse).
 
