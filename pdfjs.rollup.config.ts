@@ -43,7 +43,7 @@ export default defineConfig({
         // Force setting up fake PDF.js worker.
         '#isWorkerDisabled = false': '#isWorkerDisabled = true',
         // Remove WASM code from the worker.
-        'wasmExports = await createWasm': '',
+        'wasmExports = await createWasm': 'wasmExports = {}',
         'if (!this.#modulePromise)': 'if (false)',
         '#instantiateWasm(fallbackCallback, imports, successCallback) {': '#instantiateWasm(fallbackCallback, imports, successCallback) { return;',
         '#getJsModule(fallbackCallback) {': '#getJsModule(fallbackCallback) { return;',
