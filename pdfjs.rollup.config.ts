@@ -49,8 +49,6 @@ export default defineConfig({
         '#getJsModule(fallbackCallback) {': '#getJsModule(fallbackCallback) { return;',
         // Mock the `@napi-rs/canvas` module import from the unused `NodeCanvasFactory` class.
         'require("@napi-rs/canvas")': canvasMock,
-        // Prevent unenv from injecting the `Buffer` polyfill.
-        // 'typeof Buffer !== "undefined" && val instanceof Buffer': 'false',
       },
     }),
     nodeResolve(),
