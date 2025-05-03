@@ -42,6 +42,11 @@ export default defineConfig({
         'await import(/*webpackIgnore: true*/this.workerSrc)': '__pdfjsWorker__',
         // Force setting up fake PDF.js worker.
         '#isWorkerDisabled = false': '#isWorkerDisabled = true',
+        // Remove WASM code from the worker.
+        'wasmExports = await createWasm': '',
+        'if (!this.#modulePromise)': 'if (false)',
+        '#instantiateWasm(fallbackCallback, imports, successCallback) {': '#instantiateWasm(fallbackCallback, imports, successCallback) { return;',
+        '#getJsModule(fallbackCallback) {': '#getJsModule(fallbackCallback) { return;',
         // Mock the `@napi-rs/canvas` module import from the unused `NodeCanvasFactory` class.
         'require("@napi-rs/canvas")': canvasMock,
         // Prevent unenv from injecting the `Buffer` polyfill.
