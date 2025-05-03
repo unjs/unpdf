@@ -7,16 +7,13 @@ import { defineConfig } from 'rollup'
 import { pdfjsTypes } from './src/pdfjs-serverless/rollup/plugins'
 
 const canvasMock = `
-new Proxy(
-  {},
-  {
-    get(target, prop) {
-      return () => {
-        throw new Error("@napi-rs/canvas is not available in this environment")
-      }
-    },
+new Proxy({}, {
+  get(target, prop) {
+    return () => {
+      throw new Error("@napi-rs/canvas is not available in this environment")
+    }
   },
-)
+})
 `
   .replaceAll('\n', '')
   .trim()
