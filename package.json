@@ -71,7 +71,7 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^4.12.0",
-    "@napi-rs/canvas": "^0.1.69",
+    "@napi-rs/canvas": "^0.1.70",
     "@rollup/plugin-alias": "^5.1.1",
     "@rollup/plugin-inject": "^5.0.5",
     "@rollup/plugin-node-resolve": "^16.0.1",
@@ -80,7 +80,7 @@
     "@rollup/plugin-typescript": "^12.1.2",
     "@types/node": "^22.15.3",
     "bumpp": "^10.1.0",
-    "eslint": "^9.25.1",
+    "eslint": "^9.26.0",
     "fast-glob": "^3.3.3",
     "pdfjs-dist": "~5.2.133",
     "rollup": "^4.40.1",

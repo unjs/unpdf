@@ -69,12 +69,13 @@ Usually you don't need to worry about the PDF.js build. `unpdf` ships with a ser
 For example, if you want to use the official PDF.js build, you can do the following:
 
 ```ts
-import { definePDFJSModule } from 'unpdf'
+import { definePDFJSModule, extractText, getDocumentProxy } from 'unpdf'
 
 // Define the PDF.js build before using any other unpdf method
 await definePDFJSModule(() => import('pdfjs-dist'))
 
 // Now, you can use all unpdf methods with the official PDF.js build
+const pdf = await getDocumentProxy(/* … */)
 const { text } = await extractText(pdf)
 ```
 
@@ -93,23 +94,17 @@ const { version } = await getResolvedPDFJS()
 > [!NOTE]
 > If no other PDF.js build was defined, the serverless build will always be used.
 
-For example, you can use the `getDocument` method to load a PDF file and then use the `getPage` method to get a specific page. You can also use the `getTextContent` method to extract the text from the page.
+For example, you can use the `getDocument` method to load a PDF file and then use the `getMetadata` method to get the metadata of the PDF file:
 
 ```ts
+import { readFile } from 'node:fs/promises'
 import { getResolvedPDFJS } from 'unpdf'
 
 const { getDocument } = await getResolvedPDFJS()
-const data = Deno.readFileSync('dummy.pdf')
-const document = await getDocument(data).promise
+const data = await readFile('./dummy.pdf')
+const document = await getDocument(new Uint8Array(data)).promise
 
 console.log(await document.getMetadata())
-
-for (let i = 1; i <= document.numPages; i++) {
-  const page = await document.getPage(i)
-  const textContent = await page.getTextContent()
-  const contents = textContent.items.map(item => item.str).join(' ')
-  console.log(contents)
-}
 ```
 
 ## API
