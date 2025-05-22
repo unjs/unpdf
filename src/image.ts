@@ -50,7 +50,9 @@ export async function extractImages(
     }
 
     const imageKey = operatorList.argsArray[i][0]
-    const image = await page.objs.get(imageKey)
+    const image = imageKey.startsWith('g_') // If global image key, we must use commonObjs
+      ? await page.commonObjs.get(imageKey)
+      : await page.objs.get(imageKey);
 
     if (!image || !image.data || !image.width || !image.height) {
       // Missing required properties
