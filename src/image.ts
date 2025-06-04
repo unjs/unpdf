@@ -10,6 +10,12 @@ export interface ExtractedImageObject {
   key: string
 }
 
+interface RequestedImageObject {
+  data?: Uint8ClampedArray
+  width?: number
+  height?: number
+}
+
 /**
  * Extracts images from a specific page of a PDF document, including necessary metadata,
  * such as width, height, and calculated color channels.
@@ -52,8 +58,8 @@ export async function extractImages(
     const imageKey = operatorList.argsArray[i][0]
     // Resolve global image keys
     const image = imageKey.startsWith('g_')
-      ? await new Promise<any>((resolve) => page.commonObjs.get(imageKey, (resolvedImage: any) => resolve(resolvedImage)))
-      : await new Promise<any>((resolve) => page.objs.get(imageKey, (resolvedImage: any) => resolve(resolvedImage)))
+      ? await new Promise<RequestedImageObject | null>(resolve => page.commonObjs.get(imageKey, (resolvedImage: RequestedImageObject | null) => resolve(resolvedImage)))
+      : await new Promise<RequestedImageObject | null>(resolve => page.objs.get(imageKey, (resolvedImage: RequestedImageObject | null) => resolve(resolvedImage)))
 
     if (!image || !image.data || !image.width || !image.height) {
       // Missing required properties
