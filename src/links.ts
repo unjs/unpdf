@@ -4,9 +4,9 @@ import { getDocumentProxy, isPDFDocumentProxy } from './utils'
 export async function extractLinks(
   data: DocumentInitParameters['data'] | PDFDocumentProxy,
 ): Promise<{
-    totalPages: number
-    links: string[]
-  }> {
+  totalPages: number
+  links: string[]
+}> {
   const pdf = isPDFDocumentProxy(data) ? data : await getDocumentProxy(data)
   const pageLinks = await Promise.all(
     Array.from({ length: pdf.numPages }, (_, i) => getPageLinks(pdf, i + 1)),
