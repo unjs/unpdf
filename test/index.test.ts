@@ -7,6 +7,7 @@ import {
   definePDFJSModule,
   extractImages,
   extractText,
+  extractLinks,
   getDocumentProxy,
   getMeta,
   getResolvedPDFJS,
@@ -58,6 +59,13 @@ describe('unpdf', () => {
 
     expect(text[0]).toMatchInlineSnapshot('"Dummy PDF file"')
     expect(totalPages).toMatchInlineSnapshot('1')
+  })
+
+  it('extracts links from a PDF', async () => {
+    const { links, totalPages } = await extractLinks(await getPDF('links.pdf'))
+    expect(links.length).toMatchInlineSnapshot('4')
+    expect(links[0]).toMatchInlineSnapshot('"https://www.antennahouse.com/"')
+    expect(totalPages).toMatchInlineSnapshot('2')
   })
 
   it('extracts images from a PDF', async () => {

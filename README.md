@@ -10,7 +10,7 @@ This library is also intended as a modern alternative to the unmaintained but st
 
 - 🏗️ Made for Node.js, browser and serverless environments
 - 🪭 Includes serverless build of PDF.js ([`unpdf/pdfjs`](./package.json#L34))
-- 💬 Extract [text](#extract-text-from-pdf) and [images](#extractimages) from PDF files
+- 💬 Extract [text](#extract-text-from-pdf), [links](#extractlinks), and [images](#extractimages) from PDF files
 - 🧠 Perfect for AI applications and PDF summarization
 - 🧱 Opt-in to legacy PDF.js build
 - 💨 Zero dependencies
@@ -167,6 +167,39 @@ function extractText(
   totalPages: number
   text: string
 }>
+```
+
+### `extractLinks`
+
+Extracts all links from a PDF document, including hyperlinks and external URLs.
+
+**Type Declaration**
+
+```ts
+function extractLinks(
+  data: DocumentInitParameters['data'] | PDFDocumentProxy,
+): Promise<{
+  totalPages: number
+  links: string[]
+}>
+```
+
+**Example**
+
+```ts
+import { readFile } from 'node:fs/promises'
+import { extractLinks, getDocumentProxy } from 'unpdf'
+
+// Load a PDF file
+const buffer = await readFile('./document.pdf')
+const pdf = await getDocumentProxy(new Uint8Array(buffer))
+
+// Extract all links from the PDF
+const { totalPages, links } = await extractLinks(pdf)
+
+console.log(`Total pages: ${totalPages}`)
+console.log(`Found ${links.length} links:`)
+for (const link of links) console.log(link)
 ```
 
 ### `extractImages`

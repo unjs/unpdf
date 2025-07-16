@@ -1,7 +1,5 @@
-import {
-  extractImages as _extractImages,
-  renderPageAsImage as _renderPageAsImage,
-} from './image'
+import { extractImages as _extractImages, renderPageAsImage as _renderPageAsImage } from './image'
+import { extractLinks as _extractLinks } from './links'
 import { getMeta as _getMeta } from './meta'
 import { extractText as _extractText } from './text'
 import { resolvePDFJSImport } from './utils'
@@ -33,4 +31,9 @@ export const extractImages: typeof _extractImages = async (...args) => {
 export const renderPageAsImage: typeof _renderPageAsImage = async (...args) => {
   await resolvePDFJSImport()
   return await _renderPageAsImage(...args)
+}
+
+export const extractLinks: typeof _extractLinks = async (...args) => {
+  await resolvePDFJSImport()
+  return await _extractLinks(...args)
 }
