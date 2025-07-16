@@ -6,8 +6,8 @@ import { describe, expect, it } from 'vitest'
 import {
   definePDFJSModule,
   extractImages,
-  extractText,
   extractLinks,
+  extractText,
   getDocumentProxy,
   getMeta,
   getResolvedPDFJS,
