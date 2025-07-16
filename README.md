@@ -199,7 +199,6 @@ const { totalPages, links } = await extractLinks(pdf)
 
 console.log(`Total pages: ${totalPages}`)
 console.log(`Found ${links.length} links:`)
-
 for (const link of links) console.log(link)
 ```
 
