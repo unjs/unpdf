@@ -1,10 +1,7 @@
-import {
-  extractImages as _extractImages,
-  renderPageAsImage as _renderPageAsImage,
-} from './image'
+import { extractImages as _extractImages, renderPageAsImage as _renderPageAsImage } from './image'
+import { extractLinks as _extractLinks } from './links'
 import { getMeta as _getMeta } from './meta'
 import { extractText as _extractText } from './text'
-import { extractLinks as _extractLinks } from './link'
 import { resolvePDFJSImport } from './utils'
 
 export { configureUnPDF, definePDFJSModule } from './config'
@@ -38,6 +35,5 @@ export const renderPageAsImage: typeof _renderPageAsImage = async (...args) => {
 
 export const extractLinks: typeof _extractLinks = async (...args) => {
   await resolvePDFJSImport()
-  // @ts-expect-error: TS doesn't support overloads with default values
   return await _extractLinks(...args)
 }
