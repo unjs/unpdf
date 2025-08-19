@@ -88,6 +88,30 @@ export async function extractImages(
   return images
 }
 
+export function renderPageAsImage(
+  data: DocumentInitParameters['data'] | PDFDocumentProxy,
+  pageNumber: number,
+  options?: {
+    canvasImport?: () => Promise<typeof import('@napi-rs/canvas')>
+    /** @default 1.0 */
+    scale?: number
+    width?: number
+    height?: number
+    toDataURL?: false
+  }
+): Promise<ArrayBuffer>
+export function renderPageAsImage(
+  data: DocumentInitParameters['data'] | PDFDocumentProxy,
+  pageNumber: number,
+  options: {
+    canvasImport?: () => Promise<typeof import('@napi-rs/canvas')>
+    /** @default 1.0 */
+    scale?: number
+    width?: number
+    height?: number
+    toDataURL: true
+  }
+): Promise<string>
 export async function renderPageAsImage(
   data: DocumentInitParameters['data'] | PDFDocumentProxy,
   pageNumber: number,
@@ -97,6 +121,7 @@ export async function renderPageAsImage(
     scale?: number
     width?: number
     height?: number
+    toDataURL?: boolean
   } = {},
 ) {
   const CanvasFactory = await createIsomorphicCanvasFactory(options.canvasImport)
@@ -132,6 +157,11 @@ export async function renderPageAsImage(
   }).promise
 
   const dataUrl = drawingContext.canvas.toDataURL()
+
+  if (options.toDataURL) {
+    return dataUrl
+  }
+
   const response = await fetch(dataUrl)
 
   return await response.arrayBuffer()

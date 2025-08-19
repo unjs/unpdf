@@ -30,7 +30,7 @@ export const extractImages: typeof _extractImages = async (...args) => {
 
 export const renderPageAsImage: typeof _renderPageAsImage = async (...args) => {
   await resolvePDFJSImport()
-  return await _renderPageAsImage(...args)
+  return await (_renderPageAsImage as any)(...args)
 }
 
 export const extractLinks: typeof _extractLinks = async (...args) => {
