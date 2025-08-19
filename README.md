@@ -273,7 +273,7 @@ extractPdfImages().catch(console.error)
 
 ### `renderPageAsImage`
 
-To render a PDF page as an image, you can use the `renderPageAsImage` method. This method will return an `ArrayBuffer` of the rendered image.
+To render a PDF page as an image, you can use the `renderPageAsImage` method. This method will return an `ArrayBuffer` of the rendered image. It can also return a data URL (`string`) if `toDataURL` option is set to `true`.
 
 > [!NOTE]
 > This method will only work in Node.js and browser environments.
@@ -286,7 +286,7 @@ In order to use this method, make sure to meet the following requirements:
 **Type Declaration**
 
 ```ts
-declare function renderPageAsImage(
+function renderPageAsImage(
   data: DocumentInitParameters['data'],
   pageNumber: number,
   options?: {
@@ -295,11 +295,24 @@ declare function renderPageAsImage(
     scale?: number
     width?: number
     height?: number
+    toDataURL?: false
   },
 ): Promise<ArrayBuffer>
+function renderPageAsImage(
+  data: DocumentInitParameters['data'],
+  pageNumber: number,
+  options: {
+    canvasImport?: () => Promise<typeof import('@napi-rs/canvas')>
+    /** @default 1.0 */
+    scale?: number
+    width?: number
+    height?: number
+    toDataURL: true
+  },
+): Promise<string>
 ```
 
-**Example**
+**Examples**
 
 ```ts
 import { definePDFJSModule, renderPageAsImage } from 'unpdf'
@@ -316,6 +329,36 @@ const result = await renderPageAsImage(buffer, pageNumber, {
   scale: 2,
 })
 await writeFile('dummy-page-1.png', new Uint8Array(result))
+```
+
+```ts
+import { definePDFJSModule, renderPageAsImage } from 'unpdf'
+
+await definePDFJSModule(() => import('pdfjs-dist'))
+
+const pdf = await readFile('./dummy.pdf')
+const buffer = new Uint8Array(pdf)
+const pageNumber = 1
+
+const result = await renderPageAsImage(buffer, pageNumber, {
+  canvasImport: () => import('@napi-rs/canvas'),
+  scale: 2,
+  toDataURL: true,
+})
+
+const html = `<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dummy Page</title>
+  </head>
+  <body>
+    <img alt="Example Page" src="${result}">
+  </body>
+</html>`
+
+await writeFile('dummy-page-1.html', html)
 ```
 
 ## License
