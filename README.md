@@ -287,7 +287,7 @@ In order to use this method, make sure to meet the following requirements:
 
 ```ts
 function renderPageAsImage(
-  data: DocumentInitParameters['data'],
+  data: DocumentInitParameters['data'] | PDFDocumentProxy,
   pageNumber: number,
   options?: {
     canvasImport?: () => Promise<typeof import('@napi-rs/canvas')>
@@ -299,7 +299,7 @@ function renderPageAsImage(
   },
 ): Promise<ArrayBuffer>
 function renderPageAsImage(
-  data: DocumentInitParameters['data'],
+  data: DocumentInitParameters['data'] | PDFDocumentProxy,
   pageNumber: number,
   options: {
     canvasImport?: () => Promise<typeof import('@napi-rs/canvas')>
