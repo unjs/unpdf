@@ -18,7 +18,7 @@ This library is also intended as a modern alternative to the unmaintained but st
 ## PDF.js Compatibility
 
 > [!Tip]
-> The serverless PDF.js bundle provided by `unpdf` is built from PDF.js v5.2.133.
+> The serverless PDF.js bundle provided by `unpdf` is built from PDF.js v5.4.54.
 
 You can use an [official PDF.js build](#official-or-legacy-pdfjs-build) by using the [`definePDFJSModule`](#definepdfjsmodule) method. This is useful if you want to use a specific version or a custom build of PDF.js.
 

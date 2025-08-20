@@ -152,6 +152,7 @@ export async function renderPageAsImage(
   const drawingContext = (new CanvasFactory()).create(viewport.width, viewport.height)
 
   await page.render({
+    canvas: drawingContext.canvas as HTMLCanvasElement,
     canvasContext: drawingContext.context as CanvasRenderingContext2D,
     viewport,
   }).promise
