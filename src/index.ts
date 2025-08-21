@@ -19,8 +19,7 @@ export const getMeta: typeof _getMeta = async (...args) => {
 
 export const extractText: typeof _extractText = async (...args) => {
   await resolvePDFJSImport()
-  // @ts-expect-error: TS doesn't support overloads with default values
-  return await _extractText(...args)
+  return await (_extractText as any)(...args)
 }
 
 export const extractImages: typeof _extractImages = async (...args) => {
