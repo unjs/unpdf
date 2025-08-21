@@ -88,6 +88,31 @@ describe('unpdf', () => {
     expect(Array.from(headerBytes)).toEqual([137, 80, 78, 71, 13, 10, 26, 10])
   })
 
+  it('renders a PDF as data URL', async () => {
+    const result = await renderPageAsImage(await getPDF('pdflatex-image.pdf'), 1, {
+      canvasImport: () => import('@napi-rs/canvas'),
+      toDataURL: true,
+    })
+
+    const html = `<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDFLatex Image</title>
+  </head>
+  <body>
+    <img alt="Image" src="${result}">
+  </body>
+</html>`
+    await writeFile(
+      new URL('artifacts/pdflatex-image.html', import.meta.url),
+      html,
+    )
+
+    expect(result.startsWith('data:image/png;base64,')).toBe(true)
+  })
+
   it('supports passing PDFDocumentProxy', async () => {
     const pdf = await getDocumentProxy(await getPDF())
     const { info } = await getMeta(pdf)
