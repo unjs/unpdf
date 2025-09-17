@@ -119,6 +119,57 @@ describe('unpdf', () => {
 
     expect(info.Creator).toMatchInlineSnapshot('"Writer"')
   })
+
+  it('getMeta() handles parseDates option', async () => {
+    // when parseDates is enabled - should add Date objects
+    const { info: infoWithDates } = await getMeta(await getPDF(), { parseDates: true })
+
+    expect(infoWithDates.CreationDateObject).toBeInstanceOf(Date)
+    expect(infoWithDates.ModDateObject).toBeNull() // ModDate is not present in sample.pdf
+
+    // Verify the parsed date matches the expected creation date (D:20070223175637+02'00')
+    expect(infoWithDates.CreationDateObject.getFullYear()).toBe(2007)
+    expect(infoWithDates.CreationDateObject.getMonth()).toBe(1) // February (0-based)
+    expect(infoWithDates.CreationDateObject.getDate()).toBe(23)
+    expect(infoWithDates.CreationDate).toBe('D:20070223175637+02\'00\'')
+
+    // when parseDates is disabled (default)/false - should not add Date objects
+    const { info: infoDefault } = await getMeta(await getPDF())
+
+    expect(infoDefault.CreationDateObject).toBeUndefined()
+    expect(infoDefault.ModDateObject).toBeUndefined()
+    expect(infoDefault.CreationDate).toBe('D:20070223175637+02\'00\'')
+
+    // parseDates with PDFDocumentProxy and XMP metadata date parsing
+    const pdf = await getDocumentProxy(await getPDF())
+
+    const originalGetMetadata = pdf.getMetadata
+    pdf.getMetadata = async () => {
+      const originalMeta = await originalGetMetadata.call(pdf)
+      // Create a new metadata object that preserves all original properties
+      const mockMetadata = Object.create(originalMeta.metadata || {})
+      // Override only the get method
+      mockMetadata.get = (key: string) => {
+        if (key === 'xmp:createdate')
+          return '2023-01-15T10:30:45Z'
+        if (key === 'xmp:modifydate')
+          return '2023-03-20T14:25:30Z'
+        return originalMeta.metadata?.get?.(key)
+      }
+      return { ...originalMeta, metadata: mockMetadata }
+    }
+
+    const { info: infoXMP } = await getMeta(pdf, { parseDates: true })
+
+    // XMP dates should be prioritized over PDF info dates
+    expect(infoXMP.CreationDateObject.getFullYear()).toBe(2023)
+    expect(infoXMP.CreationDateObject.getMonth()).toBe(0) // January (0-based)
+    expect(infoXMP.CreationDateObject.getDate()).toBe(15)
+    expect(infoXMP.ModDateObject).toBeInstanceOf(Date)
+    expect(infoXMP.ModDateObject.getFullYear()).toBe(2023)
+    expect(infoXMP.ModDateObject.getMonth()).toBe(2) // March (0-based)
+    expect(infoXMP.CreationDate).toBe('D:20070223175637+02\'00\'') // Original should remain
+  })
 })
 
 async function getPDF(filename = 'sample.pdf') {
