@@ -1,17 +1,15 @@
 import type { DocumentInitParameters, PDFDocumentProxy } from 'pdfjs-dist/types/src/display/api'
 import { getDocumentProxy, getResolvedPDFJS, isPDFDocumentProxy } from './utils'
 
-async function toJSDateObject(metadataDate: string, infoDate: string) {
-  const { PDFDateString } = await getResolvedPDFJS()
-  if (metadataDate) {
-    const date = Date.parse(metadataDate)
-    if (!Number.isNaN(date)) {
-      return new Date(date)
-    }
+function parseISODateString(isoDateString: string) {
+  if (!isoDateString)
+    return null
+
+  const date = Date.parse(isoDateString)
+  if (!Number.isNaN(date)) {
+    return new Date(date)
   }
-  if (infoDate) {
-    return PDFDateString.toDateObject(infoDate)
-  }
+
   return null
 }
 
@@ -25,8 +23,51 @@ export async function getMeta(
   const meta = await pdf.getMetadata()
 
   if (opts.parseDates) {
-    meta.info.CreationDateObject = await toJSDateObject(meta.metadata?.get('xmp:createdate'), meta.info?.CreationDate)
-    meta.info.ModDateObject = await toJSDateObject(meta.metadata?.get('xmp:modifydate'), meta.info?.ModDate)
+    const { PDFDateString } = await getResolvedPDFJS()
+
+    // primary date properties from /Info dictionary
+    if (meta.info?.CreationDate) {
+      meta.info.CreationDate = PDFDateString.toDateObject(meta.info?.CreationDate)
+    }
+    if (meta.info?.ModDate) {
+      meta.info.ModDate = PDFDateString.toDateObject(meta.info?.ModDate)
+    }
+
+    if (meta.metadata) {
+      const originalMetadata = meta.metadata
+      meta.metadata = {
+        ...originalMetadata,
+        get: (name: any) => {
+          // override xmp date properties
+          if (name === 'xmp:createdate' && originalMetadata.get('xmp:createdate')) {
+            return parseISODateString(originalMetadata.get('xmp:createdate'))
+          }
+
+          if (name === 'xmp:modifydate' && originalMetadata.get('xmp:modifydate')) {
+            return parseISODateString(originalMetadata.get('xmp:modifydate'))
+          }
+
+          if (name === 'xmp:metadatadate' && originalMetadata.get('xmp:metadatadate')) {
+            return parseISODateString(originalMetadata.get('xmp:metadatadate'))
+          }
+
+          // legacy xap date properties
+          if (name === 'xap:createdate' && originalMetadata.get('xap:createdate')) {
+            return parseISODateString(originalMetadata.get('xap:createdate'))
+          }
+
+          if (name === 'xap:modifydate' && originalMetadata.get('xap:modifydate')) {
+            return parseISODateString(originalMetadata.get('xap:modifydate'))
+          }
+
+          if (name === 'xap:metadatadate' && originalMetadata.get('xap:metadatadate')) {
+            return parseISODateString(originalMetadata.get('xap:metadatadate'))
+          }
+
+          return originalMetadata.get(name)
+        },
+      }
+    }
   }
 
   return {
