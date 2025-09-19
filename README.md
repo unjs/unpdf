@@ -131,11 +131,16 @@ function getResolvedPDFJS(): Promise<PDFJS>
 
 ### `getMeta`
 
+Extracts metadata from a PDF. If `parseDates` is set to `true`, the date properties will be parsed into Date objects.
+
 **Type Declaration**
 
 ```ts
 function getMeta(
   data: DocumentInitParameters['data'] | PDFDocumentProxy,
+  options?: {
+    parseDates?: boolean
+  },
 ): Promise<{
   info: Record<string, any>
   metadata: Record<string, any>
