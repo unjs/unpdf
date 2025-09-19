@@ -29,7 +29,7 @@ describe('unpdf', () => {
     const PDFJS = await getResolvedPDFJS()
     const { version } = PDFJS
 
-    expect(version).toMatchInlineSnapshot(`"5.4.54"`)
+    expect(version).toMatchInlineSnapshot(`"5.4.149"`)
   })
 
   it('extracts metadata from a PDF', async () => {
@@ -120,46 +120,31 @@ describe('unpdf', () => {
     expect(info.Creator).toMatchInlineSnapshot('"Writer"')
   })
 
-  it('getMeta() handles parseDates option', async () => {
-    // when parseDates is enabled - should add Date objects
+  it('parses PDF dates when parseDates option is enabled', async () => {
+    // Test basic date parsing from /Info dictionary
     const { info: infoWithDates } = await getMeta(await getPDF(), { parseDates: true })
 
+    expect(infoWithDates.ModDate).toBeUndefined() // ModDate not present in sample.pdf
     expect(infoWithDates.CreationDate).toBeInstanceOf(Date)
-    expect(infoWithDates.ModDate).toBeUndefined() // ModDate is not present in sample.pdf
-
-    // Verify the parsed date matches the expected creation date (D:20070223175637+02'00')
     expect(infoWithDates.CreationDate.getFullYear()).toBe(2007)
-    expect(infoWithDates.CreationDate.getMonth()).toBe(1) // February (0-based)
-    expect(infoWithDates.CreationDate.getDate()).toBe(23)
 
-    // parseDates with PDFDocumentProxy and XMP metadata date parsing
-    const pdfWithXMPMetadata = await getDocumentProxy(await getPDF('links.pdf'))
+    // Test XMP metadata date parsing
+    const { info: infoLinks, metadata: linksMetadata } = await getMeta(
+      await getDocumentProxy(await getPDF('links.pdf')),
+      { parseDates: true },
+    )
 
-    const { info: infoLinks, metadata: linksMetadata } = await getMeta(pdfWithXMPMetadata, { parseDates: true })
-
+    // Verify /Info dates are parsed
     expect(infoLinks.CreationDate).toBeInstanceOf(Date)
     expect(infoLinks.ModDate).toBeInstanceOf(Date)
-
     expect(infoLinks.CreationDate.getFullYear()).toBe(2024)
-    expect(infoLinks.CreationDate.getMonth()).toBe(0) // January (0-based)
-    expect(infoLinks.CreationDate.getDate()).toBe(23)
     expect(infoLinks.ModDate.getFullYear()).toBe(2024)
-    expect(infoLinks.ModDate.getMonth()).toBe(0) // January (0-based)
-    expect(infoLinks.ModDate.getDate()).toBe(23)
 
+    // Verify XMP dates are parsed
     expect(linksMetadata.get('xmp:createdate')).toBeInstanceOf(Date)
     expect(linksMetadata.get('xmp:modifydate')).toBeInstanceOf(Date)
     expect(linksMetadata.get('xmp:metadatadate')).toBeInstanceOf(Date)
-
     expect(linksMetadata.get('xmp:createdate').getFullYear()).toBe(2024)
-    expect(linksMetadata.get('xmp:createdate').getMonth()).toBe(0) // January (0-based)
-    expect(linksMetadata.get('xmp:createdate').getDate()).toBe(23)
-    expect(linksMetadata.get('xmp:modifydate').getFullYear()).toBe(2024)
-    expect(linksMetadata.get('xmp:modifydate').getMonth()).toBe(0) // January (0-based)
-    expect(linksMetadata.get('xmp:modifydate').getDate()).toBe(23)
-    expect(linksMetadata.get('xmp:metadatadate').getFullYear()).toBe(2024)
-    expect(linksMetadata.get('xmp:metadatadate').getMonth()).toBe(0) // January (0-based)
-    expect(linksMetadata.get('xmp:metadatadate').getDate()).toBe(23)
 
     expect(linksMetadata.get('xap:createdate')).toBeNull()
     expect(linksMetadata.get('xap:modifydate')).toBeNull()

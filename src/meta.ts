@@ -1,77 +1,70 @@
 import type { DocumentInitParameters, PDFDocumentProxy } from 'pdfjs-dist/types/src/display/api'
 import { getDocumentProxy, getResolvedPDFJS, isPDFDocumentProxy } from './utils'
 
-function parseISODateString(isoDateString: string) {
-  if (!isoDateString)
-    return null
-
-  const date = Date.parse(isoDateString)
-  if (!Number.isNaN(date)) {
-    return new Date(date)
-  }
-
-  return null
-}
+const XMP_DATE_PROPERTIES = [
+  'xmp:createdate',
+  'xmp:modifydate',
+  'xmp:metadatadate',
+  'xap:createdate',
+  'xap:modifydate',
+  'xap:metadatadate',
+]
 
 export async function getMeta(
   data: DocumentInitParameters['data'] | PDFDocumentProxy,
-  opts: {
+  options: {
     parseDates?: boolean
   } = {},
 ) {
   const pdf = isPDFDocumentProxy(data) ? data : await getDocumentProxy(data)
   const meta = await pdf.getMetadata()
 
-  if (opts.parseDates) {
+  const info = (meta?.info || {}) as Record<string, any>
+
+  if (options.parseDates) {
     const { PDFDateString } = await getResolvedPDFJS()
 
-    // primary date properties from /Info dictionary
-    if (meta.info?.CreationDate) {
-      meta.info.CreationDate = PDFDateString.toDateObject(meta.info?.CreationDate)
+    // Primary date properties from /Info dictionary
+    if (info?.CreationDate) {
+      info.CreationDate = PDFDateString.toDateObject(info?.CreationDate)
     }
-    if (meta.info?.ModDate) {
-      meta.info.ModDate = PDFDateString.toDateObject(meta.info?.ModDate)
+    if (info?.ModDate) {
+      info.ModDate = PDFDateString.toDateObject(info?.ModDate)
     }
 
+    // Override metadata getter to parse XMP date properties
     if (meta.metadata) {
-      const originalMetadata = meta.metadata
-      meta.metadata = {
-        ...originalMetadata,
-        get: (name: any) => {
-          // override xmp date properties
-          if (name === 'xmp:createdate' && originalMetadata.get('xmp:createdate')) {
-            return parseISODateString(originalMetadata.get('xmp:createdate'))
-          }
+      meta.metadata = new Proxy(meta.metadata, {
+        get(target, prop) {
+          if (prop === 'get') {
+            return (name: string) => {
+              const value = target.get(name)
 
-          if (name === 'xmp:modifydate' && originalMetadata.get('xmp:modifydate')) {
-            return parseISODateString(originalMetadata.get('xmp:modifydate'))
-          }
+              if (XMP_DATE_PROPERTIES.includes(name) && value) {
+                return parseISODateString(value)
+              }
 
-          if (name === 'xmp:metadatadate' && originalMetadata.get('xmp:metadatadate')) {
-            return parseISODateString(originalMetadata.get('xmp:metadatadate'))
+              return value
+            }
           }
-
-          // legacy xap date properties
-          if (name === 'xap:createdate' && originalMetadata.get('xap:createdate')) {
-            return parseISODateString(originalMetadata.get('xap:createdate'))
-          }
-
-          if (name === 'xap:modifydate' && originalMetadata.get('xap:modifydate')) {
-            return parseISODateString(originalMetadata.get('xap:modifydate'))
-          }
-
-          if (name === 'xap:metadatadate' && originalMetadata.get('xap:metadatadate')) {
-            return parseISODateString(originalMetadata.get('xap:metadatadate'))
-          }
-
-          return originalMetadata.get(name)
+          return target[prop as keyof typeof target]
         },
-      }
+      })
     }
   }
 
   return {
-    info: (meta?.info ?? {}) as Record<string, any>,
-    metadata: ({ ...meta?.metadata }) as Record<string, any>,
+    info,
+    metadata: meta?.metadata || {},
+  }
+}
+
+function parseISODateString(isoDateString: string) {
+  if (!isoDateString)
+    return
+
+  const parsedDate = Date.parse(isoDateString)
+  if (!Number.isNaN(parsedDate)) {
+    return new Date(parsedDate)
   }
 }
