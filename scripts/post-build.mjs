@@ -14,6 +14,9 @@ for (const filename of targets) {
   await relativeTypePaths(filename)
 }
 
+/**
+ * @param {string} filename
+ */
 async function relativeTypePaths(filename) {
   let content = await readFile(filename, 'utf8')
   if (!content.includes('pdfjs-dist/types')) {
