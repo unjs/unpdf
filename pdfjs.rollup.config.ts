@@ -46,6 +46,8 @@ export default defineConfig({
         '#getJsModule(fallbackCallback) {': '#getJsModule(fallbackCallback) { return;',
         // Mock the `@napi-rs/canvas` module import from the unused `NodeCanvasFactory` class.
         'require("@napi-rs/canvas")': canvasMock,
+        // Remove the legacy build warning.
+        'warn("Please use the `legacy` build in Node.js environments.")': '',
       },
     }),
     nodeResolve(),
