@@ -168,7 +168,7 @@ export async function renderPageAsImage(
   return await response.arrayBuffer()
 }
 
-async function createIsomorphicCanvasFactory(
+export async function createIsomorphicCanvasFactory(
   canvasImport?: () => Promise<typeof import('@napi-rs/canvas')>,
 ) {
   if (isBrowser)
