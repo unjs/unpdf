@@ -57,9 +57,9 @@ export async function extractImages(
 
     const imageKey = operatorList.argsArray[i][0]
     // Resolve global image keys
-    const image = imageKey.startsWith('g_')
-      ? await new Promise<RequestedImageObject | null>(resolve => page.commonObjs.get(imageKey, (resolvedImage: RequestedImageObject | null) => resolve(resolvedImage)))
-      : await new Promise<RequestedImageObject | null>(resolve => page.objs.get(imageKey, (resolvedImage: RequestedImageObject | null) => resolve(resolvedImage)))
+    const image = await new Promise<RequestedImageObject | null>(
+      resolve => (imageKey.startsWith('g_') ? page.commonObjs : page.objs).get(imageKey, resolve),
+    )
 
     if (!image || !image.data || !image.width || !image.height) {
       // Missing required properties
