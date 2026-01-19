@@ -288,6 +288,19 @@ In order to use this method, make sure to meet the following requirements:
 - Use the official PDF.js build (see below for details).
 - Install the [`@napi-rs/canvas`](https://github.com/Brooooooklyn/canvas) package if you are using Node.js. This package is required to render the PDF page as an image.
 
+> [!NOTE]
+> If you need to pass PDF.js `getDocument` options (e.g. to improve font rendering), use the `document` option.
+>
+> ```ts
+> const result = await renderPageAsImage(buffer, pageNumber, {
+>   canvasImport: () => import('@napi-rs/canvas'),
+>   document: {
+>     disableFontFace: true,
+>     standardFontDataUrl: new URL('standard_fonts/', import.meta.url).toString(),
+>   },
+> })
+> ```
+
 **Type Declaration**
 
 ```ts
@@ -301,6 +314,7 @@ function renderPageAsImage(
     width?: number
     height?: number
     toDataURL?: false
+    document?: Omit<DocumentInitParameters, 'data' | 'CanvasFactory'>
   },
 ): Promise<ArrayBuffer>
 function renderPageAsImage(
@@ -313,6 +327,7 @@ function renderPageAsImage(
     width?: number
     height?: number
     toDataURL: true
+    document?: Omit<DocumentInitParameters, 'data' | 'CanvasFactory'>
   },
 ): Promise<string>
 ```
