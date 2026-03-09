@@ -98,6 +98,7 @@ export function renderPageAsImage(
     width?: number
     height?: number
     toDataURL?: false
+    document?: Omit<DocumentInitParameters, 'data' | 'CanvasFactory'>
   },
 ): Promise<ArrayBuffer>
 export function renderPageAsImage(
@@ -110,6 +111,7 @@ export function renderPageAsImage(
     width?: number
     height?: number
     toDataURL: true
+    document?: Omit<DocumentInitParameters, 'data' | 'CanvasFactory'>
   },
 ): Promise<string>
 export async function renderPageAsImage(
@@ -122,12 +124,25 @@ export async function renderPageAsImage(
     width?: number
     height?: number
     toDataURL?: boolean
+    document?: Omit<DocumentInitParameters, 'data' | 'CanvasFactory'>
   } = {},
 ) {
-  const CanvasFactory = await createIsomorphicCanvasFactory(options.canvasImport)
+  const {
+    canvasImport,
+    scale: requestedScale,
+    width,
+    height,
+    toDataURL,
+    document: documentOptions = {},
+  } = options
+
+  const CanvasFactory = await createIsomorphicCanvasFactory(canvasImport)
+  const safeDocumentOptions = { ...documentOptions } as DocumentInitParameters
+  delete safeDocumentOptions.data
+  delete safeDocumentOptions.CanvasFactory
   const pdf = isPDFDocumentProxy(data)
     ? data
-    : await getDocumentProxy(data, { CanvasFactory })
+    : await getDocumentProxy(data, { ...safeDocumentOptions, CanvasFactory })
   const page = await pdf.getPage(pageNumber)
 
   if (pageNumber < 1 || pageNumber > pdf.numPages) {
@@ -138,13 +153,13 @@ export async function renderPageAsImage(
   const defaultViewport = page.getViewport({ scale: 1.0 })
 
   // Calculate appropriate scale based on provided options
-  let scale = options.scale || 1.0
+  let scale = requestedScale || 1.0
 
-  if (options.width) {
-    scale = options.width / defaultViewport.width
+  if (width) {
+    scale = width / defaultViewport.width
   }
-  else if (options.height) {
-    scale = options.height / defaultViewport.height
+  else if (height) {
+    scale = height / defaultViewport.height
   }
 
   // Create the correctly scaled viewport
@@ -159,7 +174,7 @@ export async function renderPageAsImage(
 
   const dataUrl = drawingContext.canvas.toDataURL()
 
-  if (options.toDataURL) {
+  if (toDataURL) {
     return dataUrl
   }
 
