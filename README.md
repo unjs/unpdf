@@ -7,7 +7,7 @@ Ships with a serverless build of Mozilla's [PDF.js](https://github.com/mozilla/p
 ## Features
 
 - 🏗️ Works in Node.js, browser and serverless environments
-- 🪭 Includes serverless build of PDF.js ([`unpdf/pdfjs`](./package.json#L34))
+- 🪭 Includes serverless build of PDF.js ([`unpdf/pdfjs`](./package.json))
 - 💬 Extract [text](#extract-text-from-pdf), [links](#extractlinks), and [images](#extractimages) from PDF files
 - 🧠 Perfect for AI applications and PDF summarization
 - 🧱 Opt-in to official or legacy PDF.js build
@@ -97,7 +97,7 @@ Heart and soul of this package is the [`pdfjs.rollup.config.ts`](./pdfjs.rollup.
 
 - **String replacements** strip browser-specific references from the PDF.js source.
 - **Worker inlining** embeds the PDF.js worker directly into the main bundle, since serverless runtimes can't load separate worker files.
-- **Global polyfills** provide missing APIs like `FinalizationRegistry` (unavailable in Cloudflare Workers).
+- **Global polyfills** provide missing APIs like `Promise.withResolvers` and `FinalizationRegistry` (unavailable in Node.js < 22 and Cloudflare Workers, respectively).
 
 ## API
 
@@ -119,6 +119,21 @@ Returns the resolved PDF.js module. If no other PDF.js build was defined, the se
 
 ```ts
 function getResolvedPDFJS(): Promise<PDFJS>
+```
+
+### `getDocumentProxy`
+
+Creates a `PDFDocumentProxy` from binary PDF data. Every extraction method accepts either raw data or an existing proxy – use this when you want to reuse one document across multiple calls.
+
+Applies sensible defaults: `isEvalSupported: false` and `useSystemFonts: true`; in Node.js additionally `disableFontFace: true` and `standardFontDataUrl` resolved from the local `pdfjs-dist` package (see the font rendering tip in [`renderPageAsImage`](#renderpageasimage)).
+
+**Type Declaration**
+
+```ts
+function getDocumentProxy(
+  data: DocumentInitParameters['data'],
+  options?: DocumentInitParameters,
+): Promise<PDFDocumentProxy>
 ```
 
 ### `getMeta`
@@ -163,6 +178,37 @@ function extractText(
 ): Promise<{
   totalPages: number
   text: string
+}>
+```
+
+### `extractTextItems`
+
+Extracts text with layout information – one array of positioned items per page. Useful when plain text is not enough and you need coordinates, font sizes, or reading direction, e.g. for table detection or positional parsing.
+
+**Type Declaration**
+
+```ts
+interface StructuredTextItem {
+  str: string
+  /** X position in PDF coordinate space (origin: bottom-left). */
+  x: number
+  /** Y position in PDF coordinate space (origin: bottom-left). */
+  y: number
+  width: number
+  height: number
+  fontSize: number
+  fontFamily: string
+  /** Text direction: `"ltr"`, `"rtl"`, or `"ttb"`. */
+  dir: string
+  /** Whether the text item is followed by a line break. */
+  hasEOL: boolean
+}
+
+function extractTextItems(
+  data: DocumentInitParameters['data'] | PDFDocumentProxy,
+): Promise<{
+  totalPages: number
+  items: StructuredTextItem[][]
 }>
 ```
 
@@ -314,6 +360,7 @@ function renderPageAsImage(
 **Examples**
 
 ```ts
+import { readFile, writeFile } from 'node:fs/promises'
 import { definePDFJSModule, renderPageAsImage } from 'unpdf'
 
 // Use the official PDF.js build
@@ -331,6 +378,7 @@ await writeFile('dummy-page-1.png', new Uint8Array(result))
 ```
 
 ```ts
+import { readFile, writeFile } from 'node:fs/promises'
 import { definePDFJSModule, renderPageAsImage } from 'unpdf'
 
 await definePDFJSModule(() => import('pdfjs-dist'))
