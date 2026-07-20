@@ -96,6 +96,13 @@ export class NodeCanvasFactory extends BaseCanvasFactory {
 
 export async function resolveCanvasModule(canvasImport: () => Promise<typeof import('@napi-rs/canvas')>) {
   resolvedCanvasModule ??= (await interopDefault(canvasImport()))
+
+  // Share the resolved module with the serverless PDF.js build: its baked-in
+  // `NodeCanvasFactory` (the default document-level factory of `getDocument`,
+  // used for intermediate canvases such as soft masks and transparency groups)
+  // resolves `@napi-rs/canvas` through this global symbol — see the canvas mock
+  // in `pdfjs.rollup.config.ts`.
+  ;(globalThis as Record<symbol, unknown>)[Symbol.for('unpdf.canvasModule')] = resolvedCanvasModule
 }
 
 /**

@@ -4,12 +4,22 @@ import { defineConfig } from 'rollup'
 import esbuild, { minify } from 'rollup-plugin-esbuild'
 import { pdfjsTypes } from './src/pdfjs-serverless/rollup/plugins'
 
+// PDF.js resolves `@napi-rs/canvas` for its built-in `NodeCanvasFactory`, which
+// becomes the *document-level* canvas factory when no `CanvasFactory` option is
+// passed to `getDocument`. That factory is used for intermediate canvases (soft
+// masks, transparency groups, tiling patterns), so it must work whenever the
+// canvas module has been resolved via `resolveCanvasModule` — the resolved
+// module is shared through a well-known global symbol (see
+// `src/_internal/canvas.ts`). Without it, keep the descriptive error.
 const canvasMock = `
 new Proxy({}, {
   get(target, prop) {
+    const canvasModule = globalThis[Symbol.for("unpdf.canvasModule")];
+    if (canvasModule)
+      return canvasModule[prop];
     return () => {
-      throw new Error("@napi-rs/canvas is not available in this environment")
-    }
+      throw new Error("@napi-rs/canvas is not available in this environment");
+    };
   },
 })
 `
@@ -42,7 +52,8 @@ export default defineConfig({
         'if (!this.#modulePromise)': 'if (false)',
         '#instantiateWasm(fallbackCallback, imports, successCallback) {': '#instantiateWasm(fallbackCallback, imports, successCallback) { return;',
         '#getJsModule(fallbackCallback) {': '#getJsModule(fallbackCallback) { return;',
-        // Mock the `@napi-rs/canvas` module import from the unused `NodeCanvasFactory` class.
+        // Bridge the `@napi-rs/canvas` module import of PDF.js' `NodeCanvasFactory`
+        // to the module resolved by `resolveCanvasModule` (see `canvasMock` above).
         'require("@napi-rs/canvas")': canvasMock,
         // Remove the legacy build warning.
         'warn("Please use the `legacy` build in Node.js environments.")': '',
