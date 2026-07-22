@@ -29,7 +29,7 @@ async function relativeTypePaths(filename) {
 
   // Replace `pdfjs-dist/types` import path with relative path and add `.js` extension
   const base = relativePath.startsWith('.') ? relativePath : `./${relativePath}`
-  content = content.replace(/pdfjs-dist\/types(\/[^'";\s]+(?<!\.js))/g, `${base}$1.js`)
+  content = content.replace(/pdfjs-dist\/types(\/[^'";\s]+?)(?:\.js)?(?=['"])/g, `${base}$1.js`)
   content = content.replace(/pdfjs-dist\/types/g, base)
 
   await fsp.writeFile(path.resolve(rootDir, filename), content, 'utf8')
