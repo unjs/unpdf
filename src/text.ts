@@ -92,9 +92,20 @@ export async function extractText(
 
   return {
     totalPages: pdf.numPages,
-    // Collapse only intra-line whitespace runs so `hasEOL` line breaks survive
-    text: mergePages ? texts.join('\n').replace(/[^\S\n]+/g, ' ') : texts,
+    text: mergePages ? normalizeMergedText(texts) : texts,
   }
+}
+
+/**
+ * Collapses whitespace without destroying the line structure: `hasEOL` and
+ * page-join line breaks survive, but at most one blank line remains.
+ */
+function normalizeMergedText(texts: string[]) {
+  return texts
+    .join('\n')
+    .replace(/[^\S\n]+/g, ' ')
+    .replace(/ ?\n ?/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
 }
 
 async function getPageText(document: PDFDocumentProxy, pageNumber: number) {
