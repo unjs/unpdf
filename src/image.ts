@@ -158,15 +158,28 @@ export async function renderPageAsImage(
         viewport,
       }).promise
 
-      const dataUrl = drawingContext.canvas.toDataURL()
+      const { canvas } = drawingContext
 
       if (options.toDataURL) {
-        return dataUrl
+        return canvas.toDataURL()
       }
 
-      const response = await fetch(dataUrl)
+      // Encode PNG bytes directly instead of round-tripping through a data URL
+      if ('encode' in canvas) {
+        const buffer = await canvas.encode('png')
+        // `Buffer` pools its underlying `ArrayBuffer`, so slice out this view
+        return buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength)
+      }
 
-      return await response.arrayBuffer()
+      const blob = await new Promise<Blob | null>((resolve) => {
+        canvas.toBlob(resolve)
+      })
+
+      if (!blob) {
+        throw new Error('Failed to encode canvas to a PNG blob.')
+      }
+
+      return await blob.arrayBuffer()
     }
     finally {
       canvasFactory.destroy(drawingContext)
