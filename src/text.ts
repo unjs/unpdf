@@ -73,6 +73,13 @@ export function extractText(
   totalPages: number
   text: string
 }>
+export function extractText(
+  data: DocumentInitParameters['data'] | PDFDocumentProxy,
+  options?: { mergePages?: boolean },
+): Promise<{
+  totalPages: number
+  text: string | string[]
+}>
 export async function extractText(
   data: DocumentInitParameters['data'] | PDFDocumentProxy,
   options: { mergePages?: boolean } = {},
@@ -85,7 +92,8 @@ export async function extractText(
 
   return {
     totalPages: pdf.numPages,
-    text: mergePages ? texts.join('\n').replace(/\s+/g, ' ') : texts,
+    // Collapse only intra-line whitespace runs so `hasEOL` line breaks survive
+    text: mergePages ? texts.join('\n').replace(/[^\S\n]+/g, ' ') : texts,
   }
 }
 

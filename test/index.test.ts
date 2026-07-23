@@ -62,6 +62,31 @@ describe('unpdf', () => {
     expect(totalPages).toMatchInlineSnapshot('1')
   })
 
+  it('preserves line breaks when merging pages', async () => {
+    const { text } = await extractText(await getPDF('links.pdf'), { mergePages: true })
+
+    expect(typeof text).toBe('string')
+    // Page and per-item EOL breaks survive instead of collapsing to one line
+    expect(text).toContain('\n')
+    expect(text.split('\n').length).toBeGreaterThan(1)
+  })
+
+  it('collapses intra-line whitespace but keeps newlines when merging', async () => {
+    const { text } = await extractText(await getPDF('links.pdf'), { mergePages: true })
+
+    expect(text).toContain('\n')
+    // No runs of two or more non-newline whitespace characters remain
+    expect(text).not.toMatch(/[^\S\n]{2,}/)
+    expect(text).not.toMatch(/[\t\r]/)
+  })
+
+  it('accepts a runtime boolean for mergePages', async () => {
+    const mergePages: boolean = true
+    const { text } = await extractText(await getPDF('links.pdf'), { mergePages })
+
+    expect(typeof text === 'string' || Array.isArray(text)).toBe(true)
+  })
+
   it('extracts structured text items from a PDF', async () => {
     const { items, totalPages } = await extractTextItems(await getPDF())
 
