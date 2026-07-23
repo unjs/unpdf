@@ -1,5 +1,5 @@
 import type { DocumentInitParameters, PDFDocumentProxy, TextItem, TextStyle } from 'pdfjs-dist/types/src/display/api'
-import { getDocumentProxy, isPDFDocumentProxy } from './utils'
+import { withDocument } from './utils'
 
 export interface StructuredTextItem {
   /** Text content. */
@@ -25,19 +25,13 @@ export interface StructuredTextItem {
 export async function extractTextItems(
   data: DocumentInitParameters['data'] | PDFDocumentProxy,
 ): Promise<{ totalPages: number, items: StructuredTextItem[][] }> {
-  const pdf = isPDFDocumentProxy(data) ? data : await getDocumentProxy(data)
-  const ownsDocument = pdf !== data
-  try {
+  return await withDocument(data, async (pdf) => {
     const items = await Promise.all(
       Array.from({ length: pdf.numPages }, (_, i) => getPageTextItems(pdf, i + 1)),
     )
 
     return { totalPages: pdf.numPages, items }
-  }
-  finally {
-    if (ownsDocument)
-      await pdf.destroy()
-  }
+  })
 }
 
 async function getPageTextItems(
@@ -92,9 +86,7 @@ export async function extractText(
   options: { mergePages?: boolean } = {},
 ) {
   const { mergePages = false } = options
-  const pdf = isPDFDocumentProxy(data) ? data : await getDocumentProxy(data)
-  const ownsDocument = pdf !== data
-  try {
+  return await withDocument(data, async (pdf) => {
     const texts = await Promise.all(
       Array.from({ length: pdf.numPages }, (_, i) => getPageText(pdf, i + 1)),
     )
@@ -103,11 +95,7 @@ export async function extractText(
       totalPages: pdf.numPages,
       text: mergePages ? normalizeMergedText(texts) : texts,
     }
-  }
-  finally {
-    if (ownsDocument)
-      await pdf.destroy()
-  }
+  })
 }
 
 /**

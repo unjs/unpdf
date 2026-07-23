@@ -51,6 +51,28 @@ export async function getDocumentProxy(
   return pdf
 }
 
+/**
+ * Runs an operation on a `PDFDocumentProxy` resolved from either binary data
+ * or an existing proxy. Documents created here are destroyed once the
+ * operation settles – caller-supplied proxies keep their lifecycle with the
+ * caller.
+ */
+export async function withDocument<T>(
+  data: DocumentInitParameters['data'] | PDFDocumentProxy,
+  operation: (pdf: PDFDocumentProxy) => Promise<T>,
+  options?: DocumentInitParameters,
+): Promise<T> {
+  const pdf = isPDFDocumentProxy(data) ? data : await getDocumentProxy(data, options)
+
+  try {
+    return await operation(pdf)
+  }
+  finally {
+    if (pdf !== data)
+      await pdf.destroy()
+  }
+}
+
 export async function getResolvedPDFJS(): Promise<typeof PDFJS> {
   if (!resolvedModule) {
     await resolvePDFJSImport()

@@ -1,5 +1,5 @@
 import type { DocumentInitParameters, PDFDocumentProxy } from 'pdfjs-dist/types/src/display/api'
-import { getDocumentProxy, isPDFDocumentProxy } from './utils'
+import { withDocument } from './utils'
 
 export async function extractLinks(
   data: DocumentInitParameters['data'] | PDFDocumentProxy,
@@ -7,9 +7,7 @@ export async function extractLinks(
   totalPages: number
   links: string[]
 }> {
-  const pdf = isPDFDocumentProxy(data) ? data : await getDocumentProxy(data)
-  const ownsDocument = pdf !== data
-  try {
+  return await withDocument(data, async (pdf) => {
     const pageLinks = await Promise.all(
       Array.from({ length: pdf.numPages }, (_, i) => getPageLinks(pdf, i + 1)),
     )
@@ -18,11 +16,7 @@ export async function extractLinks(
       totalPages: pdf.numPages,
       links: pageLinks.flat(),
     }
-  }
-  finally {
-    if (ownsDocument)
-      await pdf.destroy()
-  }
+  })
 }
 
 async function getPageLinks(document: PDFDocumentProxy, pageNumber: number) {

@@ -1,6 +1,6 @@
 import type { DocumentInitParameters, PDFDocumentProxy } from 'pdfjs-dist/types/src/display/api'
 import { DOMCanvasFactory, injectCanvasConstructors, NodeCanvasFactory, resolveCanvasModule } from './_internal/canvas'
-import { getDocumentProxy, getResolvedPDFJS, isBrowser, isNode, isPDFDocumentProxy } from './utils'
+import { getResolvedPDFJS, isBrowser, isNode, withDocument } from './utils'
 
 export interface ExtractedImageObject {
   data: Uint8ClampedArray
@@ -36,9 +36,7 @@ export async function extractImages(
   data: DocumentInitParameters['data'] | PDFDocumentProxy,
   pageNumber: number,
 ): Promise<ExtractedImageObject[]> {
-  const pdf = isPDFDocumentProxy(data) ? data : await getDocumentProxy(data)
-  const ownsDocument = pdf !== data
-  try {
+  return await withDocument(data, async (pdf) => {
     if (pageNumber < 1 || pageNumber > pdf.numPages) {
       throw new Error(`Invalid page number. Must be between 1 and ${pdf.numPages}.`)
     }
@@ -87,11 +85,7 @@ export async function extractImages(
     }
 
     return images
-  }
-  finally {
-    if (ownsDocument)
-      await pdf.destroy()
-  }
+  })
 }
 
 export function renderPageAsImage(
@@ -131,12 +125,8 @@ export async function renderPageAsImage(
   } = {},
 ) {
   const CanvasFactory = await createIsomorphicCanvasFactory(options.canvasImport)
-  const pdf = isPDFDocumentProxy(data)
-    ? data
-    : await getDocumentProxy(data, { CanvasFactory })
-  const ownsDocument = pdf !== data
 
-  try {
+  return await withDocument(data, async (pdf) => {
     if (pageNumber < 1 || pageNumber > pdf.numPages) {
       throw new Error(`Invalid page number. Must be between 1 and ${pdf.numPages}.`)
     }
@@ -181,11 +171,7 @@ export async function renderPageAsImage(
     finally {
       canvasFactory.destroy(drawingContext)
     }
-  }
-  finally {
-    if (ownsDocument)
-      await pdf.destroy()
-  }
+  }, { CanvasFactory })
 }
 
 export async function createIsomorphicCanvasFactory(

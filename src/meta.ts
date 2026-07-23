@@ -1,5 +1,5 @@
 import type { DocumentInitParameters, PDFDocumentProxy } from 'pdfjs-dist/types/src/display/api'
-import { getDocumentProxy, getResolvedPDFJS, isPDFDocumentProxy } from './utils'
+import { getResolvedPDFJS, withDocument } from './utils'
 
 const XMP_DATE_PROPERTIES = [
   'xmp:createdate',
@@ -16,9 +16,7 @@ export async function getMeta(
     parseDates?: boolean
   } = {},
 ) {
-  const pdf = isPDFDocumentProxy(data) ? data : await getDocumentProxy(data)
-  const ownsDocument = pdf !== data
-  try {
+  return await withDocument(data, async (pdf) => {
     const meta = await pdf.getMetadata()
 
     const info = (meta?.info || {}) as Record<string, any>
@@ -59,11 +57,7 @@ export async function getMeta(
       info,
       metadata: meta?.metadata || {},
     }
-  }
-  finally {
-    if (ownsDocument)
-      await pdf.destroy()
-  }
+  })
 }
 
 function parseISODateString(isoDateString: string) {
