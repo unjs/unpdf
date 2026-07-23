@@ -26,11 +26,18 @@ export async function extractTextItems(
   data: DocumentInitParameters['data'] | PDFDocumentProxy,
 ): Promise<{ totalPages: number, items: StructuredTextItem[][] }> {
   const pdf = isPDFDocumentProxy(data) ? data : await getDocumentProxy(data)
-  const items = await Promise.all(
-    Array.from({ length: pdf.numPages }, (_, i) => getPageTextItems(pdf, i + 1)),
-  )
+  const ownsDocument = pdf !== data
+  try {
+    const items = await Promise.all(
+      Array.from({ length: pdf.numPages }, (_, i) => getPageTextItems(pdf, i + 1)),
+    )
 
-  return { totalPages: pdf.numPages, items }
+    return { totalPages: pdf.numPages, items }
+  }
+  finally {
+    if (ownsDocument)
+      await pdf.destroy()
+  }
 }
 
 async function getPageTextItems(
@@ -79,13 +86,20 @@ export async function extractText(
 ) {
   const { mergePages = false } = options
   const pdf = isPDFDocumentProxy(data) ? data : await getDocumentProxy(data)
-  const texts = await Promise.all(
-    Array.from({ length: pdf.numPages }, (_, i) => getPageText(pdf, i + 1)),
-  )
+  const ownsDocument = pdf !== data
+  try {
+    const texts = await Promise.all(
+      Array.from({ length: pdf.numPages }, (_, i) => getPageText(pdf, i + 1)),
+    )
 
-  return {
-    totalPages: pdf.numPages,
-    text: mergePages ? texts.join('\n').replace(/\s+/g, ' ') : texts,
+    return {
+      totalPages: pdf.numPages,
+      text: mergePages ? texts.join('\n').replace(/\s+/g, ' ') : texts,
+    }
+  }
+  finally {
+    if (ownsDocument)
+      await pdf.destroy()
   }
 }
 

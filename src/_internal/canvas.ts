@@ -1,9 +1,9 @@
-import type { Canvas, CanvasRenderingContext2D } from '@napi-rs/canvas'
+import type { Canvas, SKRSContext2D } from '@napi-rs/canvas'
 import { interopDefault } from '../utils'
 
 interface CanvasFactoryContext {
   canvas?: HTMLCanvasElement | Canvas
-  context?: CanvasRenderingContext2D | CanvasRenderingContext2D
+  context?: CanvasRenderingContext2D | SKRSContext2D | null
 }
 
 let resolvedCanvasModule: typeof import('@napi-rs/canvas') | undefined

@@ -2,7 +2,7 @@ import { readFile, writeFile } from 'node:fs/promises'
 /* eslint-disable ts/ban-ts-comment */
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import {
   definePDFJSModule,
   extractImages,
@@ -135,6 +135,43 @@ describe('unpdf', () => {
     )
 
     expect(result.startsWith('data:image/png;base64,')).toBe(true)
+  })
+
+  it('destroys internally created document proxies', async () => {
+    const probe = await getDocumentProxy(await getPDF())
+    const destroySpy = vi.spyOn(Object.getPrototypeOf(probe), 'destroy')
+
+    await extractText(await getPDF())
+
+    expect(destroySpy).toHaveBeenCalled()
+
+    destroySpy.mockRestore()
+    await probe.destroy()
+  })
+
+  it('does not destroy caller-owned document proxies', async () => {
+    const pdf = await getDocumentProxy(await getPDF())
+    const destroySpy = vi.spyOn(pdf, 'destroy')
+
+    const { text } = await extractText(pdf)
+    expect(text[0]).toBe('Dummy PDF file')
+    expect(destroySpy).not.toHaveBeenCalled()
+
+    // The proxy must still be usable after a helper returns
+    const { info } = await getMeta(pdf)
+    expect(info.Creator).toBe('Writer')
+    expect(destroySpy).not.toHaveBeenCalled()
+
+    await pdf.destroy()
+  })
+
+  it('preserves extracted image data after destroying the document', async () => {
+    const [firstImage] = await extractImages(await getPDF('pdflatex-image.pdf'), 1)
+
+    expect(firstImage!.data.length).toBeGreaterThan(0)
+    expect(firstImage!.data.length).toBe(
+      firstImage!.width * firstImage!.height * firstImage!.channels,
+    )
   })
 
   it('supports passing PDFDocumentProxy', async () => {

@@ -8,13 +8,20 @@ export async function extractLinks(
   links: string[]
 }> {
   const pdf = isPDFDocumentProxy(data) ? data : await getDocumentProxy(data)
-  const pageLinks = await Promise.all(
-    Array.from({ length: pdf.numPages }, (_, i) => getPageLinks(pdf, i + 1)),
-  )
+  const ownsDocument = pdf !== data
+  try {
+    const pageLinks = await Promise.all(
+      Array.from({ length: pdf.numPages }, (_, i) => getPageLinks(pdf, i + 1)),
+    )
 
-  return {
-    totalPages: pdf.numPages,
-    links: pageLinks.flat(),
+    return {
+      totalPages: pdf.numPages,
+      links: pageLinks.flat(),
+    }
+  }
+  finally {
+    if (ownsDocument)
+      await pdf.destroy()
   }
 }
 
