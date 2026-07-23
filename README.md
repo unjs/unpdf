@@ -408,6 +408,15 @@ const html = `<!DOCTYPE html>
 await writeFile('dummy-page-1.html', html)
 ```
 
+## Processing Untrusted PDFs
+
+The `getDocumentProxy` defaults are safe against script execution (`isEvalSupported: false`), but resource limits are your job:
+
+- **Image decoding:** `maxImageSize` is unlimited by default – pass e.g. `maxImageSize: 16_777_216` (~16 MP) so a single declared image can't allocate gigabytes.
+- **Page fan-out:** `extractText`, `extractTextItems`, and `extractLinks` process all pages in one call – check `pdf.numPages` against a limit first.
+- **Timeouts:** with the serverless build, parsing runs on your event loop (no worker) – race extraction calls against a timeout.
+- The raw `getDocument` from `unpdf/pdfjs` applies none of these defaults.
+
 ## License
 
 [MIT](./LICENSE) License © 2023-PRESENT [Johann Schopplich](https://github.com/johannschopplich)
