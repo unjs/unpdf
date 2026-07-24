@@ -1,11 +1,9 @@
 shellEmulator: true
-
 trustPolicy: no-downgrade
 
 packages:
   - examples/*
 
-onlyBuiltDependencies:
-  - esbuild
-  - sharp
-  - workerd
+allowBuilds:
+  esbuild: true
+  workerd: true
