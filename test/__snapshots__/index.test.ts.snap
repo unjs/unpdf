@@ -1,0 +1,20 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`unpdf > preserves line breaks and normalizes whitespace when merging pages 1`] = `
+"Antenna House, Inc.
+Links in PDF
+There are two types of links in PDF: a link to a specific position in the same PDF document, and a link to an external
+document. The internal-destination property of fo:basic-link indicates to link to a position in the same document. Its
+destination may be either an ID or a page number. The external-destination property indicates to link to an external
+document. Its destination may be either an external file or a website.
+Linking to an internal destination
+Linking to an ID：Specify internal-destination="Link-01" on the link; specify id="Link-01" on the link’s destination.
+Linking to a page number (page 2)：internal-destination="2"
+Linking to a page number (page 2) and setting the display ratio (200%)：internal-destination="2#zoom=200"
+Linking to an external destination
+Linking to an external file (attachment-sample-1.pdf).：external-destination="./attachment-sample-1.pdf"
+Linking to a website (https://www.antennahouse.com/)：external-destination="https://www.antennahouse.com/"
+Antenna House, Inc.
+About Antenna House
+See also https://www.antennahouse.com/for more details."
+`;
