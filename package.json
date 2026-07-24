@@ -58,6 +58,9 @@
   "files": [
     "dist"
   ],
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "build": "tsdown && node scripts/post-build.mjs",
     "build:pdfjs": "rolldown --config pdfjs.rolldown.config.ts && cp -R node_modules/pdfjs-dist/types dist",
@@ -85,7 +88,7 @@
     "@types/node": "^24.12.2",
     "bumpp": "^11.0.1",
     "eslint": "^10.2.0",
-    "pdfjs-dist": "~5.6.205",
+    "pdfjs-dist": "~6.1.200",
     "rolldown": "^1.2.0",
     "tinyglobby": "^0.2.16",
     "tsdown": "^0.22.14",

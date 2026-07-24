@@ -12,19 +12,19 @@ describe('document lifecycle', () => {
 
   it('destroys internally created document proxies', async () => {
     const probe = await getDocumentProxy(await getPDF())
-    const destroySpy = vi.spyOn(Object.getPrototypeOf(probe), 'destroy')
+    const destroySpy = vi.spyOn(Object.getPrototypeOf(probe.loadingTask), 'destroy')
 
     await extractText(await getPDF())
 
     expect(destroySpy).toHaveBeenCalled()
 
     destroySpy.mockRestore()
-    await probe.destroy()
+    await probe.loadingTask.destroy()
   })
 
   it('does not destroy caller-owned document proxies', async () => {
     const pdf = await getDocumentProxy(await getPDF())
-    const destroySpy = vi.spyOn(pdf, 'destroy')
+    const destroySpy = vi.spyOn(pdf.loadingTask, 'destroy')
 
     const { text } = await extractText(pdf)
     expect(text[0]).toBe('Dummy PDF file')
@@ -35,7 +35,7 @@ describe('document lifecycle', () => {
     expect(info.Creator).toBe('Writer')
     expect(destroySpy).not.toHaveBeenCalled()
 
-    await pdf.destroy()
+    await pdf.loadingTask.destroy()
   })
 
   it('preserves extracted image data after destroying the document', async () => {
