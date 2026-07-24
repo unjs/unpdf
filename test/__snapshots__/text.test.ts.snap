@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`unpdf > preserves line breaks and normalizes whitespace when merging pages 1`] = `
+exports[`text > preserves line breaks and normalizes whitespace when merging pages 1`] = `
 "Antenna House, Inc.
 Links in PDF
 There are two types of links in PDF: a link to a specific position in the same PDF document, and a link to an external

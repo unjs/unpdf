@@ -4,5 +4,6 @@ export default defineConfig({
   test: {
     isolate: false,
     maxWorkers: 1,
+    setupFiles: ['./test/setup.ts'],
   },
 })
