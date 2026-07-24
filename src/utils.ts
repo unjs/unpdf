@@ -18,6 +18,7 @@ export const isBrowser = typeof window !== 'undefined'
  * In Node.js environments, additionally applies:
  * - `disableFontFace: true`
  * - `standardFontDataUrl` resolved from the local `pdfjs-dist` package
+ * - `cMapUrl` and `cMapPacked` resolved from the local `pdfjs-dist` package
  */
 export async function getDocumentProxy(
   data: DocumentInitParameters['data'],
@@ -32,6 +33,8 @@ export async function getDocumentProxy(
       nodeDefaults = {
         disableFontFace: true,
         standardFontDataUrl: new URL('./standard_fonts/', base).href,
+        cMapUrl: new URL('./cmaps/', base).href,
+        cMapPacked: true,
       }
     }
     catch {

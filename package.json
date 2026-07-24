@@ -66,7 +66,8 @@
     "lint:fix": "eslint . --fix",
     "release": "bumpp",
     "test": "vitest",
-    "test:types": "tsc --noEmit"
+    "test:types": "tsc --noEmit",
+    "test:types:dist": "tsc -p test/types/tsconfig.json"
   },
   "peerDependencies": {
     "@napi-rs/canvas": "^0.1.69"
