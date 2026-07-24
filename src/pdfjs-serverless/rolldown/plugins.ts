@@ -23,7 +23,7 @@ new Proxy({}, {
 // Raw literal substitutions applied to the PDF.js source before bundling –
 // matched verbatim, every occurrence replaced. The worker anchor carries its
 // exact multi-line indentation on purpose.
-const anchors: Record<string, string> = {
+const patches: Record<string, string> = {
   // Force inlining the PDF.js worker.
   'await import(\n      /*webpackIgnore: true*/\n      /*@vite-ignore*/\n      this.workerSrc)': '__pdfjsWorker__',
   // Force setting up fake PDF.js worker.
@@ -47,7 +47,7 @@ const anchors: Record<string, string> = {
  */
 export function patchPDFJSSource(): Plugin {
   const hitCounts = new Map<string, number>(
-    Object.keys(anchors).map(anchor => [anchor, 0]),
+    Object.keys(patches).map(anchor => [anchor, 0]),
   )
 
   return {
@@ -56,7 +56,7 @@ export function patchPDFJSSource(): Plugin {
       let patched = code
       let hasChanged = false
 
-      for (const [anchor, replacement] of Object.entries(anchors)) {
+      for (const [anchor, replacement] of Object.entries(patches)) {
         const occurrences = code.split(anchor).length - 1
         if (occurrences === 0)
           continue
