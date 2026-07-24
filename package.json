@@ -74,7 +74,7 @@
     "test:types:dist": "tsc -p test/types/tsconfig.json"
   },
   "peerDependencies": {
-    "@napi-rs/canvas": "^0.1.69"
+    "@napi-rs/canvas": "^0.1.69 || ^1.0.0"
   },
   "peerDependenciesMeta": {
     "@napi-rs/canvas": {
@@ -84,7 +84,7 @@
   "devDependencies": {
     "@antfu/eslint-config": "^8.3.0",
     "@arethetypeswrong/cli": "^0.18.5",
-    "@napi-rs/canvas": "^0.1.100",
+    "@napi-rs/canvas": "^1.0.2",
     "@types/node": "^24.13.3",
     "bumpp": "^11.1.0",
     "eslint": "^10.7.0",
