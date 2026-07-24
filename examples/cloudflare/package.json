@@ -6,7 +6,7 @@
     "dev": "esbuild --bundle --platform=neutral --outfile=build/index.js index.ts && wrangler dev build/index.js"
   },
   "devDependencies": {
-    "esbuild": "^0.28.0",
-    "wrangler": "^4.81.1"
+    "esbuild": "^0.28.1",
+    "wrangler": "^4.114.0"
   }
 }
