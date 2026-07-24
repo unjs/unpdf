@@ -5,14 +5,6 @@ import { glob } from 'tinyglobby'
 
 const rootDir = path.resolve(import.meta.dirname, '..')
 
-// For Node builds, tsdown emits only `index.d.mts`/`index.d.cts`, but the
-// package `types` field points at `index.d.ts` – seed it from the CJS flavor
-// to match the `main` entry.
-await fsp.copyFile(
-  path.resolve(rootDir, 'dist/index.d.cts'),
-  path.resolve(rootDir, 'dist/index.d.ts'),
-)
-
 const bundleDeclarations = await glob(['dist/**/*.{d.cts,d.mts,d.ts}'], {
   cwd: rootDir,
   ignore: ['**/types/**'],
