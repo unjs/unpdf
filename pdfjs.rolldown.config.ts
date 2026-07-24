@@ -3,11 +3,8 @@ import { patchPDFJSSource, pdfjsTypes } from './src/pdfjs-serverless/rolldown/pl
 
 export default defineConfig({
   input: 'src/pdfjs-serverless/index.mjs',
-  // The package sets `"sideEffects": false` for the tree-shakeable library
-  // build, but the serverless entry pulls in polyfill/mock modules whose only
-  // job is to mutate global prototypes (`Uint8Array.prototype.toHex`,
-  // `Map.prototype.getOrInsertComputed`, `DOMMatrix`, …). Force them to be
-  // treated as side-effectful so their installs are never tree-shaken away.
+  // The root `"sideEffects": false` would tree-shake the polyfill/mock modules
+  // away – their only job is to mutate globals.
   treeshake: {
     moduleSideEffects: [
       { test: /pdfjs-serverless[\\/](mocks|polyfills)\.mjs$/, sideEffects: true },
@@ -21,8 +18,8 @@ export default defineConfig({
     // `__pdfjsWorker__` anchor, so everything must land in a single chunk.
     codeSplitting: false,
     sourcemap: false,
-    // PDF.js relies on `Function.prototype.name`/class names at runtime, so the
-    // minifier must preserve them – the oxc equivalent of esbuild's `keepNames`.
+    // PDF.js relies on `Function.prototype.name`/class names at runtime – the
+    // minifier must preserve them.
     minify: {
       compress: {
         target: 'es2022',

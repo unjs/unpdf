@@ -20,11 +20,9 @@ new Proxy({}, {
 })
 `.trim()
 
-// Raw literal substitutions applied to the PDF.js source before bundling. Each
-// key is matched verbatim (no word boundaries) and every occurrence is
-// replaced, mirroring `@rollup/plugin-replace` with empty delimiters. The
-// worker anchor carries its exact multi-line indentation on purpose – it must
-// match the `await import(...)` expression byte-for-byte.
+// Raw literal substitutions applied to the PDF.js source before bundling –
+// matched verbatim, every occurrence replaced. The worker anchor carries its
+// exact multi-line indentation on purpose.
 const anchors: Record<string, string> = {
   // Force inlining the PDF.js worker.
   'await import(\n      /*webpackIgnore: true*/\n      /*@vite-ignore*/\n      this.workerSrc)': '__pdfjsWorker__',
