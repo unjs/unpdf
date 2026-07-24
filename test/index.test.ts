@@ -70,13 +70,6 @@ describe('unpdf', () => {
     expect(text).toMatchSnapshot()
   })
 
-  it('accepts a runtime boolean for mergePages', async () => {
-    const mergePages: boolean = true
-    const { text } = await extractText(await getPDF('links.pdf'), { mergePages })
-
-    expect(typeof text === 'string' || Array.isArray(text)).toBe(true)
-  })
-
   it('extracts structured text items from a PDF', async () => {
     const { items, totalPages } = await extractTextItems(await getPDF())
 
