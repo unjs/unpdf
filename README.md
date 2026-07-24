@@ -340,21 +340,9 @@ function renderPageAsImage(
     scale?: number
     width?: number
     height?: number
-    toDataURL?: false
+    toDataURL?: boolean
   },
-): Promise<ArrayBuffer>
-function renderPageAsImage(
-  data: DocumentInitParameters['data'] | PDFDocumentProxy,
-  pageNumber: number,
-  options: {
-    canvasImport?: () => Promise<typeof import('@napi-rs/canvas')>
-    /** @default 1.0 */
-    scale?: number
-    width?: number
-    height?: number
-    toDataURL: true
-  },
-): Promise<string>
+): Promise<ArrayBuffer | string>
 ```
 
 **Examples**
