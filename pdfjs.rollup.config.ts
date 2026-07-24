@@ -13,17 +13,15 @@ import { pdfjsTypes } from './src/pdfjs-serverless/rollup/plugins'
 const canvasMock = `
 new Proxy({}, {
   get(target, prop) {
-    const canvasModule = globalThis[Symbol.for("unpdf.canvasModule")];
+    const canvasModule = globalThis[Symbol.for("unpdf.canvasModule")]
     if (canvasModule)
-      return canvasModule[prop];
+      return canvasModule[prop]
     return () => {
       throw new Error("@napi-rs/canvas is not available in this environment")
     }
   },
 })
-`
-  .replaceAll('\n', '')
-  .trim()
+`.trim()
 
 export default defineConfig({
   input: 'src/pdfjs-serverless/index.mjs',
