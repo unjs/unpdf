@@ -5,8 +5,9 @@ import { glob } from 'tinyglobby'
 
 const rootDir = path.resolve(import.meta.dirname, '..')
 
-// tsdown emits no `index.d.ts` (`fixedExtension`), but the package `types`
-// field points at one – seed it from the CJS flavor to match the `main` entry.
+// For Node builds, tsdown emits only `index.d.mts`/`index.d.cts`, but the
+// package `types` field points at `index.d.ts` – seed it from the CJS flavor
+// to match the `main` entry.
 await fsp.copyFile(
   path.resolve(rootDir, 'dist/index.d.cts'),
   path.resolve(rootDir, 'dist/index.d.ts'),

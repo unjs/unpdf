@@ -4,7 +4,6 @@ export default defineConfig({
   entry: ['src/index.ts'],
   format: ['esm', 'cjs'],
   platform: 'node',
-  fixedExtension: true,
   dts: true,
   clean: false,
   // `getDocumentProxy` probes `import.meta.resolve` inside a `try/catch`; in
