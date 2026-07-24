@@ -1,5 +1,5 @@
 import type { DocumentInitParameters, PDFDocumentProxy } from 'pdfjs-dist/types/src/display/api'
-import { getDocumentProxy, getResolvedPDFJS, isPDFDocumentProxy } from './utils'
+import { getResolvedPDFJS, withDocument } from './utils'
 
 const XMP_DATE_PROPERTIES = [
   'xmp:createdate',
@@ -16,47 +16,48 @@ export async function getMeta(
     parseDates?: boolean
   } = {},
 ) {
-  const pdf = isPDFDocumentProxy(data) ? data : await getDocumentProxy(data)
-  const meta = await pdf.getMetadata()
+  return await withDocument(data, async (pdf) => {
+    const meta = await pdf.getMetadata()
 
-  const info = (meta?.info || {}) as Record<string, any>
+    const info = (meta?.info || {}) as Record<string, any>
 
-  if (options.parseDates) {
-    const { PDFDateString } = await getResolvedPDFJS()
+    if (options.parseDates) {
+      const { PDFDateString } = await getResolvedPDFJS()
 
-    // Primary date properties from /Info dictionary
-    if (info?.CreationDate) {
-      info.CreationDate = PDFDateString.toDateObject(info?.CreationDate)
-    }
-    if (info?.ModDate) {
-      info.ModDate = PDFDateString.toDateObject(info?.ModDate)
-    }
+      // Primary date properties from /Info dictionary
+      if (info?.CreationDate) {
+        info.CreationDate = PDFDateString.toDateObject(info?.CreationDate)
+      }
+      if (info?.ModDate) {
+        info.ModDate = PDFDateString.toDateObject(info?.ModDate)
+      }
 
-    // Override metadata getter to parse XMP date properties
-    if (meta.metadata) {
-      meta.metadata = new Proxy(meta.metadata, {
-        get(target, prop) {
-          if (prop === 'get') {
-            return (name: string) => {
-              const value = target.get(name)
+      // Override metadata getter to parse XMP date properties
+      if (meta.metadata) {
+        meta.metadata = new Proxy(meta.metadata, {
+          get(target, prop) {
+            if (prop === 'get') {
+              return (name: string) => {
+                const value = target.get(name)
 
-              if (XMP_DATE_PROPERTIES.includes(name) && value) {
-                return parseISODateString(value)
+                if (XMP_DATE_PROPERTIES.includes(name) && value) {
+                  return parseISODateString(value)
+                }
+
+                return value
               }
-
-              return value
             }
-          }
-          return target[prop as keyof typeof target]
-        },
-      })
+            return target[prop as keyof typeof target]
+          },
+        })
+      }
     }
-  }
 
-  return {
-    info,
-    metadata: meta?.metadata || {},
-  }
+    return {
+      info,
+      metadata: meta?.metadata || {},
+    }
+  })
 }
 
 function parseISODateString(isoDateString: string) {
