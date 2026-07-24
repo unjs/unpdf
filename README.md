@@ -156,7 +156,7 @@ function getMeta(
 
 ### `extractText`
 
-Extracts all text from a PDF. If `mergePages` is set to `true`, the text of all pages will be merged into a single string. Otherwise, an array of strings for each page will be returned.
+Extracts all text from a PDF. If `mergePages` is set to `true`, the text of all pages will be merged into a single string with line breaks preserved and at most one blank line in a row. Otherwise, an array of strings for each page will be returned.
 
 **Type Declaration**
 
@@ -164,20 +164,11 @@ Extracts all text from a PDF. If `mergePages` is set to `true`, the text of all 
 function extractText(
   data: DocumentInitParameters['data'] | PDFDocumentProxy,
   options?: {
-    mergePages?: false
+    mergePages?: boolean
   }
 ): Promise<{
   totalPages: number
-  text: string[]
-}>
-function extractText(
-  data: DocumentInitParameters['data'] | PDFDocumentProxy,
-  options: {
-    mergePages: true
-  }
-): Promise<{
-  totalPages: number
-  text: string
+  text: string | string[]
 }>
 ```
 

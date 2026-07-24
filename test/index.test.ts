@@ -62,6 +62,14 @@ describe('unpdf', () => {
     expect(totalPages).toMatchInlineSnapshot('1')
   })
 
+  it('preserves line breaks and normalizes whitespace when merging pages', async () => {
+    const { text } = await extractText(await getPDF('links.pdf'), { mergePages: true })
+
+    // Guard against blind snapshot updates re-collapsing everything to one line
+    expect(text).toContain('\n')
+    expect(text).toMatchSnapshot()
+  })
+
   it('extracts structured text items from a PDF', async () => {
     const { items, totalPages } = await extractTextItems(await getPDF())
 

@@ -73,6 +73,13 @@ export function extractText(
   totalPages: number
   text: string
 }>
+export function extractText(
+  data: DocumentInitParameters['data'] | PDFDocumentProxy,
+  options?: { mergePages?: boolean },
+): Promise<{
+  totalPages: number
+  text: string | string[]
+}>
 export async function extractText(
   data: DocumentInitParameters['data'] | PDFDocumentProxy,
   options: { mergePages?: boolean } = {},
@@ -85,7 +92,7 @@ export async function extractText(
 
   return {
     totalPages: pdf.numPages,
-    text: mergePages ? texts.join('\n').replace(/\s+/g, ' ') : texts,
+    text: mergePages ? normalizeMergedText(texts) : texts,
   }
 }
 
@@ -99,4 +106,16 @@ async function getPageText(document: PDFDocumentProxy, pageNumber: number) {
       .map(item => item.str + (item.hasEOL ? '\n' : ''))
       .join('')
   )
+}
+
+/**
+ * Collapses whitespace without destroying the line structure: `hasEOL` and
+ * page-join line breaks survive, but at most one blank line remains.
+ */
+function normalizeMergedText(texts: string[]) {
+  return texts
+    .join('\n')
+    .replace(/[^\S\n]+/g, ' ')
+    .replace(/ ?\n ?/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
 }
