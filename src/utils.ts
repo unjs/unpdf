@@ -12,7 +12,6 @@ export const isBrowser = typeof window !== 'undefined'
  * Returns a PDFDocumentProxy instance from a given binary data.
  *
  * Applies the following defaults:
- * - `isEvalSupported: false`
  * - `useSystemFonts: true`
  *
  * In Node.js environments, additionally applies:
@@ -44,7 +43,6 @@ export async function getDocumentProxy(
 
   const pdf = await getDocument({
     data,
-    isEvalSupported: false,
     // See: https://github.com/mozilla/pdf.js/issues/4244#issuecomment-1479534301
     useSystemFonts: true,
     ...nodeDefaults,
