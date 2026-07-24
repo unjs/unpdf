@@ -10,5 +10,6 @@
     "noEmit": true,
     "verbatimModuleSyntax": true,
     "skipLibCheck": true
-  }
+  },
+  "exclude": ["node_modules", "test/types"]
 }

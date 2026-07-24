@@ -21,6 +21,8 @@ jobs:
           cache: pnpm
       - run: pnpm install
       - run: pnpm run build:pdfjs
+      - run: pnpm run build
       - run: pnpm run test:types
+      - run: pnpm run test:types:dist
       - run: pnpm run lint
       - run: pnpm run test

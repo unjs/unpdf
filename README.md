@@ -125,7 +125,7 @@ function getResolvedPDFJS(): Promise<PDFJS>
 
 Creates a `PDFDocumentProxy` from binary PDF data. Every extraction method accepts either raw data or an existing proxy – use this when you want to reuse one document across multiple calls.
 
-Applies sensible defaults: `isEvalSupported: false` and `useSystemFonts: true`; in Node.js additionally `disableFontFace: true` and `standardFontDataUrl` resolved from the local `pdfjs-dist` package (see the font rendering tip in [`renderPageAsImage`](#renderpageasimage)).
+Applies sensible defaults: `isEvalSupported: false` and `useSystemFonts: true`; in Node.js additionally `disableFontFace: true`, plus `standardFontDataUrl` and `cMapUrl`/`cMapPacked` resolved from the local `pdfjs-dist` package for standard font and CJK character map support (see the font rendering tip in [`renderPageAsImage`](#renderpageasimage)).
 
 **Type Declaration**
 
@@ -331,21 +331,9 @@ function renderPageAsImage(
     scale?: number
     width?: number
     height?: number
-    toDataURL?: false
+    toDataURL?: boolean
   },
-): Promise<ArrayBuffer>
-function renderPageAsImage(
-  data: DocumentInitParameters['data'] | PDFDocumentProxy,
-  pageNumber: number,
-  options: {
-    canvasImport?: () => Promise<typeof import('@napi-rs/canvas')>
-    /** @default 1.0 */
-    scale?: number
-    width?: number
-    height?: number
-    toDataURL: true
-  },
-): Promise<string>
+): Promise<ArrayBuffer | string>
 ```
 
 **Examples**

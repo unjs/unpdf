@@ -152,6 +152,21 @@ describe('unpdf', () => {
     expect(result.startsWith('data:image/png;base64,')).toBe(true)
   })
 
+  it('renders a page with a soft mask from a pre-built document proxy', async () => {
+    // Intermediate canvases (soft masks, transparency groups) are requested from
+    // the document-level canvas factory, which for a proxy created without the
+    // `CanvasFactory` option is the built-in PDF.js one — it must resolve
+    // `@napi-rs/canvas` once `canvasImport` has been provided.
+    // See https://github.com/unjs/unpdf/issues/53
+    const pdf = await getDocumentProxy(await getPDF('transparency.pdf'))
+    const result = await renderPageAsImage(pdf, 1, {
+      canvasImport: () => import('@napi-rs/canvas'),
+    })
+
+    const headerBytes = new Uint8Array(result, 0, 8)
+    expect(Array.from(headerBytes)).toEqual([137, 80, 78, 71, 13, 10, 26, 10])
+  })
+
   it('supports passing PDFDocumentProxy', async () => {
     const pdf = await getDocumentProxy(await getPDF())
     const { info } = await getMeta(pdf)
