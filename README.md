@@ -164,24 +164,6 @@ Extracts all text from a PDF. If `mergePages` is set to `true`, the text of all 
 function extractText(
   data: DocumentInitParameters['data'] | PDFDocumentProxy,
   options?: {
-    mergePages?: false
-  }
-): Promise<{
-  totalPages: number
-  text: string[]
-}>
-function extractText(
-  data: DocumentInitParameters['data'] | PDFDocumentProxy,
-  options: {
-    mergePages: true
-  }
-): Promise<{
-  totalPages: number
-  text: string
-}>
-function extractText(
-  data: DocumentInitParameters['data'] | PDFDocumentProxy,
-  options?: {
     mergePages?: boolean
   }
 ): Promise<{

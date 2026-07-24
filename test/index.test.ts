@@ -65,15 +65,9 @@ describe('unpdf', () => {
   it('preserves line breaks and normalizes whitespace when merging pages', async () => {
     const { text } = await extractText(await getPDF('links.pdf'), { mergePages: true })
 
-    expect(typeof text).toBe('string')
-    // Page and per-item EOL breaks survive instead of collapsing to one line
+    // Guard against blind snapshot updates re-collapsing everything to one line
     expect(text).toContain('\n')
-    // Whitespace is normalized: no intra-line runs, no spaces around line
-    // breaks, at most one blank line
-    expect(text).not.toMatch(/[^\S\n]{2,}/)
-    expect(text).not.toMatch(/[\t\r]/)
-    expect(text).not.toMatch(/ \n|\n /)
-    expect(text).not.toMatch(/\n{3,}/)
+    expect(text).toMatchSnapshot()
   })
 
   it('accepts a runtime boolean for mergePages', async () => {
