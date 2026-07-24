@@ -16,6 +16,6 @@ describe('pdfjs resolution', () => {
     const PDFJS = await getResolvedPDFJS()
     const { version } = PDFJS
 
-    expect(version).toMatchInlineSnapshot(`"5.6.205"`)
+    expect(version).toMatchInlineSnapshot(`"6.1.200"`)
   })
 })
