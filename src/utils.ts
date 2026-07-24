@@ -72,7 +72,7 @@ export async function withDocument<T>(
   }
   finally {
     if (pdf !== data)
-      await pdf.destroy()
+      await pdf.loadingTask.destroy()
   }
 }
 
