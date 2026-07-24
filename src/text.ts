@@ -96,18 +96,6 @@ export async function extractText(
   }
 }
 
-/**
- * Collapses whitespace without destroying the line structure: `hasEOL` and
- * page-join line breaks survive, but at most one blank line remains.
- */
-function normalizeMergedText(texts: string[]) {
-  return texts
-    .join('\n')
-    .replace(/[^\S\n]+/g, ' ')
-    .replace(/ ?\n ?/g, '\n')
-    .replace(/\n{3,}/g, '\n\n')
-}
-
 async function getPageText(document: PDFDocumentProxy, pageNumber: number) {
   const page = await document.getPage(pageNumber)
   const content = await page.getTextContent()
@@ -118,4 +106,16 @@ async function getPageText(document: PDFDocumentProxy, pageNumber: number) {
       .map(item => item.str + (item.hasEOL ? '\n' : ''))
       .join('')
   )
+}
+
+/**
+ * Collapses whitespace without destroying the line structure: `hasEOL` and
+ * page-join line breaks survive, but at most one blank line remains.
+ */
+function normalizeMergedText(texts: string[]) {
+  return texts
+    .join('\n')
+    .replace(/[^\S\n]+/g, ' ')
+    .replace(/ ?\n ?/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
 }
