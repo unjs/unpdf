@@ -13,11 +13,7 @@ export async function consumeBuiltDeclarations(data: Uint8Array) {
   const pdf: PDFDocumentProxy = await getDocumentProxy(data)
   const { text } = await extractText(pdf, { mergePages: true })
   const mergedText: string = text
-  // A runtime boolean matches neither literal overload – requires the widened one
-  const mergePages: boolean = data.length > 0
-  const { text: runtimeText } = await extractText(pdf, { mergePages })
-  const mixedText: string | string[] = runtimeText
   const { info } = await getMeta(pdf)
 
-  return { pdf, mergedText, mixedText, info }
+  return { pdf, mergedText, info }
 }
