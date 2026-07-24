@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "module": "NodeNext",
+    "types": ["node"],
+    "noEmit": true,
+    "skipLibCheck": false
+  },
+  "include": ["nodenext.mts"]
+}
