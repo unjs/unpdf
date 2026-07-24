@@ -6,6 +6,15 @@ import { glob } from 'tinyglobby'
 
 const rootDir = fileURLToPath(new URL('..', import.meta.url))
 
+// `fixedExtension` makes tsdown emit only `index.d.mts` and `index.d.cts`, but
+// the package `types` field points at `index.d.ts`. Seed it from the CJS flavor
+// so it matches the `main` (`index.cjs`) entry, then let the pass below rewrite
+// its type paths alongside the other declarations.
+await fsp.copyFile(
+  path.resolve(rootDir, 'dist/index.d.cts'),
+  path.resolve(rootDir, 'dist/index.d.ts'),
+)
+
 const bundleDeclarations = await glob(['dist/**/*.{d.cts,d.mts,d.ts}'], {
   cwd: rootDir,
   ignore: ['**/types/**'],

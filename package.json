@@ -59,13 +59,14 @@
     "dist"
   ],
   "scripts": {
-    "build": "unbuild && node scripts/post-build.mjs",
-    "build:pdfjs": "rollup --config pdfjs.rollup.config.ts --configPlugin typescript && cp -R node_modules/pdfjs-dist/types dist",
-    "dev": "unbuild --stub",
+    "build": "tsdown && node scripts/post-build.mjs",
+    "build:pdfjs": "rolldown --config pdfjs.rolldown.config.ts && cp -R node_modules/pdfjs-dist/types dist",
+    "dev": "tsdown --watch",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "release": "bumpp",
     "test": "vitest",
+    "test:attw": "attw --pack --ignore-rules cjs-resolves-to-esm",
     "test:types": "tsc --noEmit",
     "test:types:dist": "tsc -p test/types/tsconfig.json"
   },
@@ -79,20 +80,16 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^8.2.0",
+    "@arethetypeswrong/cli": "^0.18.5",
     "@napi-rs/canvas": "^0.1.97",
-    "@rollup/plugin-node-resolve": "^16.0.3",
-    "@rollup/plugin-replace": "^6.0.3",
-    "@rollup/plugin-typescript": "^12.3.0",
     "@types/node": "^24.12.2",
     "bumpp": "^11.0.1",
     "eslint": "^10.2.0",
     "pdfjs-dist": "~5.6.205",
-    "rollup": "^4.60.1",
-    "rollup-plugin-esbuild": "^6.2.1",
+    "rolldown": "^1.2.0",
     "tinyglobby": "^0.2.16",
-    "tslib": "^2.8.1",
+    "tsdown": "^0.22.14",
     "typescript": "^6.0.2",
-    "unbuild": "^3.6.1",
     "vitest": "^4.1.4"
   }
 }
