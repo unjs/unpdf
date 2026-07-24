@@ -1,15 +1,12 @@
 // @ts-check
 import * as fsp from 'node:fs/promises'
 import * as path from 'node:path'
-import { fileURLToPath } from 'node:url'
 import { glob } from 'tinyglobby'
 
-const rootDir = fileURLToPath(new URL('..', import.meta.url))
+const rootDir = path.resolve(import.meta.dirname, '..')
 
-// `fixedExtension` makes tsdown emit only `index.d.mts` and `index.d.cts`, but
-// the package `types` field points at `index.d.ts`. Seed it from the CJS flavor
-// so it matches the `main` (`index.cjs`) entry, then let the pass below rewrite
-// its type paths alongside the other declarations.
+// tsdown emits no `index.d.ts` (`fixedExtension`), but the package `types`
+// field points at one – seed it from the CJS flavor to match the `main` entry.
 await fsp.copyFile(
   path.resolve(rootDir, 'dist/index.d.cts'),
   path.resolve(rootDir, 'dist/index.d.ts'),
