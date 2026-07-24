@@ -1,10 +1,9 @@
 // @ts-check
 import * as fsp from 'node:fs/promises'
 import * as path from 'node:path'
-import { fileURLToPath } from 'node:url'
 import { glob } from 'tinyglobby'
 
-const rootDir = fileURLToPath(new URL('..', import.meta.url))
+const rootDir = path.resolve(import.meta.dirname, '..')
 
 const bundleDeclarations = await glob(['dist/**/*.{d.cts,d.mts,d.ts}'], {
   cwd: rootDir,

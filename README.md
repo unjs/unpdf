@@ -93,7 +93,7 @@ console.log(await document.getMetadata())
 > [!NOTE]
 > The serverless PDF.js bundle is built from PDF.js v5.6.205.
 
-Heart and soul of this package is the [`pdfjs.rollup.config.ts`](./pdfjs.rollup.config.ts) file. It uses [Rollup](https://rollupjs.org/) to bundle PDF.js into a single file for serverless environments. The key techniques:
+Heart and soul of this package is the [`pdfjs.rolldown.config.ts`](./pdfjs.rolldown.config.ts) file. It uses [Rolldown](https://rolldown.rs/) to bundle PDF.js into a single file for serverless environments. The key techniques:
 
 - **String replacements** strip browser-specific references from the PDF.js source.
 - **Worker inlining** embeds the PDF.js worker directly into the main bundle, since serverless runtimes can't load separate worker files.
