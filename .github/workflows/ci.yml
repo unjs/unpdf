@@ -12,12 +12,16 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [22, 24, 26]
     steps:
       - uses: actions/checkout@v6
       - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v6
         with:
-          node-version: 24
+          node-version: ${{ matrix.node-version }}
           cache: pnpm
       - run: pnpm install
       - run: pnpm run build:pdfjs
@@ -27,3 +31,45 @@ jobs:
       - run: pnpm run test:types:dist
       - run: pnpm run lint
       - run: pnpm run test
+
+      - uses: actions/upload-artifact@v7
+        if: matrix.node-version == 26
+        with:
+          name: dist
+          path: dist
+
+  bun:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+          cache: pnpm
+      - uses: oven-sh/setup-bun@v2
+      - run: pnpm install
+      - uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: dist
+      - run: bun --bun ./node_modules/vitest/vitest.mjs run
+
+  deno:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+          cache: pnpm
+      - uses: denoland/setup-deno@v2
+      - run: pnpm install
+      - uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: dist
+      - run: deno run -A ./node_modules/vitest/vitest.mjs run
