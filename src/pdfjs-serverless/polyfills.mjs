@@ -36,6 +36,23 @@ if (typeof Map.prototype.getOrInsertComputed === 'undefined') {
   })
 }
 
+// `Map.prototype.getOrInsert` is used by PDF.js v6.4+.
+// Not yet available in Safari < 26.2 and Node.js < 26.
+if (typeof Map.prototype.getOrInsert === 'undefined') {
+  // eslint-disable-next-line no-extend-native
+  Object.defineProperty(Map.prototype, 'getOrInsert', {
+    value(key, defaultValue) {
+      if (this.has(key)) {
+        return this.get(key)
+      }
+      this.set(key, defaultValue)
+      return defaultValue
+    },
+    writable: true,
+    configurable: true,
+  })
+}
+
 // `Uint8Array.prototype.toHex` is used by PDF.js v5.6+ for document fingerprints.
 // Not yet available in Node.js < 26.
 if (typeof Uint8Array.prototype.toHex === 'undefined') {

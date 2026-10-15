@@ -91,7 +91,7 @@ console.log(await document.getMetadata())
 ## How It Works
 
 > [!NOTE]
-> The serverless PDF.js bundle is built from PDF.js v5.6.205.
+> The serverless PDF.js bundle is built from PDF.js v6.4.299. It requires the global `Iterator` constructor (Safari 18.4+); without it, importing the bundle throws.
 
 Heart and soul of this package is the [`pdfjs.rolldown.config.ts`](./pdfjs.rolldown.config.ts) file. It uses [Rolldown](https://rolldown.rs/) to bundle PDF.js into a single file for serverless environments. The key techniques:
 
