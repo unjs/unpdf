@@ -1,5 +1,6 @@
-shellEmulator: true
+minimumReleaseAgeExcludePrune: true
 trustPolicy: no-downgrade
+shellEmulator: true
 
 packages:
   - examples/*
