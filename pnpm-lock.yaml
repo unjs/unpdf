@@ -208,6 +208,9 @@ importers:
       esbuild:
         specifier: ^0.28.2
         version: 0.28.2
+      unpdf:
+        specifier: workspace:*
+        version: link:../..
       wrangler:
         specifier: ^4.151.0
         version: 4.151.0(@types/node@26.6.5)
