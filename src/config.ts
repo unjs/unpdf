@@ -1,15 +1,14 @@
 import { resolvePDFJSImport } from './utils'
 
 /**
- * By default, unpdf will use the latest version of PDF.js compiled for
- * serverless environments. If you want to use a different version, you can
- * provide a custom resolver function.
+ * Sets the PDF.js build every other method uses – call it before any of them.
+ * Without it, the serverless build is used.
  *
  * @example
- * // Use the official PDF.js build (make sure to install it first)
+ * // In Node.js, the legacy build of `pdfjs-dist` (install it first)
  * import { definePDFJSModule } from 'unpdf'
  *
- * await definePDFJSModule(() => import('pdfjs-dist'))
+ * await definePDFJSModule(() => import('pdfjs-dist/legacy/build/pdf.mjs'))
  */
 export async function definePDFJSModule(pdfjs: () => Promise<any>) {
   await resolvePDFJSImport(pdfjs, { reload: true })

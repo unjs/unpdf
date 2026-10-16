@@ -19,18 +19,6 @@ interface RequestedImageObject {
 /**
  * Extracts images from a specific page of a PDF document, including necessary metadata,
  * such as width, height, and calculated color channels.
- *
- * @example
- * const imagesData = await extractImages(pdf, pageNum)
- *
- * for (const imgData of imagesData) {
- *   const imageIndex = totalImagesProcessed + 1
- *   await sharp(imgData.data, {
- *     raw: { width: imgData.width, height: imgData.height, channels: imgData.channels }
- *   })
- *     .png()
- *     .toFile(`${imageIndex}.png`)
- * }
  */
 export async function extractImages(
   data: DocumentInitParameters['data'] | PDFDocumentProxy,

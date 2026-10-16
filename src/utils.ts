@@ -9,7 +9,7 @@ export const isNode = globalThis.process?.release?.name === 'node'
 export const isBrowser = typeof window !== 'undefined'
 
 /**
- * Returns a `PDFDocumentProxy` instance from a given binary data.
+ * Creates a `PDFDocumentProxy` from binary PDF data.
  *
  * Applies the following defaults:
  * - `useSystemFonts: true`
