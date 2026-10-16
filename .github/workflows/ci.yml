@@ -41,16 +41,19 @@ jobs:
         include:
           - runtime: Node.js 22
             node-version: 22
-            command: pnpm run test
+            command: pnpm exec vitest run --project node
           - runtime: Node.js 24
             node-version: 24
-            command: pnpm run test
+            command: pnpm exec vitest run --project node
           - runtime: Node.js 26
             node-version: 26
-            command: pnpm run test
+            command: pnpm exec vitest run --project node
           - runtime: Bun
             node-version: 24
-            command: bun --bun vitest run
+            command: bun --bun vitest run --project node
+          - runtime: Cloudflare Workers
+            node-version: 24
+            command: pnpm exec vitest run --project workerd
     steps:
       - uses: actions/checkout@v6
       - uses: pnpm/action-setup@v6

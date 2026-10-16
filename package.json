@@ -84,6 +84,7 @@
   "devDependencies": {
     "@antfu/eslint-config": "^9.5.1",
     "@arethetypeswrong/cli": "^0.18.5",
+    "@cloudflare/vitest-plugin": "^1.4.3",
     "@napi-rs/canvas": "^1.0.11",
     "@types/node": "^26.6.5",
     "bumpp": "^12.3.0",

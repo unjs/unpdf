@@ -1,0 +1,7 @@
+// The Vitest pool always turns on Node.js compatibility, so a Worker without
+// `nodejs_compat` stays untested.
+{
+  "name": "unpdf-test",
+  "compatibility_date": "2026-01-01",
+  "compatibility_flags": ["nodejs_compat"]
+}
