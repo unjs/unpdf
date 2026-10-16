@@ -10,7 +10,7 @@ on:
       - main
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -26,4 +26,48 @@ jobs:
       - run: pnpm run test:types
       - run: pnpm run test:types:dist
       - run: pnpm run lint
-      - run: pnpm run test
+      - uses: actions/upload-artifact@v7
+        with:
+          name: dist
+          path: dist
+
+  test:
+    name: test (${{ matrix.runtime }})
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runtime: Node.js 22
+            node-version: 22
+            command: pnpm run test
+          - runtime: Node.js 24
+            node-version: 24
+            command: pnpm run test
+          - runtime: Node.js 26
+            node-version: 26
+            command: pnpm run test
+          - runtime: Bun
+            node-version: 24
+            command: bun --bun vitest run
+          - runtime: Deno
+            node-version: 24
+            command: deno run -A npm:vitest run
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: pnpm
+      - uses: oven-sh/setup-bun@v2
+        if: matrix.runtime == 'Bun'
+      - uses: denoland/setup-deno@v2
+        if: matrix.runtime == 'Deno'
+      - run: pnpm install
+      - uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: dist
+      - run: ${{ matrix.command }}
