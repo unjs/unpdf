@@ -10,18 +10,14 @@ on:
       - main
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        node-version: [22, 24, 26]
     steps:
       - uses: actions/checkout@v6
       - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v6
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 24
           cache: pnpm
       - run: pnpm install
       - run: pnpm run build:pdfjs
@@ -30,46 +26,48 @@ jobs:
       - run: pnpm run test:types
       - run: pnpm run test:types:dist
       - run: pnpm run lint
-      - run: pnpm run test
-
       - uses: actions/upload-artifact@v7
-        if: matrix.node-version == 26
         with:
           name: dist
           path: dist
 
-  bun:
-    needs: test
+  test:
+    name: test (${{ matrix.runtime }})
+    needs: build
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runtime: Node.js 22
+            node-version: 22
+            command: pnpm run test
+          - runtime: Node.js 24
+            node-version: 24
+            command: pnpm run test
+          - runtime: Node.js 26
+            node-version: 26
+            command: pnpm run test
+          - runtime: Bun
+            node-version: 24
+            command: bun --bun ./node_modules/vitest/vitest.mjs run
+          - runtime: Deno
+            node-version: 24
+            command: deno run -A ./node_modules/vitest/vitest.mjs run
     steps:
       - uses: actions/checkout@v6
       - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v6
         with:
-          node-version: lts/*
+          node-version: ${{ matrix.node-version }}
           cache: pnpm
       - uses: oven-sh/setup-bun@v2
-      - run: pnpm install
-      - uses: actions/download-artifact@v8
-        with:
-          name: dist
-          path: dist
-      - run: bun --bun ./node_modules/vitest/vitest.mjs run
-
-  deno:
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - uses: pnpm/action-setup@v6
-      - uses: actions/setup-node@v6
-        with:
-          node-version: lts/*
-          cache: pnpm
+        if: matrix.runtime == 'Bun'
       - uses: denoland/setup-deno@v2
+        if: matrix.runtime == 'Deno'
       - run: pnpm install
       - uses: actions/download-artifact@v8
         with:
           name: dist
           path: dist
-      - run: deno run -A ./node_modules/vitest/vitest.mjs run
+      - run: ${{ matrix.command }}
