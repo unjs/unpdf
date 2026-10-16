@@ -1,7 +1,8 @@
-import { writeFile } from 'node:fs/promises'
 import { describe, expect, it } from 'vitest'
 import { extractImages, getDocumentProxy, renderPageAsImage } from '../src/index'
 import { getPDF } from './utils'
+
+const PNG_SIGNATURE = [137, 80, 78, 71, 13, 10, 26, 10]
 
 describe('image', () => {
   it('extracts images from a PDF', async () => {
@@ -14,14 +15,7 @@ describe('image', () => {
       canvasImport: () => import('@napi-rs/canvas'),
     })
 
-    await writeFile(
-      new URL('artifacts/pdflatex-image.png', import.meta.url),
-      new Uint8Array(result),
-    )
-
-    // Verify the buffer contains the PNG header signature.
-    const headerBytes = new Uint8Array(result, 0, 8)
-    expect(Array.from(headerBytes)).toEqual([137, 80, 78, 71, 13, 10, 26, 10])
+    expect(Array.from(new Uint8Array(result, 0, 8))).toEqual(PNG_SIGNATURE)
   })
 
   it('renders a PDF as data URL', async () => {
@@ -30,23 +24,7 @@ describe('image', () => {
       toDataURL: true,
     })
 
-    const html = `<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDFLatex Image</title>
-  </head>
-  <body>
-    <img alt="Image" src="${result}">
-  </body>
-</html>`
-    await writeFile(
-      new URL('artifacts/pdflatex-image.html', import.meta.url),
-      html,
-    )
-
-    expect(result.startsWith('data:image/png;base64,')).toBe(true)
+    expect(result).toMatch(/^data:image\/png;base64,/)
   })
 
   it('renders a page with a soft mask from a pre-built document proxy', async () => {
@@ -54,13 +32,11 @@ describe('image', () => {
     // the document-level canvas factory, which for a proxy created without the
     // `CanvasFactory` option is the built-in PDF.js one – it must resolve
     // `@napi-rs/canvas` once `canvasImport` has been provided.
-    // See https://github.com/unjs/unpdf/issues/53
     const pdf = await getDocumentProxy(await getPDF('transparency.pdf'))
     const result = await renderPageAsImage(pdf, 1, {
       canvasImport: () => import('@napi-rs/canvas'),
     })
 
-    const headerBytes = new Uint8Array(result, 0, 8)
-    expect(Array.from(headerBytes)).toEqual([137, 80, 78, 71, 13, 10, 26, 10])
+    expect(Array.from(new Uint8Array(result, 0, 8))).toEqual(PNG_SIGNATURE)
   })
 })

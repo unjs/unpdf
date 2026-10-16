@@ -3,6 +3,8 @@
     "module": "NodeNext",
     "types": ["node"],
     "noEmit": true,
+    // Off, so extensionless imports inside the shipped declarations fail the
+    // check instead of degrading to error types.
     "skipLibCheck": false
   },
   "include": ["nodenext.mts"]

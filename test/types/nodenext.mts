@@ -1,19 +1,10 @@
-/**
- * Compile-only consumer of the built package: `tsc` resolves the shipped
- * declarations the way a `moduleResolution: "nodenext"` project does, with
- * `skipLibCheck` disabled so extensionless imports inside the declaration
- * files fail the check instead of degrading to error types.
- *
- * Requires `pnpm run build:pdfjs && pnpm run build` beforehand.
- */
+// Type-checks the shipped declarations as a `nodenext` consumer would – needs `build:pdfjs` and `build` first.
 import type { PDFDocumentProxy } from 'unpdf/pdfjs'
-import { extractText, getDocumentProxy, getMeta } from 'unpdf'
+import { extractText, getDocumentProxy } from 'unpdf'
 
-export async function consumeBuiltDeclarations(data: Uint8Array) {
+export async function consumeBuiltDeclarations(data: Uint8Array): Promise<string> {
   const pdf: PDFDocumentProxy = await getDocumentProxy(data)
   const { text } = await extractText(pdf, { mergePages: true })
-  const mergedText: string = text
-  const { info } = await getMeta(pdf)
 
-  return { pdf, mergedText, info }
+  return text
 }

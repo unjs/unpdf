@@ -23,7 +23,6 @@ describe('text', () => {
 
     expect(totalPages).toBe(1)
     expect(items).toHaveLength(1)
-    expect(items[0]!.length).toBeGreaterThan(0)
 
     const firstItem = items[0]![0]!
     expect(firstItem).toMatchInlineSnapshot(`

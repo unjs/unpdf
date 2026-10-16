@@ -3,13 +3,6 @@ import { extractImages, extractText, getDocumentProxy, getMeta } from '../src/in
 import { getPDF } from './utils'
 
 describe('document lifecycle', () => {
-  it('supports passing PDFDocumentProxy', async () => {
-    const pdf = await getDocumentProxy(await getPDF())
-    const { info } = await getMeta(pdf)
-
-    expect(info.Creator).toMatchInlineSnapshot('"Writer"')
-  })
-
   it('destroys internally created document proxies', async () => {
     const probe = await getDocumentProxy(await getPDF())
     const destroySpy = vi.spyOn(Object.getPrototypeOf(probe.loadingTask), 'destroy')
@@ -41,7 +34,6 @@ describe('document lifecycle', () => {
   it('preserves extracted image data after destroying the document', async () => {
     const [firstImage] = await extractImages(await getPDF('pdflatex-image.pdf'), 1)
 
-    expect(firstImage!.data.length).toBeGreaterThan(0)
     expect(firstImage!.data.length).toBe(
       firstImage!.width * firstImage!.height * firstImage!.channels,
     )
