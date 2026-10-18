@@ -47,7 +47,9 @@ export async function getMeta(
                 return value
               }
             }
-            return target[prop as keyof typeof target]
+            const value = target[prop as keyof typeof target]
+            // `Metadata` keeps its state in private fields, so methods must run on the target.
+            return typeof value === 'function' ? value.bind(target) : value
           },
         })
       }

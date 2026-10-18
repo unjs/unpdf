@@ -51,4 +51,12 @@ describe('meta', () => {
     expect(linksMetadata.get('xap:modifydate')).toBeNull()
     expect(linksMetadata.get('xap:metadatadate')).toBeNull()
   })
+
+  it('keeps the other metadata methods working when parseDates is enabled', async () => {
+    const { metadata } = await getMeta(await getPDF('links.pdf'))
+    const { metadata: metadataWithDates } = await getMeta(await getPDF('links.pdf'), { parseDates: true })
+
+    expect(metadataWithDates.getRaw()).toBe(metadata.getRaw())
+    expect([...metadataWithDates]).toEqual([...metadata])
+  })
 })
