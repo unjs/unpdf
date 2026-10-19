@@ -52,11 +52,20 @@ describe('meta', () => {
     expect(linksMetadata.get('xap:metadatadate')).toBeNull()
   })
 
-  it('keeps the other metadata methods working when parseDates is enabled', async () => {
+  it('keeps getRaw working and parses dates in iteration with parseDates', async () => {
     const { metadata } = await getMeta(await getPDF('links.pdf'))
     const { metadata: metadataWithDates } = await getMeta(await getPDF('links.pdf'), { parseDates: true })
 
     expect(metadataWithDates.getRaw()).toBe(metadata.getRaw())
-    expect([...metadataWithDates]).toEqual([...metadata])
+    expect(Object.fromEntries(metadataWithDates)['xmp:createdate']).toBeInstanceOf(Date)
+  })
+
+  it('leaves the cached metadata of a reused document unparsed', async () => {
+    const pdf = await getDocumentProxy(await getPDF('links.pdf'))
+    await getMeta(pdf, { parseDates: true })
+    const { info, metadata } = await getMeta(pdf)
+
+    expect(info.CreationDate).toBeTypeOf('string')
+    expect(metadata.get('xmp:createdate')).toBeTypeOf('string')
   })
 })
