@@ -1,37 +1,36 @@
 name: Release
 
-permissions:
-  id-token: write
-  contents: write
-
 on:
   push:
     tags:
       - 'v*'
 
+permissions:
+  id-token: write
+  contents: write
+
 jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - uses: pnpm/action-setup@v6
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
           registry-url: https://registry.npmjs.org/
           cache: pnpm
+
+      - run: pnpm install
+      - run: pnpm run build:pdfjs
+      - run: pnpm run build
 
       - name: Publish changelog
         run: npx changelogithub
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - run: pnpm install
-      - run: |
-          pnpm run build:pdfjs
-          pnpm run build
-
       - name: Publish to npm
-        run: npm install -g npm@latest && npm publish --access public
+        run: npm install -g npm@latest && npm publish --access public --tag ${{ contains(github.ref_name, '-') && 'next' || 'latest' }}
