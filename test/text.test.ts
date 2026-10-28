@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, expectTypeOf, it, vi } from 'vitest'
 import { extractText, extractTextItems, getDocumentProxy } from '../src/index'
 import { getPDF, isWorkerd } from './utils'
 
@@ -42,6 +42,7 @@ describe('text', () => {
     expect(items).toHaveLength(1)
 
     const firstItem = items[0]![0]!
+    expectTypeOf(firstItem.dir).toEqualTypeOf<'ltr' | 'rtl' | 'ttb'>()
     expect(firstItem).toMatchInlineSnapshot(`
       {
         "dir": "ltr",

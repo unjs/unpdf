@@ -11,12 +11,37 @@ const XMP_DATE_PROPERTIES = [
   'xap:metadatadate',
 ]
 
-export async function getMeta(
+export interface PDFInfo<DateValue = string> {
+  PDFFormatVersion: string
+  Language: string | null
+  EncryptFilterName: string | null
+  IsLinearized: boolean
+  IsAcroFormPresent: boolean
+  IsXFAPresent: boolean
+  IsCollectionPresent: boolean
+  IsSignaturesPresent: boolean
+  Title?: string
+  Author?: string
+  Subject?: string
+  Keywords?: string
+  Creator?: string
+  Producer?: string
+  CreationDate?: DateValue
+  ModDate?: DateValue
+  Trapped?: { name: string }
+  /** Non-standard `/Info` entries, keyed by their PDF name. */
+  Custom?: Map<string, string | number | boolean | { name: string }>
+}
+
+export async function getMeta<ParseDates extends boolean = false>(
   data: DocumentInitParameters['data'] | PDFDocumentProxy,
   options: {
-    parseDates?: boolean
+    parseDates?: ParseDates
   } = {},
-) {
+): Promise<{
+  info: PDFInfo<ParseDates extends true ? Date | null : string>
+  metadata: PDFMetadata | null
+}> {
   return await withDocument(data, async (pdf) => {
     // PDF.js caches this result per document, so parsed dates go into copies.
     const meta = await pdf.getMetadata()
@@ -48,8 +73,8 @@ export async function getMeta(
     }
 
     return {
-      info,
-      metadata: metadata || {},
+      info: info as PDFInfo<any>,
+      metadata: metadata ?? null,
     }
   })
 }

@@ -16,8 +16,7 @@ export interface StructuredTextItem {
   fontSize: number
   /** Font family resolved from the page's style table, empty when unknown. */
   fontFamily: string
-  /** Text direction: `"ltr"`, `"rtl"`, or `"ttb"`. */
-  dir: string
+  dir: 'ltr' | 'rtl' | 'ttb'
   /** Whether the text item is followed by a line break. */
   hasEOL: boolean
 }
@@ -54,7 +53,7 @@ async function getPageTextItems(
         height: item.height,
         fontSize: Math.hypot(c, d),
         fontFamily: styles[item.fontName]?.fontFamily ?? '',
-        dir: item.dir,
+        dir: item.dir as StructuredTextItem['dir'],
         hasEOL: item.hasEOL,
       }
     })

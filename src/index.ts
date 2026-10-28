@@ -1,6 +1,7 @@
 export { createIsomorphicCanvasFactory, extractImages, renderPageAsImage } from './image'
 export { extractLinks } from './links'
 export { getMeta } from './meta'
+export type { PDFInfo } from './meta'
 export { extractText, extractTextItems } from './text'
 export type { StructuredTextItem } from './text'
 export { definePDFJSModule, getDocumentProxy, getResolvedPDFJS } from './utils'
