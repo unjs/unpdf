@@ -57,6 +57,8 @@ for (const [index, image] of images.entries())
 
 Without `format`, `data` holds raw RGBA pixels. Each image carries its `bounds` on the page.
 
+In browsers, a document proxy decodes some images into bitmaps, which `extractImages` skips. Pass binary data instead, or create the proxy with `isOffscreenCanvasSupported: false` and `isImageDecoderSupported: false`.
+
 ### Render a Page as an Image
 
 Browsers render on a DOM canvas, which a Web Worker lacks. Node.js and Bun need [`@napi-rs/canvas`](https://github.com/Brooooooklyn/canvas), passed as `canvasImport`. Serverless runtimes like Cloudflare Workers have no canvas.
@@ -198,7 +200,7 @@ import { definePDFJSModule } from 'unpdf'
 definePDFJSModule(() => import('pdfjs-dist/legacy/build/pdf.mjs'))
 ```
 
-In Node.js, import the legacy build as shown. The default `pdfjs-dist` entry targets current browsers – it fails on Node.js 24 and warns on newer versions.
+In Node.js, import the legacy build as shown. The default `pdfjs-dist` entry targets current browsers – it fails on Node.js 24 and warns on newer versions. `renderPageAsImage` still requires `canvasImport`, though PDF.js draws with the `@napi-rs/canvas` that `pdfjs-dist` installs as an optional dependency.
 
 ## How It Works
 
