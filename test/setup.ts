@@ -7,9 +7,9 @@ const MISSING_API_PATTERN = /is not a function|is not defined|is not a construct
 
 let consoleWarnSpy: MockInstance<typeof console.warn>
 
-beforeAll(async () => {
+beforeAll(() => {
   // @ts-ignore: Dynamic import from package build.
-  await definePDFJSModule(() => import('../dist/pdfjs'))
+  definePDFJSModule(() => import('../dist/pdfjs'))
 })
 
 beforeEach(() => {

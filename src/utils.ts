@@ -2,7 +2,8 @@ import type { DocumentInitParameters, PDFDocumentProxy } from 'pdfjs-dist/types/
 import type * as PDFJS from 'pdfjs-dist/types/src/pdf'
 import { stubBrowserGlobals } from './_internal/env'
 
-let resolvedModule: typeof PDFJS | undefined
+let pdfjsLoader: (() => Promise<any>) | undefined
+let resolvedModule: Promise<typeof PDFJS> | undefined
 
 // eslint-disable-next-line node/prefer-global/process
 export const isNode = globalThis.process?.release?.name === 'node'
@@ -82,41 +83,30 @@ export async function withDocument<T>(
   }
 }
 
-export async function getResolvedPDFJS(): Promise<typeof PDFJS> {
-  if (!resolvedModule) {
-    await resolvePDFJSImport()
-  }
-
-  return resolvedModule!
+/**
+ * Sets the PDF.js build every other method uses. The build loads on first use,
+ * so call this before any other method. Without it, the serverless build is
+ * used.
+ *
+ * @example
+ * // In Node.js, the legacy build of `pdfjs-dist` (install it first)
+ * import { definePDFJSModule } from 'unpdf'
+ *
+ * definePDFJSModule(() => import('pdfjs-dist/legacy/build/pdf.mjs'))
+ */
+export function definePDFJSModule(pdfjs: () => Promise<any>): void {
+  pdfjsLoader = pdfjs
+  resolvedModule = undefined
 }
 
-export async function resolvePDFJSImport(
-  pdfjsResolver?: () => Promise<any>,
-  { reload = false } = {},
-) {
-  if (resolvedModule && !reload) {
-    return
-  }
+export function getResolvedPDFJS(): Promise<typeof PDFJS> {
+  resolvedModule ??= loadPDFJS(pdfjsLoader).catch((error) => {
+    // Let the next call retry instead of caching the failure.
+    resolvedModule = undefined
+    throw error
+  })
 
-  stubBrowserGlobals()
-
-  if (pdfjsResolver) {
-    try {
-      resolvedModule = await interopDefault(pdfjsResolver())
-      return
-    }
-    catch (error) {
-      throw new Error(`PDF.js could not be resolved: ${error}`)
-    }
-  }
-
-  try {
-    // @ts-expect-error: Type mismatch.
-    resolvedModule = await import('unpdf/pdfjs')
-  }
-  catch (error) {
-    throw new Error(`Serverless PDF.js bundle could not be resolved: ${error}`)
-  }
+  return resolvedModule
 }
 
 export function isPDFDocumentProxy(data: unknown): data is PDFDocumentProxy {
@@ -128,4 +118,15 @@ export async function interopDefault<T>(
 ): Promise<T extends { default: infer U } ? U : T> {
   const resolved = await m
   return (resolved as any).default || resolved
+}
+
+async function loadPDFJS(loader?: () => Promise<any>): Promise<typeof PDFJS> {
+  stubBrowserGlobals()
+
+  try {
+    return await interopDefault(loader ? loader() : import('unpdf/pdfjs'))
+  }
+  catch (error) {
+    throw new Error(`PDF.js could not be resolved: ${error}`, { cause: error })
+  }
 }
