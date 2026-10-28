@@ -139,6 +139,11 @@ export function renderPageAsImage(
   pageNumber: number,
   options: RenderPageAsImageOptions & { toDataURL: true },
 ): Promise<string>
+export function renderPageAsImage(
+  data: DocumentInitParameters['data'] | PDFDocumentProxy,
+  pageNumber: number,
+  options?: RenderPageAsImageOptions,
+): Promise<Uint8Array | string>
 export async function renderPageAsImage(
   data: DocumentInitParameters['data'] | PDFDocumentProxy,
   pageNumber: number,
