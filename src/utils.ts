@@ -5,8 +5,13 @@ import { stubBrowserGlobals } from './_internal/env'
 let pdfjsLoader: (() => Promise<any>) | undefined
 let resolvedModule: Promise<typeof PDFJS> | undefined
 
+/**
+ * Whether PDF.js takes its Node.js code paths, by PDF.js' own rule: a
+ * `process` object outside of NW.js and Electron renderers. It decides between
+ * PDF.js' Node.js and DOM factories for canvases, fonts, and CMaps.
+ */
 // eslint-disable-next-line node/prefer-global/process
-export const isNode: boolean = globalThis.process?.release?.name === 'node'
+export const isNode: boolean = isNodeProcess(globalThis.process as NodeProcess | undefined)
 
 /**
  * Creates a `PDFDocumentProxy` from binary PDF data.
@@ -128,4 +133,13 @@ async function loadPDFJS(loader?: () => Promise<any>): Promise<typeof PDFJS> {
   catch (error) {
     throw new Error(`PDF.js could not be resolved: ${error}`, { cause: error })
   }
+}
+
+type NodeProcess = NodeJS.Process & { type?: string }
+
+function isNodeProcess(nodeProcess: NodeProcess | undefined): boolean {
+  return typeof nodeProcess === 'object'
+    && `${nodeProcess}` === '[object process]'
+    && !nodeProcess.versions.nw
+    && !(nodeProcess.versions.electron && nodeProcess.type && nodeProcess.type !== 'browser')
 }

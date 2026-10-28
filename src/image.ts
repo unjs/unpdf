@@ -147,10 +147,10 @@ export async function renderPageAsImage(
     const defaultViewport = page.getViewport({ scale: 1 })
 
     let scale = options.scale ?? 1
-    if (options.width) {
+    if (options.width !== undefined) {
       scale = options.width / defaultViewport.width
     }
-    else if (options.height) {
+    else if (options.height !== undefined) {
       scale = options.height / defaultViewport.height
     }
 
@@ -168,7 +168,9 @@ export async function renderPageAsImage(
       const mimeType = `image/${format}` as const
 
       if (options.toDataURL) {
-        return canvas.toDataURL(mimeType, quality)
+        const dataURL = canvas.toDataURL(mimeType, quality)
+        assertEncodedType(dataURL.slice('data:'.length, dataURL.indexOf(';')), mimeType)
+        return dataURL
       }
 
       if ('encode' in canvas) {
@@ -186,6 +188,7 @@ export async function renderPageAsImage(
       if (!blob) {
         throw new Error(`Failed to encode canvas as ${mimeType}.`)
       }
+      assertEncodedType(blob.type, mimeType)
 
       return new Uint8Array(await blob.arrayBuffer())
     }
@@ -262,7 +265,7 @@ function toRGBA(
 
 async function prepareCanvasEnvironment(
   canvasImport?: () => Promise<typeof import('@napi-rs/canvas')>,
-) {
+): Promise<void> {
   if (isNode) {
     if (!canvasImport) {
       throw new Error('Parameter "canvasImport" is required in Node.js environment.')
@@ -273,8 +276,14 @@ async function prepareCanvasEnvironment(
     return
   }
 
-  // PDF.js creates its canvases through `document` outside of Node.js.
   if (typeof document === 'undefined') {
     throw new Error('Unsupported environment for canvas creation.')
+  }
+}
+
+function assertEncodedType(encodedType: string, mimeType: string): void {
+  // Browsers fall back to PNG for types they can't encode, such as WebP in Safari.
+  if (encodedType !== mimeType) {
+    throw new Error(`This environment can't encode ${mimeType}, only ${encodedType}.`)
   }
 }

@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { getDocumentProxy, renderPageAsImage } from '../src/index'
 import { getPDF } from './utils'
 
@@ -36,11 +36,38 @@ describe('image', () => {
     expect(result).toMatch(/^data:image\/png;base64,/)
   })
 
-  it('rejects a scale of 0', async () => {
+  it('renders a PDF as a JPEG data URL with format jpeg', async () => {
+    const result = await renderPageAsImage(await getPDF('pdflatex-image.pdf'), 1, {
+      canvasImport: () => import('@napi-rs/canvas'),
+      format: 'jpeg',
+      toDataURL: true,
+    })
+
+    expect(result).toMatch(/^data:image\/jpeg;base64,/)
+  })
+
+  it.each(['scale', 'width', 'height'])('rejects a %s of 0', async (option) => {
     await expect(renderPageAsImage(await getPDF('pdflatex-image.pdf'), 1, {
       canvasImport: () => import('@napi-rs/canvas'),
-      scale: 0,
+      [option]: 0,
     })).rejects.toThrow('Invalid canvas size')
+  })
+
+  it('renders with @napi-rs/canvas when a DOM shim defines `document`', async () => {
+    // Forget the canvas module earlier tests shared with PDF.js.
+    vi.stubGlobal(Symbol.for('unpdf.canvasModule'), undefined)
+    vi.stubGlobal('document', {})
+
+    try {
+      const result = await renderPageAsImage(await getPDF('pdflatex-image.pdf'), 1, {
+        canvasImport: () => import('@napi-rs/canvas'),
+      })
+
+      expect(Array.from(result.subarray(0, 8))).toEqual(PNG_SIGNATURE)
+    }
+    finally {
+      vi.unstubAllGlobals()
+    }
   })
 
   it('renders a page with a soft mask from a pre-built document proxy', async () => {
