@@ -1,6 +1,5 @@
 import type { Plugin, ViteUserConfig } from 'vitest/config'
 import * as fsp from 'node:fs/promises'
-import * as path from 'node:path'
 import { cloudflareTest } from '@cloudflare/vitest-plugin'
 import { configDefaults, defineConfig } from 'vitest/config'
 
@@ -44,12 +43,12 @@ function inlineBytes(): Plugin {
   return {
     name: 'inline-bytes',
     enforce: 'pre',
-    resolveId(source, importer) {
+    async resolveId(source, importer) {
       if (!BYTES_QUERY_PATTERN.test(source) || !importer)
         return
-      const file = source.replace(/[?#].*$/, '')
-      const resolved = path.resolve(path.dirname(importer.replace(/[?#].*$/, '')), file)
-      return `${resolved}?bytes`
+      const resolvedFixture = await this.resolve(source.replace(/[?#].*$/, ''), importer, { skipSelf: true })
+      if (resolvedFixture)
+        return `${resolvedFixture.id}?bytes`
     },
     async load(id) {
       if (!BYTES_QUERY_PATTERN.test(id))
