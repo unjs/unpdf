@@ -21,7 +21,7 @@ export interface ExtractedImage {
   data: Uint8Array
   width: number
   height: number
-  /** PDF.js object ID of the image, `null` for an inline image. */
+  /** PDF.js object ID of the image, `null` for a small inline image, which PDF.js passes without one. */
   key: string | null
   /** Box the image covers on the page, in PDF user space with the origin at the bottom left. */
   bounds: Bounds
