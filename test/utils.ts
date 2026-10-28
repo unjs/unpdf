@@ -37,5 +37,4 @@ export async function getPDF(filename: FixtureName = 'sample.pdf'): Promise<Uint
   return fixtures[filename].slice()
 }
 
-// workerd reports itself through the user agent, even with `nodejs_compat`.
 export const isWorkerd: boolean = globalThis.navigator?.userAgent === 'Cloudflare-Workers'

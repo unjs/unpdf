@@ -28,7 +28,7 @@ describe('meta', () => {
   it('parses PDF dates when parseDates option is enabled', async () => {
     const { info: infoWithDates } = await getMeta(await getPDF(), { parseDates: true })
 
-    expect(infoWithDates.ModDate).toBeUndefined() // `sample.pdf` carries no `ModDate`.
+    expect(infoWithDates.ModDate).toBeUndefined()
     expect(infoWithDates.CreationDate).toBeInstanceOf(Date)
     expect(infoWithDates.CreationDate!.getFullYear()).toBe(2007)
 

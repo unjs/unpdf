@@ -44,10 +44,10 @@ async function relativeTypePaths(filename) {
 }
 
 /**
- * The type declarations copied from `pdfjs-dist` are generated from JSDoc and
- * partly reference sibling modules without file extensions. Under
- * `moduleResolution: "nodenext"`, extensionless relative imports resolve to
- * error types, so append the missing `.js` extensions.
+ * Appends the missing `.js` extensions to the relative imports of the type
+ * declarations copied from `pdfjs-dist`, which are generated from JSDoc and
+ * partly omit them. Under `moduleResolution: "nodenext"`, extensionless
+ * relative imports resolve to error types.
  *
  * @param {string} filename
  */

@@ -51,7 +51,6 @@ export async function getMeta<ParseDates extends boolean = false>(
     if (options.parseDates) {
       const { PDFDateString } = await getResolvedPDFJS()
 
-      // Primary date properties from the `/Info` dictionary.
       if (info.CreationDate) {
         info.CreationDate = PDFDateString.toDateObject(info.CreationDate)
       }

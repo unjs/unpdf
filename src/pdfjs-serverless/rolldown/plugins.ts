@@ -20,9 +20,8 @@ new Proxy({}, {
 })
 `.trim()
 
-// Raw literal substitutions applied to the PDF.js source before bundling –
-// matched verbatim, every occurrence replaced. The worker anchor carries its
-// exact multi-line indentation on purpose.
+// Anchors match verbatim, so the worker anchor carries the exact multi-line
+// indentation of the PDF.js source.
 const patches: Record<string, string> = {
   // Take the inlined worker from its global instead of importing it at runtime.
   'await import(\n      /*webpackIgnore: true*/\n      /*@vite-ignore*/\n      this.workerSrc)': 'globalThis.pdfjsWorker',
@@ -33,9 +32,7 @@ const patches: Record<string, string> = {
   'if (!this.#modulePromise)': 'if (false)',
   '#instantiateWasm(fallbackCallback, imports, successCallback) {': '#instantiateWasm(fallbackCallback, imports, successCallback) { return;',
   '#getJsModule(fallbackCallback) {': '#getJsModule(fallbackCallback) { return;',
-  // Bridge the `@napi-rs/canvas` module import from the `NodeCanvasFactory` class.
   'require("@napi-rs/canvas")': canvasMock,
-  // Remove the legacy build warning.
   'warn("Please use the `legacy` build in Node.js environments.")': '',
 }
 

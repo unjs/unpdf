@@ -39,7 +39,8 @@ interface PDFJSImageData {
  * Extracts the images painted on a page – image XObjects, inline images, and
  * image masks – as RGBA pixels. Image masks come out opaque black where they
  * paint and transparent elsewhere, since their color is the fill color at the
- * time of painting.
+ * time of painting. A 1×1 image mask that paints its pixel, which PDF.js
+ * turns into a solid fill, is skipped.
  *
  * @remarks
  * A caller-supplied document proxy created with `isOffscreenCanvasSupported`

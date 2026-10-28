@@ -34,9 +34,7 @@ describe('extractImages', () => {
 
     expect(images.map(image => image.bounds)).toEqual([
       { x: 10, y: 20, width: 100, height: 50 },
-      // Rotated by 90° around its bottom-left corner.
       { x: 110, y: 100, width: 40, height: 40 },
-      // Inside a form XObject that moves its content up by 100.
       { x: 200, y: 150, width: 30, height: 20 },
       { x: 20, y: 250, width: 50, height: 10 },
     ])

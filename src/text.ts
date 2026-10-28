@@ -2,7 +2,6 @@ import type { DocumentInitParameters, PDFDocumentProxy, TextItem, TextStyle } fr
 import { withDocument } from './utils'
 
 export interface StructuredTextItem {
-  /** Text content. */
   str: string
   /** X position in PDF coordinate space (origin: bottom-left). */
   x: number
@@ -14,10 +13,9 @@ export interface StructuredTextItem {
   height: number
   /** Font size derived from the transformation matrix. */
   fontSize: number
-  /** Font family resolved from the page's style table, empty when unknown. */
+  /** Font family, empty when unknown. */
   fontFamily: string
   dir: 'ltr' | 'rtl' | 'ttb'
-  /** Whether the text item is followed by a line break. */
   hasEOL: boolean
 }
 

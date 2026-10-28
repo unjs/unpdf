@@ -6,7 +6,11 @@ const IDENTITY_MATRIX: Matrix = [1, 0, 0, 1, 0, 0]
 /** Affine transform `[a, b, c, d, e, f]`, mapping `(x, y)` to `(a·x + c·y + e, b·x + d·y + f)`. */
 export type Matrix = [number, number, number, number, number, number]
 
-/** Axis-aligned box in PDF user space, origin bottom-left. */
+/**
+ * Axis-aligned box in PDF user space, origin bottom-left: in the coordinates of
+ * the page's `/MediaBox`, unrotated by its `/Rotate`, and unscaled by its
+ * `/UserUnit`.
+ */
 export interface Bounds {
   x: number
   y: number
