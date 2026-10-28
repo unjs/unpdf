@@ -1,4 +1,5 @@
-export { createIsomorphicCanvasFactory, extractImages, renderPageAsImage } from './image'
+export { extractImages, renderPageAsImage } from './image'
+export type { RenderPageAsImageOptions } from './image'
 export { extractLinks } from './links'
 export { getMeta } from './meta'
 export type { PDFInfo } from './meta'

@@ -1,6 +1,7 @@
 import type { DocumentInitParameters, PDFDocumentProxy } from 'pdfjs-dist/types/src/display/api'
-import { DOMCanvasFactory, injectCanvasConstructors, NodeCanvasFactory, resolveCanvasModule } from './_internal/canvas'
-import { getResolvedPDFJS, isBrowser, isNode, withDocument } from './utils'
+import type { PDFCanvasFactory } from './_internal/canvas'
+import { injectCanvasConstructors, resolveCanvasModule } from './_internal/canvas'
+import { getResolvedPDFJS, isNode, withDocument } from './utils'
 
 export interface ExtractedImageObject {
   data: Uint8ClampedArray
@@ -74,43 +75,35 @@ export async function extractImages(
   })
 }
 
+export interface RenderPageAsImageOptions {
+  canvasImport?: () => Promise<typeof import('@napi-rs/canvas')>
+  /** @default 1 */
+  scale?: number
+  width?: number
+  height?: number
+  /** @default 'png' */
+  format?: 'png' | 'jpeg' | 'webp'
+  /** Encoder quality from 0 to 1, for `jpeg` and `webp` only. */
+  quality?: number
+  toDataURL?: boolean
+}
+
 export function renderPageAsImage(
   data: DocumentInitParameters['data'] | PDFDocumentProxy,
   pageNumber: number,
-  options?: {
-    canvasImport?: () => Promise<typeof import('@napi-rs/canvas')>
-    /** @default 1.0 */
-    scale?: number
-    width?: number
-    height?: number
-    toDataURL?: false
-  },
-): Promise<ArrayBuffer>
+  options?: RenderPageAsImageOptions & { toDataURL?: false },
+): Promise<Uint8Array>
 export function renderPageAsImage(
   data: DocumentInitParameters['data'] | PDFDocumentProxy,
   pageNumber: number,
-  options: {
-    canvasImport?: () => Promise<typeof import('@napi-rs/canvas')>
-    /** @default 1.0 */
-    scale?: number
-    width?: number
-    height?: number
-    toDataURL: true
-  },
+  options: RenderPageAsImageOptions & { toDataURL: true },
 ): Promise<string>
 export async function renderPageAsImage(
   data: DocumentInitParameters['data'] | PDFDocumentProxy,
   pageNumber: number,
-  options: {
-    canvasImport?: () => Promise<typeof import('@napi-rs/canvas')>
-    /** @default 1.0 */
-    scale?: number
-    width?: number
-    height?: number
-    toDataURL?: boolean
-  } = {},
-) {
-  const CanvasFactory = await createIsomorphicCanvasFactory(options.canvasImport)
+  options: RenderPageAsImageOptions = {},
+): Promise<Uint8Array | string> {
+  await prepareCanvasEnvironment(options.canvasImport)
 
   return await withDocument(data, async (pdf) => {
     if (pageNumber < 1 || pageNumber > pdf.numPages) {
@@ -118,11 +111,9 @@ export async function renderPageAsImage(
     }
 
     const page = await pdf.getPage(pageNumber)
+    const defaultViewport = page.getViewport({ scale: 1 })
 
-    const defaultViewport = page.getViewport({ scale: 1.0 })
-
-    let scale = options.scale || 1.0
-
+    let scale = options.scale ?? 1
     if (options.width) {
       scale = options.width / defaultViewport.width
     }
@@ -130,52 +121,50 @@ export async function renderPageAsImage(
       scale = options.height / defaultViewport.height
     }
 
-    const viewport = page.getViewport({ scale: Math.max(0, scale) })
-    const canvasFactory = new CanvasFactory()
-    const drawingContext = canvasFactory.create(viewport.width, viewport.height)
+    const viewport = page.getViewport({ scale })
+    // The document's own factory, which also serves the intermediate canvases
+    // of soft masks and transparency groups while rendering.
+    const canvasFactory = pdf.canvasFactory as PDFCanvasFactory
+    const canvasAndContext = canvasFactory.create(viewport.width, viewport.height)
 
     try {
-      await page.render({
-        canvas: drawingContext.canvas as HTMLCanvasElement,
-        canvasContext: drawingContext.context as CanvasRenderingContext2D,
-        viewport,
-      }).promise
+      const { canvas } = canvasAndContext
+      await page.render({ canvas: canvas as HTMLCanvasElement, viewport }).promise
 
-      const { canvas } = drawingContext
+      const { format = 'png', quality } = options
+      const mimeType = `image/${format}` as const
 
       if (options.toDataURL) {
-        return canvas.toDataURL()
+        return canvas.toDataURL(mimeType, quality)
       }
 
-      // Encode PNG bytes directly instead of round-tripping through a data URL.
       if ('encode' in canvas) {
-        const buffer = await canvas.encode('png')
-        // `Buffer` pools its underlying `ArrayBuffer`, so slice out this view.
-        return buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength)
+        // `@napi-rs/canvas` takes the quality from 0 to 100.
+        const buffer = format === 'png'
+          ? await canvas.encode(format)
+          : await canvas.encode(format, quality === undefined ? undefined : quality * 100)
+        return new Uint8Array(buffer)
       }
 
       const blob = await new Promise<Blob | null>((resolve) => {
-        canvas.toBlob(resolve)
+        canvas.toBlob(resolve, mimeType, quality)
       })
 
       if (!blob) {
-        throw new Error('Failed to encode canvas to a PNG blob.')
+        throw new Error(`Failed to encode canvas as ${mimeType}.`)
       }
 
-      return await blob.arrayBuffer()
+      return new Uint8Array(await blob.arrayBuffer())
     }
     finally {
-      canvasFactory.destroy(drawingContext)
+      canvasFactory.destroy(canvasAndContext)
     }
-  }, { CanvasFactory })
+  })
 }
 
-export async function createIsomorphicCanvasFactory(
+async function prepareCanvasEnvironment(
   canvasImport?: () => Promise<typeof import('@napi-rs/canvas')>,
 ) {
-  if (isBrowser)
-    return DOMCanvasFactory
-
   if (isNode) {
     if (!canvasImport) {
       throw new Error('Parameter "canvasImport" is required in Node.js environment.')
@@ -183,8 +172,11 @@ export async function createIsomorphicCanvasFactory(
 
     await resolveCanvasModule(canvasImport)
     injectCanvasConstructors()
-    return NodeCanvasFactory
+    return
   }
 
-  throw new Error('Unsupported environment for canvas creation.')
+  // PDF.js creates its canvases through `document` outside of Node.js.
+  if (typeof document === 'undefined') {
+    throw new Error('Unsupported environment for canvas creation.')
+  }
 }

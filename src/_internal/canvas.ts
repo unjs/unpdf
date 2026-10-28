@@ -1,113 +1,32 @@
 import type { Canvas, SKRSContext2D } from '@napi-rs/canvas'
 import { interopDefault } from '../utils'
 
-interface CanvasFactoryContext {
-  canvas?: HTMLCanvasElement | Canvas
-  context?: CanvasRenderingContext2D | SKRSContext2D | null
+export interface CanvasAndContext {
+  canvas: HTMLCanvasElement | Canvas
+  context: CanvasRenderingContext2D | SKRSContext2D
+}
+
+/** The shape of the document-level canvas factory PDF.js exposes as `canvasFactory`. */
+export interface PDFCanvasFactory {
+  create: (width: number, height: number) => CanvasAndContext
+  destroy: (canvasAndContext: CanvasAndContext) => void
 }
 
 let resolvedCanvasModule: typeof import('@napi-rs/canvas') | undefined
-
-/**
- * Derived from the PDF.js project by the Mozilla Foundation.
- * @see https://github.com/mozilla/pdf.js/blob/b8de9a372f9bbf7e33adb362eeae5ef1919dba73/src/display/canvas_factory.js#L18
- * @license Apache-2.0
- */
-class BaseCanvasFactory {
-  #enableHWA = false
-
-  constructor({ enableHWA = false } = {}) {
-    this.#enableHWA = enableHWA
-  }
-
-  create(width: number, height: number) {
-    const canvas = this._createCanvas(width, height)
-
-    return {
-      canvas,
-      context: canvas.getContext('2d', {
-        willReadFrequently: !this.#enableHWA,
-      }),
-    }
-  }
-
-  reset({ canvas }: CanvasFactoryContext, width: number, height: number) {
-    if (!canvas) {
-      throw new Error('Canvas is not specified')
-    }
-
-    canvas.width = width
-    canvas.height = height
-  }
-
-  destroy(context: CanvasFactoryContext) {
-    if (!context.canvas) {
-      throw new Error('Canvas is not specified')
-    }
-
-    // Zeroing the width and height cause Firefox to release graphics
-    // resources immediately, which can greatly reduce memory consumption.
-    context.canvas.width = 0
-    context.canvas.height = 0
-    context.canvas = undefined
-    context.context = undefined
-  }
-
-  // eslint-disable-next-line unused-imports/no-unused-vars
-  _createCanvas(width: number, height: number): HTMLCanvasElement | Canvas {
-    throw new Error('Not implemented')
-  }
-}
-
-/**
- * Derived from the PDF.js project by the Mozilla Foundation.
- * @see https://github.com/mozilla/pdf.js/blob/b8de9a372f9bbf7e33adb362eeae5ef1919dba73/src/display/canvas_factory.js#L18
- * @license Apache-2.0
- */
-export class DOMCanvasFactory extends BaseCanvasFactory {
-  _document: Document
-
-  constructor({ ownerDocument = globalThis.document, enableHWA = false } = {}) {
-    super({ enableHWA })
-    this._document = ownerDocument
-  }
-
-  _createCanvas(width: number, height: number) {
-    const canvas = this._document.createElement('canvas')
-    canvas.width = width
-    canvas.height = height
-    return canvas
-  }
-}
-
-export class NodeCanvasFactory extends BaseCanvasFactory {
-  constructor({ enableHWA = false } = {}) {
-    super({ enableHWA })
-  }
-
-  _createCanvas(width: number, height: number) {
-    if (!resolvedCanvasModule) {
-      throw new Error('@napi-rs/canvas module is not resolved')
-    }
-
-    return resolvedCanvasModule.createCanvas(width, height)
-  }
-}
 
 export async function resolveCanvasModule(canvasImport: () => Promise<typeof import('@napi-rs/canvas')>) {
   resolvedCanvasModule ??= (await interopDefault(canvasImport()))
 
   // Share the resolved module with the serverless PDF.js build: its baked-in
-  // `NodeCanvasFactory` (the default document-level factory of `getDocument`,
-  // used for intermediate canvases such as soft masks and transparency groups)
+  // `NodeCanvasFactory` (the default document-level factory of `getDocument`)
   // resolves `@napi-rs/canvas` through this global symbol.
   ;(globalThis as Record<PropertyKey, unknown>)[Symbol.for('unpdf.canvasModule')] = resolvedCanvasModule
 }
 
 /**
- * Injects `DOMMatrix`, `ImageData` and `Path2D` constructors from the
- * `@napi-rs/canvas` package into the global scope. This is necessary for
- * Node.js environments that do not support these constructors natively.
+ * Injects the `DOMMatrix` and `Path2D` constructors of `@napi-rs/canvas` into
+ * the global scope, which the PDF.js display layer instantiates while
+ * rendering. Only the legacy `pdfjs-dist` build polyfills them itself.
  *
  * @remarks
  * `DOMMatrix` is always set because {@link stubBrowserGlobals} may have
@@ -119,9 +38,6 @@ export function injectCanvasConstructors() {
     return
 
   globalThis.DOMMatrix = resolvedCanvasModule.DOMMatrix as unknown as typeof DOMMatrix
-
-  if (typeof globalThis.ImageData === 'undefined')
-    globalThis.ImageData = resolvedCanvasModule.ImageData as unknown as typeof ImageData
 
   if (typeof globalThis.Path2D === 'undefined')
     globalThis.Path2D = resolvedCanvasModule.Path2D as unknown as typeof Path2D
