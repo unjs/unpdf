@@ -6,7 +6,7 @@ Ships with a serverless build of Mozilla's [PDF.js](https://github.com/mozilla/p
 
 ## Features
 
-- 🏗️ Works in Node.js 22+, Bun, browsers, and serverless environments ([Cloudflare Workers example](./examples/cloudflare))
+- 🏗️ Works in Node.js 24+, Bun, browsers, and serverless environments ([Cloudflare Workers example](./examples/cloudflare))
 - 🪭 Includes serverless build of PDF.js ([`unpdf/pdfjs`](#how-it-works))
 - 💬 Extract [text](#extracttext), [positioned text](#extracttextitems), [links](#extractlinks), [images](#extractimages), and [metadata](#getmeta) from PDF files
 - 🖼️ [Render pages as images](#renderpageasimage)

@@ -1,4 +1,4 @@
-// Promise polyfill for Node.js < 22 and some browsers.
+// `Promise.withResolvers` is not available in Safari < 17.4.
 if (typeof Promise.withResolvers === 'undefined') {
   Promise.withResolvers = function () {
     let resolve, reject
@@ -11,7 +11,7 @@ if (typeof Promise.withResolvers === 'undefined') {
 }
 
 // `Promise.try` is used by PDF.js v5.6+ in its message handler.
-// Not yet available in Safari < 18.2 and Node.js < 23.
+// Not yet available in Safari < 18.2.
 if (typeof Promise.try === 'undefined') {
   Promise.try = function (fn, ...args) {
     return new Promise(resolve => resolve(fn(...args)))

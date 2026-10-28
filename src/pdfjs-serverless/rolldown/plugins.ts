@@ -135,9 +135,7 @@ export function pdfjsTypes(): Plugin {
 export * from './types/src/pdf.js'
 `.trimStart()
 
-      for (const filename of ['pdfjs.d.ts', 'pdfjs.d.mts']) {
-        await writeFile(`dist/${filename}`, typeExports, 'utf8')
-      }
+      await writeFile('dist/pdfjs.d.mts', typeExports, 'utf8')
     },
   }
 }

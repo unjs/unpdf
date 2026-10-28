@@ -30,36 +30,19 @@
   "sideEffects": false,
   "exports": {
     ".": {
-      "import": {
-        "types": "./dist/index.d.mts",
-        "default": "./dist/index.mjs"
-      },
-      "require": {
-        "types": "./dist/index.d.cts",
-        "default": "./dist/index.cjs"
-      }
+      "types": "./dist/index.d.mts",
+      "default": "./dist/index.mjs"
     },
     "./pdfjs": {
       "types": "./dist/pdfjs.d.mts",
-      "import": "./dist/pdfjs.mjs"
-    }
-  },
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.cts",
-  "typesVersions": {
-    "*": {
-      "*": [
-        "*",
-        "dist/*"
-      ]
+      "default": "./dist/pdfjs.mjs"
     }
   },
   "files": [
     "dist"
   ],
   "engines": {
-    "node": ">=22"
+    "node": ">=24"
   },
   "scripts": {
     "build": "tsdown && node scripts/post-build.mjs",
@@ -69,7 +52,7 @@
     "lint:fix": "eslint . --fix",
     "release": "bumpp",
     "test": "vitest",
-    "test:attw": "attw --pack --ignore-rules cjs-resolves-to-esm",
+    "test:attw": "attw --pack --profile esm-only",
     "test:types": "tsc --noEmit",
     "test:types:dist": "tsc -p test/types/tsconfig.json"
   },

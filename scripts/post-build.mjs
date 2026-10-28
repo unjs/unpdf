@@ -5,7 +5,7 @@ import { glob } from 'tinyglobby'
 
 const rootDir = path.resolve(import.meta.dirname, '..')
 
-const bundleDeclarations = await glob(['dist/**/*.{d.cts,d.mts,d.ts}'], {
+const bundleDeclarations = await glob(['dist/**/*.d.mts'], {
   cwd: rootDir,
   ignore: ['**/types/**'],
 })

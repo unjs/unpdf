@@ -2,14 +2,10 @@ import { defineConfig } from 'tsdown'
 
 export default defineConfig({
   entry: ['src/index.ts'],
-  format: ['esm', 'cjs'],
+  format: 'esm',
   platform: 'node',
   dts: true,
   clean: false,
-  // `getDocumentProxy` probes `import.meta.resolve` inside a `try/catch`; in
-  // the CJS output it collapses to a throwing expression on purpose – Node CJS
-  // consumers fall back to the serverless bundle without the font defaults.
-  suppressWarnings: [/EMPTY_IMPORT_META/],
   deps: {
     neverBundle: [
       'unpdf/pdfjs',
