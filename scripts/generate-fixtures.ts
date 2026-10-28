@@ -40,7 +40,7 @@ function buildCJKPredefinedCMap(): Uint8Array {
     '<< /Type /Font /Subtype /Type0 /BaseFont /KozMinPro-Regular /Encoding /UniJIS-UCS2-H /DescendantFonts [6 0 R] >>',
     '<< /Type /Font /Subtype /CIDFontType0 /BaseFont /KozMinPro-Regular /CIDSystemInfo << /Registry (Adobe) /Ordering (Japan1) /Supplement 4 >> /FontDescriptor 7 0 R /DW 1000 >>',
     '<< /Type /FontDescriptor /FontName /KozMinPro-Regular /Flags 4 /FontBBox [0 -200 1000 900] /ItalicAngle 0 /Ascent 880 /Descent -120 /CapHeight 700 /StemV 80 >>',
-  ], { hasBinaryMarker: true })
+  ])
 }
 
 function buildDocument(): Uint8Array {
@@ -173,7 +173,7 @@ function buildTransparency(): Uint8Array {
     '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 200 200] /Resources << /ExtGState << /GS0 << /Type /ExtGState /SMask << /Type /Mask /S /Luminosity /G 5 0 R >> >> >> >> /Contents 4 0 R >>',
     stream('', 'q /GS0 gs 1 0 0 rg 0 0 200 200 re f Q'),
     stream('/Type /XObject /Subtype /Form /BBox [0 0 200 200] /Group << /S /Transparency /CS /DeviceGray >>', '0.5 g 0 0 200 200 re f'),
-  ], { version: '1.4' })
+  ])
 }
 
 function buildUnpaintedImages(): Uint8Array {
@@ -217,14 +217,9 @@ function stream(dictionary: string, data: string): string {
  */
 function serializePDF(
   objects: (string | undefined)[],
-  {
-    version = '1.7',
-    hasBinaryMarker = false,
-    infoObjectNumber,
-  }: { version?: string, hasBinaryMarker?: boolean, infoObjectNumber?: number } = {},
+  { infoObjectNumber }: { infoObjectNumber?: number } = {},
 ): Uint8Array {
-  // Bytes above 127 in a comment flag the file as binary to transfer tools.
-  let pdf = `%PDF-${version}\n${hasBinaryMarker ? '%\xE2\xE3\xCF\xD3\n' : ''}`
+  let pdf = '%PDF-1.7\n'
   const xrefEntries = ['0000000000 65535 f ']
 
   for (const [index, body] of objects.entries()) {

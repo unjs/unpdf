@@ -1,6 +1,6 @@
 import type { DocumentInitParameters, PDFDocumentProxy } from 'pdfjs-dist/types/src/display/api'
 import type * as PDFJS from 'pdfjs-dist/types/src/pdf'
-import { stubBrowserGlobals } from './_internal/env'
+import { polyfillDOMMatrix } from './_internal/dommatrix-polyfill'
 
 let pdfjsLoader: (() => Promise<any>) | undefined
 let resolvedModule: Promise<typeof PDFJS> | undefined
@@ -118,7 +118,7 @@ export async function interopDefault<T>(
 }
 
 async function loadPDFJS(loader?: () => Promise<any>): Promise<typeof PDFJS> {
-  stubBrowserGlobals()
+  polyfillDOMMatrix()
 
   try {
     return await interopDefault(loader ? loader() : import('unpdf/pdfjs'))

@@ -79,11 +79,6 @@ export async function getMeta<ParseDates extends boolean = false>(
 }
 
 function parseISODateString(isoDateString: string) {
-  if (!isoDateString)
-    return
-
   const parsedDate = Date.parse(isoDateString)
-  if (!Number.isNaN(parsedDate)) {
-    return new Date(parsedDate)
-  }
+  return Number.isNaN(parsedDate) ? null : new Date(parsedDate)
 }

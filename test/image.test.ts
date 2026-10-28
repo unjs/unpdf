@@ -5,7 +5,7 @@ import { getPDF } from './utils'
 const PNG_SIGNATURE = [137, 80, 78, 71, 13, 10, 26, 10]
 const JPEG_SIGNATURE = [0xFF, 0xD8, 0xFF]
 
-describe('image', () => {
+describe('renderPageAsImage', () => {
   it('renders a PDF as image', async () => {
     const result = await renderPageAsImage(await getPDF('pdflatex-image.pdf'), 1, {
       canvasImport: () => import('@napi-rs/canvas'),

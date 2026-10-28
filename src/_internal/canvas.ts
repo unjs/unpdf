@@ -29,7 +29,7 @@ export async function resolveCanvasModule(canvasImport: () => Promise<typeof imp
  * rendering. Only the legacy `pdfjs-dist` build polyfills them itself.
  *
  * @remarks
- * `DOMMatrix` is always set because {@link stubBrowserGlobals} may have
+ * `DOMMatrix` is always set because {@link polyfillDOMMatrix} may have
  * installed a minimal stub to allow PDF.js to import – the real
  * `@napi-rs/canvas` implementation must take precedence for rendering.
  */
