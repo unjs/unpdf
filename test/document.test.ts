@@ -31,10 +31,13 @@ describe('document lifecycle', () => {
   })
 
   it('preserves extracted image data after destroying the document', async () => {
-    const [firstImage] = await extractImages(await getPDF('pdflatex-image.pdf'), 1)
+    const [jpegImage] = await extractImages(await getPDF('pdflatex-image.pdf'), 1)
 
-    expect(firstImage!.data.length).toBe(
-      firstImage!.width * firstImage!.height * 4,
-    )
+    const { data, width, height } = jpegImage!
+    const centerOffset = (height / 2 * width + width / 2) * 4
+
+    expect({ width, height }).toEqual({ width: 300, height: 200 })
+    expect(Array.from(data.subarray(0, 4))).toEqual([1, 0, 0, 255])
+    expect(Array.from(data.subarray(centerOffset, centerOffset + 4))).toEqual([202, 158, 113, 255])
   })
 })

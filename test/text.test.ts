@@ -11,11 +11,9 @@ describe('text', () => {
   })
 
   it('preserves line breaks and normalizes whitespace when merging pages', async () => {
-    const { text } = await extractText(await getPDF('links.pdf'), { mergePages: true })
+    const { text } = await extractText(await getPDF('document.pdf'), { mergePages: true })
 
-    // Guard against blind snapshot updates re-collapsing everything to one line.
-    expect(text).toContain('\n')
-    expect(text).toMatchSnapshot()
+    expect(text).toBe('Links to pages\nunpdf on GitHub\nPDF.js by Mozilla\nUnJS ecosystem\nBack to page one')
   })
 
   // Workers have no local `pdfjs-dist` to load the CMap data from.

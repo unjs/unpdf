@@ -1,8 +1,8 @@
 // Inlined by the `?bytes` plugin, since workerd can't read the fixtures from the host file system.
 import annotationImagePDF from './fixtures/annotation-image.pdf?bytes'
 import cjkPredefinedCMapPDF from './fixtures/cjk-predefined-cmap.pdf?bytes'
+import documentPDF from './fixtures/document.pdf?bytes'
 import imagesPDF from './fixtures/images.pdf?bytes'
-import linksPDF from './fixtures/links.pdf?bytes'
 import pdflatexImagePDF from './fixtures/pdflatex-image.pdf?bytes'
 import samplePDF from './fixtures/sample.pdf?bytes'
 import scannedPagesPDF from './fixtures/scanned-pages.pdf?bytes'
@@ -13,8 +13,8 @@ import unpaintedImagesPDF from './fixtures/unpainted-images.pdf?bytes'
 type FixtureName
   = | 'annotation-image.pdf'
     | 'cjk-predefined-cmap.pdf'
+    | 'document.pdf'
     | 'images.pdf'
-    | 'links.pdf'
     | 'pdflatex-image.pdf'
     | 'sample.pdf'
     | 'scanned-pages.pdf'
@@ -25,8 +25,8 @@ type FixtureName
 const fixtures: Record<FixtureName, Uint8Array> = {
   'annotation-image.pdf': annotationImagePDF,
   'cjk-predefined-cmap.pdf': cjkPredefinedCMapPDF,
+  'document.pdf': documentPDF,
   'images.pdf': imagesPDF,
-  'links.pdf': linksPDF,
   'pdflatex-image.pdf': pdflatexImagePDF,
   'sample.pdf': samplePDF,
   'scanned-pages.pdf': scannedPagesPDF,

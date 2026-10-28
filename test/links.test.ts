@@ -3,12 +3,13 @@ import { extractLinks } from '../src/index'
 import { getPDF } from './utils'
 
 describe('links', () => {
-  it('extracts links per page', async () => {
-    const { links, totalPages } = await extractLinks(await getPDF('links.pdf'))
-
-    const url = 'https://www.antennahouse.com/'
+  it('extracts the URL of each external link per page', async () => {
+    const { links, totalPages } = await extractLinks(await getPDF('document.pdf'))
 
     expect(totalPages).toBe(2)
-    expect(links).toEqual([[url, url], [url, url]])
+    expect(links).toEqual([
+      ['https://github.com/unjs/unpdf', 'https://mozilla.github.io/pdf.js/'],
+      ['https://unjs.io/'],
+    ])
   })
 })

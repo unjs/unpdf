@@ -32,24 +32,21 @@ describe('meta', () => {
     expect(infoWithDates.CreationDate).toBeInstanceOf(Date)
     expect(infoWithDates.CreationDate!.getFullYear()).toBe(2007)
 
-    const { info: infoLinks, metadata: linksMetadata } = await getMeta(
-      await getDocumentProxy(await getPDF('links.pdf')),
+    const { info: documentInfo, metadata: documentMetadata } = await getMeta(
+      await getDocumentProxy(await getPDF('document.pdf')),
       { parseDates: true },
     )
 
-    expect(infoLinks.CreationDate).toBeInstanceOf(Date)
-    expect(infoLinks.ModDate).toBeInstanceOf(Date)
-    expect(infoLinks.CreationDate!.getFullYear()).toBe(2024)
-    expect(infoLinks.ModDate!.getFullYear()).toBe(2024)
+    expect(documentInfo.CreationDate).toEqual(new Date('2024-01-15T09:30:00Z'))
+    expect(documentInfo.ModDate).toEqual(new Date('2024-02-20T12:00:00Z'))
 
-    expect(linksMetadata!.get('xmp:createdate')).toBeInstanceOf(Date)
-    expect(linksMetadata!.get('xmp:modifydate')).toBeInstanceOf(Date)
-    expect(linksMetadata!.get('xmp:metadatadate')).toBeInstanceOf(Date)
-    expect(linksMetadata!.get('xmp:createdate').getFullYear()).toBe(2024)
+    expect(documentMetadata!.get('xmp:createdate')).toEqual(new Date('2024-01-15T09:30:00Z'))
+    expect(documentMetadata!.get('xmp:modifydate')).toEqual(new Date('2024-02-20T12:00:00Z'))
+    expect(documentMetadata!.get('xmp:metadatadate')).toEqual(new Date('2024-02-21T08:15:00Z'))
 
-    expect(linksMetadata!.get('xap:createdate')).toBeNull()
-    expect(linksMetadata!.get('xap:modifydate')).toBeNull()
-    expect(linksMetadata!.get('xap:metadatadate')).toBeNull()
+    expect(documentMetadata!.get('xap:createdate')).toBeNull()
+    expect(documentMetadata!.get('xap:modifydate')).toBeNull()
+    expect(documentMetadata!.get('xap:metadatadate')).toBeNull()
   })
 
   it('types the date fields of info by the parseDates option', async () => {
@@ -61,19 +58,19 @@ describe('meta', () => {
   })
 
   it('keeps getRaw working and parses dates in iteration with parseDates', async () => {
-    const { metadata } = await getMeta(await getPDF('links.pdf'))
-    const { metadata: metadataWithDates } = await getMeta(await getPDF('links.pdf'), { parseDates: true })
+    const { metadata } = await getMeta(await getPDF('document.pdf'))
+    const { metadata: metadataWithDates } = await getMeta(await getPDF('document.pdf'), { parseDates: true })
 
     expect(metadataWithDates!.getRaw()).toBe(metadata!.getRaw())
-    expect(Object.fromEntries(metadataWithDates!)['xmp:createdate']).toBeInstanceOf(Date)
+    expect(Object.fromEntries(metadataWithDates!)['xmp:createdate']).toEqual(new Date('2024-01-15T09:30:00Z'))
   })
 
   it('leaves the cached metadata of a reused document unparsed', async () => {
-    const pdf = await getDocumentProxy(await getPDF('links.pdf'))
+    const pdf = await getDocumentProxy(await getPDF('document.pdf'))
     await getMeta(pdf, { parseDates: true })
     const { info, metadata } = await getMeta(pdf)
 
-    expect(info.CreationDate).toBeTypeOf('string')
-    expect(metadata!.get('xmp:createdate')).toBeTypeOf('string')
+    expect(info.CreationDate).toBe('D:20240115103000+01\'00\'')
+    expect(metadata!.get('xmp:createdate')).toBe('2024-01-15T10:30:00+01:00')
   })
 })
