@@ -34,7 +34,7 @@ jobs:
   test:
     name: test (${{ matrix.runtime }})
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os || 'ubuntu-latest' }}
     strategy:
       fail-fast: false
       matrix:
@@ -44,6 +44,10 @@ jobs:
             command: pnpm exec vitest run --project node
           - runtime: Node.js 26
             node-version: 26
+            command: pnpm exec vitest run --project node
+          - runtime: Node.js 24 on Windows
+            os: windows-latest
+            node-version: 24
             command: pnpm exec vitest run --project node
           - runtime: Bun
             node-version: 24
