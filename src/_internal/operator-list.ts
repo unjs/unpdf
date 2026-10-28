@@ -30,7 +30,8 @@ interface GraphicsState {
 
 /**
  * Walks an operator list in painting order, tracking the graphics state the
- * operations draw with through `save`/`restore` and form XObjects.
+ * operations draw with through `save`/`restore`, form XObjects, and annotation
+ * appearances.
  */
 export function* walkOperatorList(
   operatorList: PDFOperatorList,
@@ -46,7 +47,7 @@ export function* walkOperatorList(
     if (fn === ops.save) {
       stateStack.push(state)
     }
-    else if (fn === ops.restore || fn === ops.paintFormXObjectEnd) {
+    else if (fn === ops.restore || fn === ops.paintFormXObjectEnd || fn === ops.endAnnotation) {
       state = stateStack.pop() ?? state
     }
     else if (fn === ops.transform) {
@@ -57,6 +58,16 @@ export function* walkOperatorList(
       const [formMatrix] = args
       if (formMatrix) {
         state = { ...state, transform: multiplyMatrices(state.transform, formMatrix) }
+      }
+    }
+    else if (fn === ops.beginAnnotation) {
+      // Like PDF.js' canvas, draw an annotation appearance from the page's base
+      // state, mapped onto the annotation rectangle by `transform` and `matrix`.
+      stateStack.push(state)
+      const [, , annotationTransform, appearanceMatrix] = args
+      state = {
+        transform: multiplyMatrices(Array.from(annotationTransform) as Matrix, appearanceMatrix),
+        textRenderingMode: 0,
       }
     }
     else if (fn === ops.setTextRenderingMode) {

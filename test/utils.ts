@@ -1,4 +1,5 @@
 // Inlined by the `?bytes` plugin, since workerd can't read the fixtures from the host file system.
+import annotationImagePDF from './fixtures/annotation-image.pdf?bytes'
 import cjkPredefinedCMapPDF from './fixtures/cjk-predefined-cmap.pdf?bytes'
 import imagesPDF from './fixtures/images.pdf?bytes'
 import linksPDF from './fixtures/links.pdf?bytes'
@@ -9,7 +10,8 @@ import standardFontPDF from './fixtures/standard-font.pdf?bytes'
 import transparencyPDF from './fixtures/transparency.pdf?bytes'
 
 type FixtureName
-  = | 'cjk-predefined-cmap.pdf'
+  = | 'annotation-image.pdf'
+    | 'cjk-predefined-cmap.pdf'
     | 'images.pdf'
     | 'links.pdf'
     | 'pdflatex-image.pdf'
@@ -19,6 +21,7 @@ type FixtureName
     | 'transparency.pdf'
 
 const fixtures: Record<FixtureName, Uint8Array> = {
+  'annotation-image.pdf': annotationImagePDF,
   'cjk-predefined-cmap.pdf': cjkPredefinedCMapPDF,
   'images.pdf': imagesPDF,
   'links.pdf': linksPDF,

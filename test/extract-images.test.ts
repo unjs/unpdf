@@ -42,6 +42,12 @@ describe('extractImages', () => {
     ])
   })
 
+  it('maps images of annotation appearances onto the annotation rectangle', async () => {
+    const [image] = await extractImages(await getPDF('annotation-image.pdf'), 1)
+
+    expect(image!.bounds).toEqual({ x: 50, y: 60, width: 100, height: 50 })
+  })
+
   it('returns pixel data that later extractions from the same proxy do not share', async () => {
     const pdf = await getDocumentProxy(await getPDF('images.pdf'))
     const [, firstInlineImage] = await extractImages(pdf, 1)
