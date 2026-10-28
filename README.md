@@ -137,7 +137,7 @@ function extractLinks(data): Promise<{ totalPages: number, links: string[][] }>
 Extracts the images painted on a page – image XObjects, inline images, and image masks – as RGBA pixels or PNG bytes, each with `width`, `height`, and `bounds` in PDF space.
 
 ```ts
-function extractImages(data, pageNumber: number, options?: { format?: 'rgba' | 'png' }): Promise<ExtractedImageObject[]>
+function extractImages(data, pageNumber: number, options?: { format?: 'rgba' | 'png' }): Promise<ExtractedImage[]>
 ```
 
 ### `renderPageAsImage`

@@ -16,7 +16,7 @@ export interface ExtractImagesOptions {
   format?: 'rgba' | 'png'
 }
 
-export interface ExtractedImageObject {
+export interface ExtractedImage {
   /** RGBA pixels, four bytes per pixel, row by row from the top – or PNG bytes with `format: 'png'`. */
   data: Uint8Array
   width: number
@@ -50,7 +50,7 @@ export async function extractImages(
   data: DocumentInitParameters['data'] | PDFDocumentProxy,
   pageNumber: number,
   options: ExtractImagesOptions = {},
-): Promise<ExtractedImageObject[]> {
+): Promise<ExtractedImage[]> {
   return await withDocument(data, async (pdf) => {
     if (pageNumber < 1 || pageNumber > pdf.numPages) {
       throw new Error(`Invalid page number. Must be between 1 and ${pdf.numPages}.`)
@@ -60,7 +60,7 @@ export async function extractImages(
     const operatorList = await page.getOperatorList()
     const { ImageKind, OPS } = await getResolvedPDFJS()
 
-    const images: ExtractedImageObject[] = []
+    const images: ExtractedImage[] = []
 
     for (const { fn, args, transform } of walkOperatorList(operatorList, OPS)) {
       let key: string | null = null
