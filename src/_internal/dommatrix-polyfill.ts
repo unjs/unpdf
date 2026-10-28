@@ -1,4 +1,4 @@
-export function polyfillDOMMatrix() {
+export function polyfillDOMMatrix(): void {
   if (typeof globalThis.DOMMatrix !== 'undefined')
     return
 

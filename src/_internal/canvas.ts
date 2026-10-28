@@ -14,7 +14,7 @@ export interface PDFCanvasFactory {
 
 let resolvedCanvasModule: typeof import('@napi-rs/canvas') | undefined
 
-export async function resolveCanvasModule(canvasImport: () => Promise<typeof import('@napi-rs/canvas')>) {
+export async function resolveCanvasModule(canvasImport: () => Promise<typeof import('@napi-rs/canvas')>): Promise<void> {
   resolvedCanvasModule ??= (await interopDefault(canvasImport()))
 
   // Share the resolved module with the serverless PDF.js build: its baked-in
@@ -33,7 +33,7 @@ export async function resolveCanvasModule(canvasImport: () => Promise<typeof imp
  * installed a minimal stub to allow PDF.js to import – the real
  * `@napi-rs/canvas` implementation must take precedence for rendering.
  */
-export function injectCanvasConstructors() {
+export function injectCanvasConstructors(): void {
   if (!resolvedCanvasModule)
     return
 

@@ -6,7 +6,7 @@ let pdfjsLoader: (() => Promise<any>) | undefined
 let resolvedModule: Promise<typeof PDFJS> | undefined
 
 // eslint-disable-next-line node/prefer-global/process
-export const isNode = globalThis.process?.release?.name === 'node'
+export const isNode: boolean = globalThis.process?.release?.name === 'node'
 
 /**
  * Creates a `PDFDocumentProxy` from binary PDF data.
@@ -22,7 +22,7 @@ export const isNode = globalThis.process?.release?.name === 'node'
 export async function getDocumentProxy(
   data: DocumentInitParameters['data'],
   options: DocumentInitParameters = {},
-) {
+): Promise<PDFDocumentProxy> {
   const { getDocument } = await getResolvedPDFJS()
 
   let nodeDefaults: Partial<DocumentInitParameters> = {}

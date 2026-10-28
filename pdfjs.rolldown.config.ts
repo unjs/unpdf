@@ -1,7 +1,8 @@
+import type { RolldownOptions } from 'rolldown'
 import { defineConfig } from 'rolldown'
 import { assertRuntimePatchesFirst, patchPDFJSSource, pdfjsTypes } from './src/pdfjs-serverless/rolldown/plugins'
 
-export default defineConfig({
+const config: RolldownOptions = defineConfig({
   input: 'src/pdfjs-serverless/index.mjs',
   // The root `"sideEffects": false` applies to the sources read here too, which
   // would drop the mock and polyfill modules whose only job is to mutate
@@ -41,3 +42,5 @@ export default defineConfig({
     pdfjsTypes(),
   ],
 })
+
+export default config

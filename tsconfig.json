@@ -7,8 +7,11 @@
     "resolveJsonModule": true,
     "types": ["node"],
     "noUncheckedIndexedAccess": true,
+    "declaration": true,
     "noEmit": true,
+    "isolatedDeclarations": true,
     "verbatimModuleSyntax": true,
+    "erasableSyntaxOnly": true,
     "skipLibCheck": true
   },
   "exclude": ["node_modules", "test/types"]

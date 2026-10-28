@@ -1,7 +1,7 @@
 import { extractText, getDocumentProxy } from 'unpdf'
 
 export default {
-  async fetch() {
+  async fetch(): Promise<Response> {
     const buffer = await fetch('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf')
       .then(res => res.arrayBuffer())
     const document = await getDocumentProxy(new Uint8Array(buffer))

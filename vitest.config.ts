@@ -1,10 +1,10 @@
-import type { Plugin } from 'vitest/config'
+import type { Plugin, ViteUserConfig } from 'vitest/config'
 import * as fsp from 'node:fs/promises'
 import * as path from 'node:path'
 import { cloudflareTest } from '@cloudflare/vitest-plugin'
 import { configDefaults, defineConfig } from 'vitest/config'
 
-export default defineConfig({
+const config: ViteUserConfig = defineConfig({
   test: {
     maxWorkers: 1,
     projects: [
@@ -35,6 +35,8 @@ export default defineConfig({
     ],
   },
 })
+
+export default config
 
 const BYTES_QUERY_PATTERN = /[?&]bytes(?:&|$)/
 
