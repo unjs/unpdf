@@ -1,6 +1,6 @@
-import { describe, expect, it } from 'vitest'
-import { extractText, extractTextItems } from '../src/index'
-import { getPDF } from './utils'
+import { describe, expect, it, vi } from 'vitest'
+import { extractText, extractTextItems, getDocumentProxy } from '../src/index'
+import { getPDF, isWorkerd } from './utils'
 
 describe('text', () => {
   it('extracts text from a PDF', async () => {
@@ -16,6 +16,23 @@ describe('text', () => {
     // Guard against blind snapshot updates re-collapsing everything to one line.
     expect(text).toContain('\n')
     expect(text).toMatchSnapshot()
+  })
+
+  // Workers have no local `pdfjs-dist` to load the CMap data from.
+  it.skipIf(isWorkerd)('extracts text encoded with a predefined CJK CMap', async () => {
+    const { text } = await extractText(await getPDF('cjk-predefined-cmap.pdf'))
+
+    expect(text[0]).toBe('日本語テキスト')
+  })
+
+  it.skipIf(isWorkerd)('loads standard font data from the local pdfjs-dist', async () => {
+    const warnSpy = vi.spyOn(console, 'warn')
+    const pdf = await getDocumentProxy(await getPDF('standard-font.pdf'), { useSystemFonts: false })
+    const page = await pdf.getPage(1)
+    await page.getOperatorList()
+
+    expect(warnSpy.mock.calls.flat().join('\n')).not.toContain('Unable to load font data')
+    await pdf.loadingTask.destroy()
   })
 
   it('extracts structured text items from a PDF', async () => {

@@ -28,11 +28,18 @@ export async function getDocumentProxy(
   let nodeDefaults: Partial<DocumentInitParameters> = {}
   if (isNode) {
     try {
-      const base = import.meta.resolve('pdfjs-dist/package.json')
+      // PDF.js reads these with `fs.readFile`, which takes strings as paths,
+      // not as `file:` URLs. PDF.js also appends file names without a separator
+      // and rejects a value without a trailing `/` – a separator Windows accepts.
+      // eslint-disable-next-line node/prefer-global/process
+      const nodeProcess = globalThis.process
+      const { dirname, join } = nodeProcess.getBuiltinModule('node:path')
+      const { fileURLToPath } = nodeProcess.getBuiltinModule('node:url')
+      const pdfjsDir = dirname(fileURLToPath(import.meta.resolve('pdfjs-dist/package.json')))
       nodeDefaults = {
         disableFontFace: true,
-        standardFontDataUrl: new URL('./standard_fonts/', base).href,
-        cMapUrl: new URL('./cmaps/', base).href,
+        standardFontDataUrl: `${join(pdfjsDir, 'standard_fonts')}/`,
+        cMapUrl: `${join(pdfjsDir, 'cmaps')}/`,
         cMapPacked: true,
       }
     }
