@@ -1,5 +1,5 @@
-import { describe, expect, expectTypeOf, it, vi } from 'vitest'
-import { extractText, extractTextItems, getDocumentProxy } from '../src/index'
+import { describe, expect, expectTypeOf, it } from 'vitest'
+import { extractText, extractTextItems, getDocumentProxy, getResolvedPDFJS } from '../src/index'
 import { getPDF, isWorkerd } from './utils'
 
 describe('text', () => {
@@ -24,12 +24,13 @@ describe('text', () => {
   })
 
   it.skipIf(isWorkerd)('loads standard font data from the local pdfjs-dist', async () => {
-    const warnSpy = vi.spyOn(console, 'warn')
-    const pdf = await getDocumentProxy(await getPDF('standard-font.pdf'), { useSystemFonts: false })
+    const { OPS } = await getResolvedPDFJS()
+    const pdf = await getDocumentProxy(await getPDF('standard-font.pdf'))
     const page = await pdf.getPage(1)
-    await page.getOperatorList()
+    const { fnArray, argsArray } = await page.getOperatorList()
+    const [fontId] = argsArray[fnArray.indexOf(OPS.setFont)]
 
-    expect(warnSpy.mock.calls.flat().join('\n')).not.toContain('Unable to load font data')
+    expect(page.commonObjs.get(fontId).missingFile).toBe(false)
     await pdf.loadingTask.destroy()
   })
 

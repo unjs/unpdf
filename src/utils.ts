@@ -14,15 +14,9 @@ let resolvedModule: Promise<typeof PDFJS> | undefined
 export const isNode: boolean = isNodeProcess(globalThis.process as NodeProcess | undefined)
 
 /**
- * Creates a `PDFDocumentProxy` from binary PDF data.
- *
- * Applies the following defaults:
- * - `useSystemFonts: true`
- *
- * In Node.js environments, additionally applies:
- * - `disableFontFace: true`
- * - `standardFontDataUrl` resolved from the local `pdfjs-dist` package
- * - `cMapUrl` and `cMapPacked` resolved from the local `pdfjs-dist` package
+ * Creates a `PDFDocumentProxy` from binary PDF data, with `useSystemFonts:
+ * true`. In Node.js with `pdfjs-dist` installed, it uses that package's
+ * standard fonts instead of system fonts, and its packed CMaps.
  */
 export async function getDocumentProxy(
   data: DocumentInitParameters['data'],
@@ -42,15 +36,14 @@ export async function getDocumentProxy(
       const { fileURLToPath } = nodeProcess.getBuiltinModule('node:url')
       const pdfjsDir = dirname(fileURLToPath(import.meta.resolve('pdfjs-dist/package.json')))
       nodeDefaults = {
-        disableFontFace: true,
+        useSystemFonts: false,
         standardFontDataUrl: `${join(pdfjsDir, 'standard_fonts')}/`,
         cMapUrl: `${join(pdfjsDir, 'cmaps')}/`,
         cMapPacked: true,
       }
     }
     catch {
-      // `pdfjs-dist` is not installed (e.g. when using the serverless
-      // bundle), so skip the font defaults.
+      // `pdfjs-dist` is not installed, so PDF.js gets no local font or CMap data.
     }
   }
 
