@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest'
-import { inspectPages } from '../src/index'
+import { describe, expect, it, vi } from 'vitest'
+import { getDocumentProxy, inspectPages } from '../src/index'
 import { getPDF } from './utils'
 
 describe('inspectPages', () => {
@@ -18,5 +18,23 @@ describe('inspectPages', () => {
         { textLength: 0, invisibleTextLength: 0, imageCount: 3, imageCoverage: 0.375 },
       ],
     })
+  })
+
+  it('releases the pages of documents it opens, but not of caller-owned proxies', async () => {
+    const pdf = await getDocumentProxy(await getPDF('scanned-pages.pdf'))
+    const cleanupSpy = vi.spyOn(Object.getPrototypeOf(await pdf.getPage(1)), 'cleanup')
+
+    try {
+      await inspectPages(await getPDF('scanned-pages.pdf'))
+      expect(cleanupSpy).toHaveBeenCalledTimes(4)
+
+      cleanupSpy.mockClear()
+      await inspectPages(pdf)
+      expect(cleanupSpy).not.toHaveBeenCalled()
+    }
+    finally {
+      cleanupSpy.mockRestore()
+      await pdf.loadingTask.destroy()
+    }
   })
 })

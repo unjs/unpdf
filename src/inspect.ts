@@ -2,7 +2,7 @@ import type { DocumentInitParameters, PDFDocumentProxy } from 'pdfjs-dist/types/
 import type * as PDFJS from 'pdfjs-dist/types/src/pdf'
 import type { Bounds } from './_internal/operator-list'
 import { getUnitSquareBounds, walkOperatorList } from './_internal/operator-list'
-import { getResolvedPDFJS, withDocument } from './utils'
+import { getResolvedPDFJS, isPDFDocumentProxy, withDocument } from './utils'
 
 const WHITESPACE_PATTERN = /\s/g
 
@@ -33,9 +33,16 @@ export async function inspectPages(
 ): Promise<{ totalPages: number, pages: PageInspection[] }> {
   return await withDocument(data, async (pdf) => {
     const { OPS } = await getResolvedPDFJS()
-    const pages = await Promise.all(
-      Array.from({ length: pdf.numPages }, (_, i) => inspectPage(pdf, i + 1, OPS)),
-    )
+    // Releasing a page drops objects that concurrent work on a caller-owned
+    // proxy may still wait for, so only pages of own documents are released.
+    const shouldReleasePages = !isPDFDocumentProxy(data)
+    const pages: PageInspection[] = []
+
+    // One page at a time, so the decoded images of a scan in a document opened
+    // here never pile up.
+    for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
+      pages.push(await inspectPage(pdf, pageNumber, OPS, shouldReleasePages))
+    }
 
     return { totalPages: pdf.numPages, pages }
   })
@@ -45,6 +52,7 @@ async function inspectPage(
   document: PDFDocumentProxy,
   pageNumber: number,
   ops: typeof PDFJS.OPS,
+  shouldReleasePage: boolean,
 ): Promise<PageInspection> {
   const page = await document.getPage(pageNumber)
   const [textContent, operatorList] = await Promise.all([
@@ -76,6 +84,10 @@ async function inspectPage(
     ) {
       imageBounds.push(getUnitSquareBounds(transform))
     }
+  }
+
+  if (shouldReleasePage) {
+    page.cleanup()
   }
 
   return {
