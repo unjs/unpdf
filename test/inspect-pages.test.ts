@@ -17,6 +17,15 @@ describe('inspectPages', () => {
     })
   })
 
+  it('ignores soft masks and hidden images, and counts hidden text as invisible', async () => {
+    const { pages } = await inspectPages(await getPDF('unpainted-images.pdf'))
+
+    expect(pages).toEqual([
+      { textLength: 0, invisibleTextLength: 0, imageCount: 1, imageCoverage: 0.0625 },
+      { textLength: 6, invisibleTextLength: 6, imageCount: 1, imageCoverage: 0.0625 },
+    ])
+  })
+
   it('releases the pages of documents it opens, but not of caller-owned proxies', async () => {
     const pdf = await getDocumentProxy(await getPDF('scanned-pages.pdf'))
     const cleanupSpy = vi.spyOn(Object.getPrototypeOf(await pdf.getPage(1)), 'cleanup')

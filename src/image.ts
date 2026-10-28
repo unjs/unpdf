@@ -58,12 +58,19 @@ export async function extractImages(
     }
 
     const page = await pdf.getPage(pageNumber)
-    const operatorList = await page.getOperatorList()
+    const [operatorList, optionalContentConfig] = await Promise.all([
+      page.getOperatorList(),
+      pdf.getOptionalContentConfig(),
+    ])
     const { ImageKind, OPS } = await getResolvedPDFJS()
 
     const images: ExtractedImage[] = []
 
-    for (const { fn, args, transform } of walkOperatorList(operatorList, OPS)) {
+    for (const { fn, args, transform, isVisible } of walkOperatorList(operatorList, OPS, optionalContentConfig)) {
+      if (!isVisible) {
+        continue
+      }
+
       let key: string | null = null
       let image: PDFJSImageData | null
 

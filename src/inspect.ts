@@ -1,4 +1,5 @@
 import type { DocumentInitParameters, PDFDocumentProxy } from 'pdfjs-dist/types/src/display/api'
+import type { OptionalContentConfig } from 'pdfjs-dist/types/src/display/optional_content_config'
 import type * as PDFJS from 'pdfjs-dist/types/src/pdf'
 import type { Bounds } from './_internal/operator-list'
 import { getUnitSquareBounds, walkOperatorList } from './_internal/operator-list'
@@ -10,8 +11,9 @@ export interface PageInspection {
   /** Characters of all text on the page, visible or not, whitespace excluded. */
   textLength: number
   /**
-   * Characters drawn with text rendering mode 3 or 7, which paint nothing –
-   * typically the OCR layer of a scan. Whitespace excluded.
+   * Characters that paint nothing: drawn with text rendering mode 3 or 7 –
+   * typically the OCR layer of a scan – or in a layer the document hides.
+   * Whitespace excluded.
    */
   invisibleTextLength: number
   /** Image XObjects, inline images, and image masks painted on the page. */
@@ -33,6 +35,7 @@ export async function inspectPages(
 ): Promise<{ totalPages: number, pages: PageInspection[] }> {
   return await withDocument(data, async (pdf) => {
     const { OPS } = await getResolvedPDFJS()
+    const optionalContentConfig = await pdf.getOptionalContentConfig()
     // Releasing a page drops objects that concurrent work on a caller-owned
     // proxy may still wait for, so only pages of own documents are released.
     const shouldReleasePages = !isPDFDocumentProxy(data)
@@ -41,7 +44,7 @@ export async function inspectPages(
     // One page at a time, so the decoded images of a scan in a document opened
     // here never pile up.
     for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
-      pages.push(await inspectPage(pdf, pageNumber, OPS, shouldReleasePages))
+      pages.push(await inspectPage(pdf, pageNumber, OPS, optionalContentConfig, shouldReleasePages))
     }
 
     return { totalPages: pdf.numPages, pages }
@@ -52,6 +55,7 @@ async function inspectPage(
   document: PDFDocumentProxy,
   pageNumber: number,
   ops: typeof PDFJS.OPS,
+  optionalContentConfig: OptionalContentConfig,
   shouldReleasePage: boolean,
 ): Promise<PageInspection> {
   const page = await document.getPage(pageNumber)
@@ -67,21 +71,21 @@ async function inspectPage(
   let invisibleTextLength = 0
   const imageBounds: Bounds[] = []
 
-  for (const { fn, args, transform, textRenderingMode } of walkOperatorList(operatorList, ops)) {
+  for (const { fn, args, transform, textRenderingMode, isVisible } of walkOperatorList(operatorList, ops, optionalContentConfig)) {
     // PDF.js turns every text-showing operator into `showText`, with glyph
     // objects and spacing numbers as its first argument.
-    if (fn === ops.showText && (textRenderingMode === 3 || textRenderingMode === 7)) {
+    if (fn === ops.showText && (!isVisible || textRenderingMode === 3 || textRenderingMode === 7)) {
       for (const glyph of args[0]) {
         if (typeof glyph === 'object' && glyph?.unicode) {
           invisibleTextLength += countCharacters(glyph.unicode)
         }
       }
     }
-    else if (
+    else if (isVisible && (
       fn === ops.paintImageXObject
       || fn === ops.paintInlineImageXObject
       || fn === ops.paintImageMaskXObject
-    ) {
+    )) {
       imageBounds.push(getUnitSquareBounds(transform))
     }
   }

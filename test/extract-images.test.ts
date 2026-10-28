@@ -46,6 +46,17 @@ describe('extractImages', () => {
     expect(image!.bounds).toEqual({ x: 50, y: 60, width: 100, height: 50 })
   })
 
+  it('skips images in soft masks and hidden layers', async () => {
+    const pdf = await getDocumentProxy(await getPDF('unpainted-images.pdf'))
+    const pageImages = await Promise.all([extractImages(pdf, 1), extractImages(pdf, 2)])
+
+    expect(pageImages.map(images => images.map(image => image.bounds))).toEqual([
+      [{ x: 0, y: 0, width: 50, height: 50 }],
+      [{ x: 0, y: 0, width: 50, height: 50 }],
+    ])
+    await pdf.loadingTask.destroy()
+  })
+
   it('returns pixel data that later extractions from the same proxy do not share', async () => {
     const pdf = await getDocumentProxy(await getPDF('images.pdf'))
     const [, firstInlineImage] = await extractImages(pdf, 1)

@@ -1,4 +1,5 @@
 import type { PDFOperatorList } from 'pdfjs-dist/types/src/display/api'
+import type { OptionalContentConfig } from 'pdfjs-dist/types/src/display/optional_content_config'
 import type * as PDFJS from 'pdfjs-dist/types/src/pdf'
 
 const IDENTITY_MATRIX: Matrix = [1, 0, 0, 1, 0, 0]
@@ -25,6 +26,8 @@ export interface Operation {
   transform: Matrix
   /** PDF text rendering mode (`Tr`), where 3 and 7 draw no visible glyphs. */
   textRenderingMode: number
+  /** Whether the operation lies outside of optional content the document hides by default. */
+  isVisible: boolean
 }
 
 interface GraphicsState {
@@ -33,16 +36,19 @@ interface GraphicsState {
 }
 
 /**
- * Walks an operator list in painting order, tracking the graphics state the
- * operations draw with through `save`/`restore`, form XObjects, and annotation
- * appearances.
+ * Walks an operator list in painting order, with the graphics state each
+ * operation draws with and whether it is visible. Skips the content of soft
+ * masks, which only modulates transparency.
  */
 export function* walkOperatorList(
   operatorList: PDFOperatorList,
   ops: typeof PDFJS.OPS,
+  optionalContentConfig: OptionalContentConfig,
 ): Generator<Operation> {
   const stateStack: GraphicsState[] = []
   let state: GraphicsState = { transform: IDENTITY_MATRIX, textRenderingMode: 0 }
+  const softMaskGroupFlags: boolean[] = []
+  const contentVisibilityFlags: boolean[] = []
 
   for (let i = 0; i < operatorList.fnArray.length; i++) {
     const fn = operatorList.fnArray[i]!
@@ -77,8 +83,28 @@ export function* walkOperatorList(
     else if (fn === ops.setTextRenderingMode) {
       state = { ...state, textRenderingMode: args[0] }
     }
+    else if (fn === ops.beginGroup) {
+      softMaskGroupFlags.push(Boolean(args[0]?.smask))
+    }
+    else if (fn === ops.endGroup) {
+      softMaskGroupFlags.pop()
+    }
+    else if (fn === ops.beginMarkedContent) {
+      contentVisibilityFlags.push(true)
+    }
+    else if (fn === ops.beginMarkedContentProps) {
+      const [tag, properties] = args
+      contentVisibilityFlags.push(tag !== 'OC' || optionalContentConfig.isVisible(properties))
+    }
+    else if (fn === ops.endMarkedContent) {
+      contentVisibilityFlags.pop()
+    }
 
-    yield { fn, args, ...state }
+    if (softMaskGroupFlags.includes(true)) {
+      continue
+    }
+
+    yield { fn, args, ...state, isVisible: !contentVisibilityFlags.includes(false) }
   }
 }
 
