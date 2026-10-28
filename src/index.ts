@@ -1,5 +1,6 @@
+export type { Bounds } from './_internal/operator-list'
 export { extractImages, renderPageAsImage } from './image'
-export type { RenderPageAsImageOptions } from './image'
+export type { ExtractedImageObject, ExtractImagesOptions, RenderPageAsImageOptions } from './image'
 export { extractLinks } from './links'
 export { getMeta } from './meta'
 export type { PDFInfo } from './meta'

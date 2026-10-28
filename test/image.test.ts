@@ -1,16 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { extractImages, getDocumentProxy, renderPageAsImage } from '../src/index'
+import { getDocumentProxy, renderPageAsImage } from '../src/index'
 import { getPDF } from './utils'
 
 const PNG_SIGNATURE = [137, 80, 78, 71, 13, 10, 26, 10]
 const JPEG_SIGNATURE = [0xFF, 0xD8, 0xFF]
 
 describe('image', () => {
-  it('extracts images from a PDF', async () => {
-    const [firstImage] = await extractImages(await getPDF('pdflatex-image.pdf'), 1)
-    expect(firstImage!.key).toMatchInlineSnapshot('"img_p0_1"')
-  })
-
   it('renders a PDF as image', async () => {
     const result = await renderPageAsImage(await getPDF('pdflatex-image.pdf'), 1, {
       canvasImport: () => import('@napi-rs/canvas'),

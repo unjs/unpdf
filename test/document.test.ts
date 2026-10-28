@@ -35,7 +35,7 @@ describe('document lifecycle', () => {
     const [firstImage] = await extractImages(await getPDF('pdflatex-image.pdf'), 1)
 
     expect(firstImage!.data.length).toBe(
-      firstImage!.width * firstImage!.height * firstImage!.channels,
+      firstImage!.width * firstImage!.height * 4,
     )
   })
 })

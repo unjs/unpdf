@@ -1,29 +1,55 @@
-import type { DocumentInitParameters, PDFDocumentProxy } from 'pdfjs-dist/types/src/display/api'
+import type { DocumentInitParameters, PDFDocumentProxy, PDFPageProxy } from 'pdfjs-dist/types/src/display/api'
+import type * as PDFJS from 'pdfjs-dist/types/src/pdf'
 import type { PDFCanvasFactory } from './_internal/canvas'
+import type { Bounds } from './_internal/operator-list'
 import { injectCanvasConstructors, resolveCanvasModule } from './_internal/canvas'
+import { getUnitSquareBounds, walkOperatorList } from './_internal/operator-list'
+import { encodePNG } from './_internal/png'
 import { getResolvedPDFJS, isNode, withDocument } from './utils'
 
-export interface ExtractedImageObject {
-  data: Uint8ClampedArray
-  width: number
-  height: number
-  channels: 1 | 3 | 4
-  key: string
+export interface ExtractImagesOptions {
+  /**
+   * Encoding of each image's `data`: raw RGBA pixels, or a PNG file.
+   *
+   * @default 'rgba'
+   */
+  format?: 'rgba' | 'png'
 }
 
-interface RequestedImageObject {
-  data?: Uint8ClampedArray
-  width?: number
-  height?: number
+export interface ExtractedImageObject {
+  /** RGBA pixels, four bytes per pixel, row by row from the top – or PNG bytes with `format: 'png'`. */
+  data: Uint8Array
+  width: number
+  height: number
+  /** PDF.js object ID of the image, `null` for an inline image. */
+  key: string | null
+  /** Box the image covers on the page, in PDF user space with the origin at the bottom left. */
+  bounds: Bounds
+}
+
+interface PDFJSImageData {
+  data: Uint8Array | Uint8ClampedArray | null
+  width: number
+  height: number
+  /** PDF.js `ImageKind`, absent on image masks. */
+  kind?: number
 }
 
 /**
- * Extracts images from a specific page of a PDF document, including necessary metadata,
- * such as width, height, and calculated color channels.
+ * Extracts the images painted on a page – image XObjects, inline images, and
+ * image masks – as RGBA pixels. Image masks come out opaque black where they
+ * paint and transparent elsewhere, since their color is the fill color at the
+ * time of painting.
+ *
+ * @remarks
+ * A caller-supplied document proxy created with `isOffscreenCanvasSupported`
+ * or `isImageDecoderSupported` (both on by default outside of Node.js) hands
+ * some images out as bitmaps instead of pixels, which are skipped.
  */
 export async function extractImages(
   data: DocumentInitParameters['data'] | PDFDocumentProxy,
   pageNumber: number,
+  options: ExtractImagesOptions = {},
 ): Promise<ExtractedImageObject[]> {
   return await withDocument(data, async (pdf) => {
     if (pageNumber < 1 || pageNumber > pdf.numPages) {
@@ -32,46 +58,53 @@ export async function extractImages(
 
     const page = await pdf.getPage(pageNumber)
     const operatorList = await page.getOperatorList()
-    const { OPS } = await getResolvedPDFJS()
+    const { ImageKind, OPS } = await getResolvedPDFJS()
 
     const images: ExtractedImageObject[] = []
 
-    for (let i = 0; i < operatorList.fnArray.length; i++) {
-      const op = operatorList.fnArray[i]
+    for (const { fn, args, transform } of walkOperatorList(operatorList, OPS)) {
+      let key: string | null = null
+      let image: PDFJSImageData | null
 
-      if (op !== OPS.paintImageXObject) {
+      if (fn === OPS.paintImageXObject) {
+        key = args[0] as string
+        image = await getPageObject(page, key)
+      }
+      else if (fn === OPS.paintInlineImageXObject) {
+        image = args[0]
+      }
+      else if (fn === OPS.paintImageMaskXObject) {
+        key = args[0].data as string
+        image = await getPageObject(page, key)
+      }
+      else {
         continue
       }
 
-      const imageKey = operatorList.argsArray[i][0]
-      // PDF.js prefixes keys of images shared across pages with `g_`.
-      const image = await new Promise<RequestedImageObject | null>(
-        resolve => (imageKey.startsWith('g_') ? page.commonObjs : page.objs).get(imageKey, resolve),
-      )
-
-      if (!image || !image.data || !image.width || !image.height) {
+      // PDF.js resolves images it failed to decode with `null`.
+      if (!image) {
         continue
       }
 
-      const { width, height, data } = image
-      const calculatedChannels = data.length / (width * height)
-
-      if (![1, 3, 4].includes(calculatedChannels)) {
+      const pixels = toRGBA(image, fn === OPS.paintImageMaskXObject, ImageKind)
+      if (!pixels) {
         continue
       }
-
-      const channels = calculatedChannels as ExtractedImageObject['channels']
 
       images.push({
-        data,
-        width,
-        height,
-        channels,
-        key: imageKey,
+        data: options.format === 'png' ? await encodePNG(pixels, image.width, image.height) : pixels,
+        width: image.width,
+        height: image.height,
+        key,
+        bounds: getUnitSquareBounds(transform),
       })
     }
 
     return images
+  }, {
+    // Keep PDF.js from decoding images into bitmaps, which hold no readable pixels.
+    isOffscreenCanvasSupported: false,
+    isImageDecoderSupported: false,
   })
 }
 
@@ -160,6 +193,71 @@ export async function renderPageAsImage(
       canvasFactory.destroy(canvasAndContext)
     }
   })
+}
+
+function getPageObject(page: PDFPageProxy, objectId: string): Promise<PDFJSImageData | null> {
+  // PDF.js prefixes the IDs of objects shared across pages with `g_`.
+  const objects = objectId.startsWith('g_') ? page.commonObjs : page.objs
+  return new Promise(resolve => objects.get(objectId, resolve))
+}
+
+/**
+ * Converts PDF.js image data into a fresh RGBA buffer, so the result never
+ * aliases a buffer PDF.js keeps cached.
+ */
+function toRGBA(
+  image: PDFJSImageData,
+  isMask: boolean,
+  imageKind: typeof PDFJS.ImageKind,
+): Uint8Array | undefined {
+  const { data, width, height, kind } = image
+
+  // Images decoded into bitmaps carry no `data`.
+  if (!data) {
+    return
+  }
+
+  const rgba = new Uint8Array(width * height * 4)
+
+  if (kind === imageKind.RGBA_32BPP) {
+    rgba.set(data.subarray(0, rgba.length))
+    return rgba
+  }
+
+  if (kind === imageKind.RGB_24BPP) {
+    for (let source = 0, target = 0; target < rgba.length; source += 3, target += 4) {
+      rgba[target] = data[source]!
+      rgba[target + 1] = data[source + 1]!
+      rgba[target + 2] = data[source + 2]!
+      rgba[target + 3] = 255
+    }
+    return rgba
+  }
+
+  if (!isMask && kind !== imageKind.GRAYSCALE_1BPP) {
+    return
+  }
+
+  // 1-bit samples, each row starting on a new byte. A 0 bit is black in a
+  // grayscale image and painted in an image mask.
+  const bytesPerRow = Math.ceil(width / 8)
+
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const bit = (data[y * bytesPerRow + (x >> 3)]! >> (7 - (x & 7))) & 1
+      const target = (y * width + x) * 4
+
+      if (isMask) {
+        rgba[target + 3] = bit === 0 ? 255 : 0
+      }
+      else {
+        rgba.fill(bit === 0 ? 0 : 255, target, target + 3)
+        rgba[target + 3] = 255
+      }
+    }
+  }
+
+  return rgba
 }
 
 async function prepareCanvasEnvironment(
