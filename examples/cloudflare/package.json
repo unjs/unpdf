@@ -8,6 +8,6 @@
   "devDependencies": {
     "esbuild": "^0.28.2",
     "unpdf": "workspace:*",
-    "wrangler": "^4.151.0"
+    "wrangler": "^4.154.0"
   }
 }

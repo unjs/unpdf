@@ -2,7 +2,7 @@
   "name": "unpdf",
   "type": "module",
   "version": "1.9.1",
-  "packageManager": "pnpm@12.11.2",
+  "packageManager": "pnpm@12.16.1",
   "description": "PDF extraction and rendering across all JavaScript runtimes",
   "author": "Johann Schopplich <hello@johannschopplich.com>",
   "license": "MIT",
@@ -65,18 +65,18 @@
     }
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^9.5.1",
+    "@antfu/eslint-config": "^10.0.0",
     "@arethetypeswrong/cli": "^0.18.5",
-    "@cloudflare/vitest-plugin": "^1.4.3",
-    "@napi-rs/canvas": "^1.0.11",
+    "@cloudflare/vitest-plugin": "^1.4.9",
+    "@napi-rs/canvas": "^1.0.13",
     "@types/node": "^26.6.5",
     "bumpp": "^12.3.0",
-    "eslint": "^10.12.0",
+    "eslint": "^10.13.0",
     "pdfjs-dist": "~6.4.299",
-    "rolldown": "^1.2.14",
+    "rolldown": "^1.2.15",
     "tinyglobby": "^0.2.17",
-    "tsdown": "^0.23.1",
+    "tsdown": "^0.23.2",
     "typescript": "^6.0.3",
-    "vitest": "^4.1.11"
+    "vitest": "^5.0.5"
   }
 }
