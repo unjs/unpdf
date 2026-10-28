@@ -5,17 +5,14 @@ export async function extractLinks(
   data: DocumentInitParameters['data'] | PDFDocumentProxy,
 ): Promise<{
   totalPages: number
-  links: string[]
+  links: string[][]
 }> {
   return await withDocument(data, async (pdf) => {
-    const pageLinks = await Promise.all(
+    const links = await Promise.all(
       Array.from({ length: pdf.numPages }, (_, i) => getPageLinks(pdf, i + 1)),
     )
 
-    return {
-      totalPages: pdf.numPages,
-      links: pageLinks.flat(),
-    }
+    return { totalPages: pdf.numPages, links }
   })
 }
 
