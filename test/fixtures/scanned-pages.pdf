@@ -1,0 +1,121 @@
+%PDF-1.7
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [10 0 R 20 0 R 30 0 R 40 0 R] /Count 4 >>
+endobj
+3 0 obj
+<< /Type /XObject /Subtype /Image /Width 1 /Height 1 /ColorSpace /DeviceGray /BitsPerComponent 8 /Length 1 >>
+stream
+€
+endstream
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+5 0 obj
+<< /Type /XObject /Subtype /Form /BBox [0 0 200 100] /Matrix [0.5 0 0 0.5 0 0] /Resources << /XObject << /Im1 3 0 R >> >> /Length 30 >>
+stream
+q 200 0 0 100 0 0 cm /Im1 Do Q
+endstream
+endobj
+6 0 obj
+<< /Type /XObject /Subtype /Image /Width 8 /Height 1 /ImageMask true /Length 1 >>
+stream
+
+endstream
+endobj
+10 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 200 100] /Resources << /XObject << /Im1 3 0 R /Fm1 5 0 R /Mask1 6 0 R >> /Font << /F1 4 0 R >> >> /Contents 11 0 R >>
+endobj
+11 0 obj
+<<  /Length 122 >>
+stream
+q 200 0 0 30 0 0 cm /Im1 Do Q
+q 200 0 0 30 0 25 cm /Im1 Do Q
+q 200 0 0 30 0 50 cm /Im1 Do Q
+q 200 0 0 30 0 75 cm /Im1 Do Q
+endstream
+endobj
+20 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 200 100] /Resources << /XObject << /Im1 3 0 R /Fm1 5 0 R /Mask1 6 0 R >> /Font << /F1 4 0 R >> >> /Contents 21 0 R >>
+endobj
+21 0 obj
+<<  /Length 189 >>
+stream
+q 100 0 0 100 0 0 cm /Im1 Do Q
+q BT 3 Tr /F1 12 Tf 10 80 Td (Hello World) Tj ET Q
+BT /F1 12 Tf 10 20 Td (xyz) Tj ET
+BT 7 Tr /F1 12 Tf 14 TL 10 60 Td [(Ab) -200 (cd)] TJ (ef) ' 0 0 (gh) " ET
+endstream
+endobj
+30 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 200 100] /Resources << /XObject << /Im1 3 0 R /Fm1 5 0 R /Mask1 6 0 R >> /Font << /F1 4 0 R >> >> /Contents 31 0 R >>
+endobj
+31 0 obj
+<<  /Length 0 >>
+stream
+
+endstream
+endobj
+40 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 200 100] /Resources << /XObject << /Im1 3 0 R /Fm1 5 0 R /Mask1 6 0 R >> /Font << /F1 4 0 R >> >> /Contents 41 0 R >>
+endobj
+41 0 obj
+<<  /Length 100 >>
+stream
+/Fm1 Do
+q 50 0 0 50 150 50 cm BI /W 1 /H 1 /CS /G /BPC 8 ID € EI Q
+q 50 0 0 50 150 50 cm /Mask1 Do Q
+endstream
+endobj
+xref
+0 42
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000137 00000 n 
+0000000281 00000 n 
+0000000378 00000 n 
+0000000577 00000 n 
+0000000000 65535 f 
+0000000000 65535 f 
+0000000000 65535 f 
+0000000693 00000 n 
+0000000871 00000 n 
+0000000000 65535 f 
+0000000000 65535 f 
+0000000000 65535 f 
+0000000000 65535 f 
+0000000000 65535 f 
+0000000000 65535 f 
+0000000000 65535 f 
+0000000000 65535 f 
+0000001046 00000 n 
+0000001224 00000 n 
+0000000000 65535 f 
+0000000000 65535 f 
+0000000000 65535 f 
+0000000000 65535 f 
+0000000000 65535 f 
+0000000000 65535 f 
+0000000000 65535 f 
+0000000000 65535 f 
+0000001466 00000 n 
+0000001644 00000 n 
+0000000000 65535 f 
+0000000000 65535 f 
+0000000000 65535 f 
+0000000000 65535 f 
+0000000000 65535 f 
+0000000000 65535 f 
+0000000000 65535 f 
+0000000000 65535 f 
+0000001695 00000 n 
+0000001873 00000 n 
+trailer
+<< /Size 42 /Root 1 0 R >>
+startxref
+2026
+%%EOF

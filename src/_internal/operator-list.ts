@@ -1,6 +1,8 @@
 import type { PDFOperatorList } from 'pdfjs-dist/types/src/display/api'
 import type * as PDFJS from 'pdfjs-dist/types/src/pdf'
 
+const IDENTITY_MATRIX: Matrix = [1, 0, 0, 1, 0, 0]
+
 /** Affine transform `[a, b, c, d, e, f]`, mapping `(x, y)` to `(a·x + c·y + e, b·x + d·y + f)`. */
 export type Matrix = [number, number, number, number, number, number]
 
@@ -17,43 +19,51 @@ export interface Operation {
   args: any
   /** Current transformation matrix at the time of the operation, mapping into PDF user space. */
   transform: Matrix
+  /** PDF text rendering mode (`Tr`), where 3 and 7 draw no visible glyphs. */
+  textRenderingMode: number
 }
 
-const IDENTITY_MATRIX: Matrix = [1, 0, 0, 1, 0, 0]
+interface GraphicsState {
+  transform: Matrix
+  textRenderingMode: number
+}
 
 /**
- * Walks an operator list in painting order, tracking the current transformation
- * matrix through `save`/`restore`, `transform`, and form XObjects.
+ * Walks an operator list in painting order, tracking the graphics state the
+ * operations draw with through `save`/`restore` and form XObjects.
  */
 export function* walkOperatorList(
   operatorList: PDFOperatorList,
   ops: typeof PDFJS.OPS,
 ): Generator<Operation> {
-  const transformStack: Matrix[] = []
-  let transform = IDENTITY_MATRIX
+  const stateStack: GraphicsState[] = []
+  let state: GraphicsState = { transform: IDENTITY_MATRIX, textRenderingMode: 0 }
 
   for (let i = 0; i < operatorList.fnArray.length; i++) {
     const fn = operatorList.fnArray[i]!
     const args = operatorList.argsArray[i]
 
     if (fn === ops.save) {
-      transformStack.push(transform)
+      stateStack.push(state)
     }
     else if (fn === ops.restore || fn === ops.paintFormXObjectEnd) {
-      transform = transformStack.pop() ?? transform
+      state = stateStack.pop() ?? state
     }
     else if (fn === ops.transform) {
-      transform = multiplyMatrices(transform, args)
+      state = { ...state, transform: multiplyMatrices(state.transform, args) }
     }
     else if (fn === ops.paintFormXObjectBegin) {
-      transformStack.push(transform)
+      stateStack.push(state)
       const [formMatrix] = args
       if (formMatrix) {
-        transform = multiplyMatrices(transform, formMatrix)
+        state = { ...state, transform: multiplyMatrices(state.transform, formMatrix) }
       }
     }
+    else if (fn === ops.setTextRenderingMode) {
+      state = { ...state, textRenderingMode: args[0] }
+    }
 
-    yield { fn, args, transform }
+    yield { fn, args, ...state }
   }
 }
 

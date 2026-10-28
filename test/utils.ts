@@ -4,6 +4,7 @@ import imagesPDF from './fixtures/images.pdf?bytes'
 import linksPDF from './fixtures/links.pdf?bytes'
 import pdflatexImagePDF from './fixtures/pdflatex-image.pdf?bytes'
 import samplePDF from './fixtures/sample.pdf?bytes'
+import scannedPagesPDF from './fixtures/scanned-pages.pdf?bytes'
 import standardFontPDF from './fixtures/standard-font.pdf?bytes'
 import transparencyPDF from './fixtures/transparency.pdf?bytes'
 
@@ -13,6 +14,7 @@ type FixtureName
     | 'links.pdf'
     | 'pdflatex-image.pdf'
     | 'sample.pdf'
+    | 'scanned-pages.pdf'
     | 'standard-font.pdf'
     | 'transparency.pdf'
 
@@ -22,6 +24,7 @@ const fixtures: Record<FixtureName, Uint8Array> = {
   'links.pdf': linksPDF,
   'pdflatex-image.pdf': pdflatexImagePDF,
   'sample.pdf': samplePDF,
+  'scanned-pages.pdf': scannedPagesPDF,
   'standard-font.pdf': standardFontPDF,
   'transparency.pdf': transparencyPDF,
 }
