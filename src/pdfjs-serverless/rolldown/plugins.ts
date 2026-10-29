@@ -1,4 +1,4 @@
-import type { Plugin } from 'rolldown'
+import type { OutputChunk, Plugin } from 'rolldown'
 import { writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
@@ -99,10 +99,12 @@ export function assertRuntimePatchesFirst(): Plugin {
   return {
     name: 'pdfjs-serverless:assert-runtime-patches-first',
     generateBundle(_options, bundle) {
-      // Rolldown lists a chunk's modules in evaluation order. Only the entry
-      // chunk evaluates eagerly; the decoder chunks hold `pdfjs-dist` modules too.
-      const moduleIds = Object.values(bundle)
-        .flatMap(output => (output.type === 'chunk' && output.isEntry ? output.moduleIds : []))
+      // Rolldown lists a chunk's modules in evaluation order, after the chunks
+      // it imports statically. The lazy decoder chunks hold `pdfjs-dist`
+      // modules too, but never evaluate eagerly.
+      const entryChunk = Object.values(bundle).find(output => output.type === 'chunk' && output.isEntry) as OutputChunk
+      const moduleIds = [...entryChunk.imports.map(fileName => bundle[fileName] as OutputChunk), entryChunk]
+        .flatMap(chunk => chunk.moduleIds)
         .map(id => id.replaceAll('\\', '/'))
       const firstPDFJSIndex = moduleIds.findIndex(id => id.includes('/pdfjs-dist/'))
 

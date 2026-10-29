@@ -9,6 +9,9 @@ const decoderLoaders = {
 
 /** Loads the WASM bytes or the JS fallback factory bundled under a PDF.js decoder file name. */
 export async function loadDecoder(fileName) {
+  if (!Object.hasOwn(decoderLoaders, fileName))
+    throw new Error(`No bundled decoder for ${fileName}`)
+
   const { default: decoder } = await decoderLoaders[fileName]()
   return decoder
 }
