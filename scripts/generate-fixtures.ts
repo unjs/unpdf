@@ -5,6 +5,7 @@ const fixtures: Record<string, () => Uint8Array> = {
   'annotation-image.pdf': buildAnnotationImage,
   'cjk-predefined-cmap.pdf': buildCJKPredefinedCMap,
   'document.pdf': buildDocument,
+  'image-decoders.pdf': buildImageDecoders,
   'images.pdf': buildImages,
   'scanned-pages.pdf': buildScannedPages,
   'standard-font.pdf': buildStandardFont,
@@ -88,6 +89,26 @@ function buildDocument(): Uint8Array {
   function linkAnnotation(rectangle: string, target: string) {
     return `<< /Type /Annot /Subtype /Link /Rect ${rectangle} /Border [0 0 0] ${target} >>`
   }
+}
+
+function buildImageDecoders(): Uint8Array {
+  // Black on the left in the top two rows, on the right in the bottom two – encoded by libtiff.
+  const ccitt = '\x33\x17\x26\xA2\xF8\x00\x80\x08'
+  // Red, blue – a lossless codestream encoded by OpenJPEG.
+  const jpx = '\xFF\x4F\xFF\x51\x00\x2F\x00\x00\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00'
+    + '\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x03\x07\x01\x01\x07\x01\x01'
+    + '\x07\x01\x01\xFF\x52\x00\x0C\x00\x00\x00\x01\x01\x00\x04\x04\x00\x01\xFF\x5C\x00\x04\x40\x40\xFF'
+    + '\x90\x00\x0A\x00\x00\x00\x00\x00\x1E\x00\x01\xFF\x93\xCF\xB4\x0C\x09\x37\x1F\xDF\x80\x10\x0B\x1B'
+    + '\xDF\x80\x10\x04\x27\xFF\xD9'
+
+  return serializePDF([
+    '<< /Type /Catalog /Pages 2 0 R >>',
+    '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
+    '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 200 200] /Resources << /XObject << /Fax1 5 0 R /Jpx1 6 0 R >> >> /Contents 4 0 R >>',
+    stream('', 'q 64 0 0 16 10 10 cm /Fax1 Do Q\nq 20 0 0 10 10 50 cm /Jpx1 Do Q'),
+    stream('/Type /XObject /Subtype /Image /Width 16 /Height 4 /ColorSpace /DeviceGray /BitsPerComponent 1 /Filter /CCITTFaxDecode /DecodeParms << /K -1 /Columns 16 /Rows 4 /BlackIs1 true >>', ccitt),
+    stream('/Type /XObject /Subtype /Image /Width 2 /Height 1 /Filter /JPXDecode', jpx),
+  ])
 }
 
 function buildImages(): Uint8Array {

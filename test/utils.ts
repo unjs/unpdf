@@ -2,6 +2,7 @@
 import annotationImagePDF from './fixtures/annotation-image.pdf?bytes'
 import cjkPredefinedCMapPDF from './fixtures/cjk-predefined-cmap.pdf?bytes'
 import documentPDF from './fixtures/document.pdf?bytes'
+import imageDecodersPDF from './fixtures/image-decoders.pdf?bytes'
 import imagesPDF from './fixtures/images.pdf?bytes'
 import pdflatexImagePDF from './fixtures/pdflatex-image.pdf?bytes'
 import samplePDF from './fixtures/sample.pdf?bytes'
@@ -14,6 +15,7 @@ type FixtureName
   = | 'annotation-image.pdf'
     | 'cjk-predefined-cmap.pdf'
     | 'document.pdf'
+    | 'image-decoders.pdf'
     | 'images.pdf'
     | 'pdflatex-image.pdf'
     | 'sample.pdf'
@@ -26,6 +28,7 @@ const fixtures: Record<FixtureName, Uint8Array> = {
   'annotation-image.pdf': annotationImagePDF,
   'cjk-predefined-cmap.pdf': cjkPredefinedCMapPDF,
   'document.pdf': documentPDF,
+  'image-decoders.pdf': imageDecodersPDF,
   'images.pdf': imagesPDF,
   'pdflatex-image.pdf': pdflatexImagePDF,
   'sample.pdf': samplePDF,

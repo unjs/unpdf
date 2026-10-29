@@ -46,7 +46,7 @@
   },
   "scripts": {
     "build": "tsdown && node scripts/post-build.mjs",
-    "build:pdfjs": "rolldown --config pdfjs.rolldown.config.ts && cp -R node_modules/pdfjs-dist/types dist",
+    "build:pdfjs": "rolldown --config pdfjs.rolldown.config.ts && cp -R node_modules/pdfjs-dist/types dist && mkdir -p dist/licenses && cp node_modules/pdfjs-dist/LICENSE dist/licenses/LICENSE_PDFJS && cp node_modules/pdfjs-dist/wasm/LICENSE_*JBIG2 node_modules/pdfjs-dist/wasm/LICENSE_*OPENJPEG dist/licenses",
     "dev": "tsdown --watch",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
