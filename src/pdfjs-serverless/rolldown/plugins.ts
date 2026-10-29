@@ -1,5 +1,6 @@
 import type { Plugin } from 'rolldown'
 import { writeFile } from 'node:fs/promises'
+import { join } from 'node:path'
 
 // PDF.js' built-in `NodeCanvasFactory` becomes the document-level canvas
 // factory when no `CanvasFactory` option is passed to `getDocument` and is
@@ -20,6 +21,8 @@ new Proxy({}, {
 })
 `.trim()
 
+const decodersModuleSpecifier = JSON.stringify(join(import.meta.dirname, '../decoders.mjs'))
+
 // Anchors match verbatim, so the worker anchor carries the exact multi-line
 // indentation of the PDF.js source.
 const patches: Record<string, string> = {
@@ -28,6 +31,12 @@ const patches: Record<string, string> = {
   // Force setting up fake PDF.js worker.
   '#isWorkerDisabled = false': '#isWorkerDisabled = true',
   'require("@napi-rs/canvas")': canvasMock,
+  // Load the image decoders from the bundle instead of `wasmUrl`. PDF.js still
+  // falls back to the JS decoders where WASM can't compile, as in workerd.
+  /* eslint-disable no-template-curly-in-string -- The anchors match template literals in the PDF.js source. */
+  'if (WasmImage.#useWorkerFetch) {\n          this.#buffer = await fetchBinaryData(`${WasmImage.#wasmUrl}${this._filename}`);\n        } else {\n          this.#buffer = await WasmImage.#handler.sendWithPromise("FetchBinaryData", {\n            kind: "wasmUrl",\n            filename: this._filename\n          });\n        }': `this.#buffer = await (await import(${decodersModuleSpecifier})).loadDecoder(this._filename);`,
+  'await import(\n      /*webpackIgnore: true*/\n      /*@vite-ignore*/\n      `${WasmImage.#wasmUrl}${this._noWasmFilename}`)': `{ default: await (await import(${decodersModuleSpecifier})).loadDecoder(this._noWasmFilename) }`,
+  /* eslint-enable no-template-curly-in-string */
   'warn("Please use the `legacy` build in Node.js environments.")': '',
 }
 
@@ -90,9 +99,10 @@ export function assertRuntimePatchesFirst(): Plugin {
   return {
     name: 'pdfjs-serverless:assert-runtime-patches-first',
     generateBundle(_options, bundle) {
-      // Rolldown lists a chunk's modules in evaluation order.
+      // Rolldown lists a chunk's modules in evaluation order. Only the entry
+      // chunk evaluates eagerly; the decoder chunks hold `pdfjs-dist` modules too.
       const moduleIds = Object.values(bundle)
-        .flatMap(output => (output.type === 'chunk' ? output.moduleIds : []))
+        .flatMap(output => (output.type === 'chunk' && output.isEntry ? output.moduleIds : []))
         .map(id => id.replaceAll('\\', '/'))
       const firstPDFJSIndex = moduleIds.findIndex(id => id.includes('/pdfjs-dist/'))
 

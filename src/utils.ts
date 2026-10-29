@@ -16,8 +16,7 @@ export const isNode: boolean = isNodeProcess(globalThis.process as NodeProcess |
 /**
  * Creates a `PDFDocumentProxy` from binary PDF data, with `useSystemFonts:
  * true`. In Node.js with `pdfjs-dist` installed, it uses that package's
- * standard fonts instead of system fonts, its packed CMaps, and its WASM image
- * decoders.
+ * standard fonts instead of system fonts, and its packed CMaps.
  */
 export async function getDocumentProxy(
   data: DocumentInitParameters['data'],
@@ -41,11 +40,10 @@ export async function getDocumentProxy(
         standardFontDataUrl: `${join(pdfjsDir, 'standard_fonts')}/`,
         cMapUrl: `${join(pdfjsDir, 'cmaps')}/`,
         cMapPacked: true,
-        wasmUrl: `${join(pdfjsDir, 'wasm')}/`,
       }
     }
     catch {
-      // `pdfjs-dist` is not installed, so PDF.js gets no local font, CMap, or WASM data.
+      // `pdfjs-dist` is not installed, so PDF.js gets no local font or CMap data.
     }
   }
 

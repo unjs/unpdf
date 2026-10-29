@@ -82,7 +82,7 @@ describe('extractImages', () => {
     )
   })
 
-  it.skipIf(isWorkerd)('extracts CCITT and JPEG 2000 images', async () => {
+  it('extracts CCITT and JPEG 2000 images', async () => {
     const images = await extractImages(await getPDF('image-decoders.pdf'), 1)
 
     expect(images.map(({ width, height, data }) => ({ width, height, data: Array.from(data) }))).toEqual([

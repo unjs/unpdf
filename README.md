@@ -57,8 +57,6 @@ for (const [index, image] of images.entries())
 
 Without `format`, `data` holds raw RGBA pixels. Each image carries its `bounds` on the page.
 
-Images compressed with CCITT, JBIG2, or JPEG 2000 need PDF.js' WASM decoders, which Node.js loads from an installed `pdfjs-dist`. Without it, as in Cloudflare Workers, `extractImages` skips them.
-
 In browsers, a document proxy decodes some images into bitmaps, which `extractImages` skips. Pass binary data instead, or create the proxy with `isOffscreenCanvasSupported: false` and `isImageDecoderSupported: false`.
 
 ### Render a Page as an Image
@@ -106,7 +104,7 @@ PDF.js does not execute scripts embedded in PDFs, but resource limits are your j
 
 ### `getDocumentProxy`
 
-Creates a `PDFDocumentProxy` with `useSystemFonts: true`. In Node.js with `pdfjs-dist` installed, it uses that package's standard fonts instead of system fonts, its CJK character maps (`cMapUrl`), and its WASM image decoders (`wasmUrl`). Cloudflare Workers have no local `pdfjs-dist` – to extract text from CJK fonts without embedded mappings, pass `cMapUrl: 'https://unpkg.com/pdfjs-dist@6.4.299/cmaps/'`, `cMapPacked: true`, and `useWorkerFetch: true`. Your options override the defaults.
+Creates a `PDFDocumentProxy` with `useSystemFonts: true`. In Node.js with `pdfjs-dist` installed, it uses that package's standard fonts instead of system fonts, and its CJK character maps (`cMapUrl`). Cloudflare Workers have no local `pdfjs-dist` – to extract text from CJK fonts without embedded mappings, pass `cMapUrl: 'https://unpkg.com/pdfjs-dist@6.4.299/cmaps/'`, `cMapPacked: true`, and `useWorkerFetch: true`. Your options override the defaults.
 
 ```ts
 function getDocumentProxy(data: Uint8Array | ArrayBuffer, options?: DocumentInitParameters): Promise<PDFDocumentProxy>
@@ -209,10 +207,11 @@ In Node.js, import the legacy build as shown. The default `pdfjs-dist` entry tar
 > [!NOTE]
 > The serverless PDF.js bundle is built from PDF.js v6.4.299. It requires the global `Iterator` constructor (Safari 18.4+); without it, importing the bundle throws.
 
-Heart and soul of this package is the [`pdfjs.rolldown.config.ts`](./pdfjs.rolldown.config.ts) file. It uses [Rolldown](https://rolldown.rs/) to bundle PDF.js into a single file for serverless environments. The key techniques:
+Heart and soul of this package is the [`pdfjs.rolldown.config.ts`](./pdfjs.rolldown.config.ts) file. It uses [Rolldown](https://rolldown.rs/) to bundle PDF.js for serverless environments. The key techniques:
 
 - **String replacements** strip browser-specific references from the PDF.js source.
 - **Worker inlining** embeds the PDF.js worker directly into the main bundle, since serverless runtimes can't load separate worker files.
+- **Bundled image decoders** ship PDF.js' JBIG2 and OpenJPEG decoders, WASM and JS fallback, as lazy chunks, so CCITT, JBIG2, and JPEG 2000 images decode without `pdfjs-dist` or a `wasmUrl`.
 - **Global polyfills** fill in newer APIs like `Promise.try` and `Map.prototype.getOrInsert` for runtimes that lack them, plus `FinalizationRegistry` for Cloudflare Workers.
 
 ## License
