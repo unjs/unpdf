@@ -1,4 +1,4 @@
-import type { OutputChunk, Plugin } from 'rolldown'
+import type { OutputBundle, OutputChunk, Plugin } from 'rolldown'
 import { writeFile } from 'node:fs/promises'
 
 // PDF.js' built-in `NodeCanvasFactory` becomes the document-level canvas
@@ -100,14 +100,14 @@ export function assertRuntimePatchesFirst(): Plugin {
   return {
     name: 'pdfjs-serverless:assert-runtime-patches-first',
     generateBundle(_options, bundle) {
-      // Rolldown lists a chunk's modules in evaluation order, after the chunks
-      // it imports statically. The lazy decoder chunks hold `pdfjs-dist`
-      // modules too, but never evaluate eagerly.
+      // Rolldown lists a chunk's modules in evaluation order, and the chunks
+      // a chunk imports statically evaluate before it. The lazy decoder chunks
+      // hold `pdfjs-dist` modules too, but never evaluate eagerly.
       const entryChunk = Object.values(bundle).find((output): output is OutputChunk => output.type === 'chunk' && output.isEntry && output.name === 'pdfjs')
       if (!entryChunk)
         throw new Error(`[pdfjs-serverless] The bundle has no \`pdfjs\` entry chunk to check.`)
 
-      const moduleIds = [...entryChunk.imports.map(fileName => bundle[fileName] as OutputChunk), entryChunk]
+      const moduleIds = collectStaticChunks(entryChunk, bundle)
         .flatMap(chunk => chunk.moduleIds)
         .map(id => id.replaceAll('\\', '/'))
       const firstPDFJSIndex = moduleIds.findIndex(id => id.includes('/pdfjs-dist/'))
@@ -146,4 +146,27 @@ export * from './types/src/pdf.js'
       await writeFile('dist/pdfjs.d.mts', typeExports, 'utf8')
     },
   }
+}
+
+/**
+ * Collects a chunk and every chunk it reaches through static imports, in
+ * evaluation order. External imports have no chunk in the bundle and are
+ * skipped.
+ */
+function collectStaticChunks(entryChunk: OutputChunk, bundle: OutputBundle): OutputChunk[] {
+  const visitedChunks = new Set<OutputChunk>()
+  const orderedChunks: OutputChunk[] = []
+
+  const visit = (chunk: OutputChunk) => {
+    visitedChunks.add(chunk)
+    for (const fileName of chunk.imports) {
+      const importedChunk = bundle[fileName]
+      if (importedChunk?.type === 'chunk' && !visitedChunks.has(importedChunk))
+        visit(importedChunk)
+    }
+    orderedChunks.push(chunk)
+  }
+
+  visit(entryChunk)
+  return orderedChunks
 }
