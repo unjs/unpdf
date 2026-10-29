@@ -40,10 +40,11 @@ export async function getDocumentProxy(
         standardFontDataUrl: `${join(pdfjsDir, 'standard_fonts')}/`,
         cMapUrl: `${join(pdfjsDir, 'cmaps')}/`,
         cMapPacked: true,
+        wasmUrl: `${join(pdfjsDir, 'wasm')}/`,
       }
     }
     catch {
-      // `pdfjs-dist` is not installed, so PDF.js gets no local font or CMap data.
+      // `pdfjs-dist` is not installed, so PDF.js gets no local font, CMap or WASM data.
     }
   }
 

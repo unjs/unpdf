@@ -27,11 +27,6 @@ const patches: Record<string, string> = {
   'await import(\n      /*webpackIgnore: true*/\n      /*@vite-ignore*/\n      this.workerSrc)': 'globalThis.pdfjsWorker',
   // Force setting up fake PDF.js worker.
   '#isWorkerDisabled = false': '#isWorkerDisabled = true',
-  // Remove WASM code from the worker.
-  'wasmExports = await createWasm': 'wasmExports = {}',
-  'if (!this.#modulePromise)': 'if (false)',
-  '#instantiateWasm(fallbackCallback, imports, successCallback) {': '#instantiateWasm(fallbackCallback, imports, successCallback) { return;',
-  '#getJsModule(fallbackCallback) {': '#getJsModule(fallbackCallback) { return;',
   'require("@napi-rs/canvas")': canvasMock,
   'warn("Please use the `legacy` build in Node.js environments.")': '',
 }

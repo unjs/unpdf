@@ -82,6 +82,16 @@ describe('extractImages', () => {
     )
   })
 
+  // Workers have no local `pdfjs-dist` to load the WASM decoders from.
+  it.skipIf(isWorkerd)('decodes CCITT and JPEG 2000 images with the WASM decoders of the local pdfjs-dist', async () => {
+    const images = await extractImages(await getPDF('image-decoders.pdf'), 1)
+
+    expect(images.map(({ width, height, data }) => ({ width, height, data: Array.from(data) }))).toEqual([
+      { width: 16, height: 4, data: pixels('KKKKKKKKWWWWWWWW'.repeat(2) + 'WWWWWWWWKKKKKKKK'.repeat(2)) },
+      { width: 2, height: 1, data: pixels('RB') },
+    ])
+  })
+
   it.skipIf(isWorkerd)('encodes PNGs that decode to the pixels of each image', async () => {
     const { createCanvas, loadImage } = await import('@napi-rs/canvas')
     const images = await extractImages(await getPDF('images.pdf'), 1, { format: 'png' })

@@ -5,6 +5,7 @@ const fixtures: Record<string, () => Uint8Array> = {
   'annotation-image.pdf': buildAnnotationImage,
   'cjk-predefined-cmap.pdf': buildCJKPredefinedCMap,
   'document.pdf': buildDocument,
+  'image-decoders.pdf': buildImageDecoders,
   'images.pdf': buildImages,
   'scanned-pages.pdf': buildScannedPages,
   'standard-font.pdf': buildStandardFont,
@@ -88,6 +89,26 @@ function buildDocument(): Uint8Array {
   function linkAnnotation(rectangle: string, target: string) {
     return `<< /Type /Annot /Subtype /Link /Rect ${rectangle} /Border [0 0 0] ${target} >>`
   }
+}
+
+function buildImageDecoders(): Uint8Array {
+  // Two image filters PDF.js decodes with WASM modules. CCITT Group 4 data of a 16×4 image whose
+  // left half is black in the top two rows and right half in the bottom two, written by libtiff.
+  const ccitt = '\x33\x17\x26\xA2\xF8\x00\x80\x08'
+  // A lossless JPEG 2000 codestream of a 2×1 RGB image – red, blue – written by OpenJPEG.
+  const jpx = fromHex(
+    'ff4fff51002f000000000002000000010000000000000000000000020000000100000000000000000003070101070101070101'
+    + 'ff52000c00000001010004040001ff5c00044040ff90000a00000000001e0001ff93cfb40c09371fdf80100b1bdf80100427ffd9',
+  )
+
+  return serializePDF([
+    '<< /Type /Catalog /Pages 2 0 R >>',
+    '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
+    '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 200 200] /Resources << /XObject << /Fax1 5 0 R /Jpx1 6 0 R >> >> /Contents 4 0 R >>',
+    stream('', 'q 64 0 0 16 10 10 cm /Fax1 Do Q\nq 20 0 0 10 10 50 cm /Jpx1 Do Q'),
+    stream('/Type /XObject /Subtype /Image /Width 16 /Height 4 /ColorSpace /DeviceGray /BitsPerComponent 1 /Filter /CCITTFaxDecode /DecodeParms << /K -1 /Columns 16 /Rows 4 /BlackIs1 true >>', ccitt),
+    stream('/Type /XObject /Subtype /Image /Width 2 /Height 1 /Filter /JPXDecode', jpx),
+  ])
 }
 
 function buildImages(): Uint8Array {
@@ -204,6 +225,10 @@ function buildUnpaintedImages(): Uint8Array {
     objects.push(body)
     return objects.length
   }
+}
+
+function fromHex(hex: string): string {
+  return hex.replace(/../g, byte => String.fromCharCode(Number.parseInt(byte, 16)))
 }
 
 function stream(dictionary: string, data: string): string {
