@@ -82,8 +82,7 @@ describe('extractImages', () => {
     )
   })
 
-  // Workers have no local `pdfjs-dist` to load the WASM decoders from.
-  it.skipIf(isWorkerd)('decodes CCITT and JPEG 2000 images with the WASM decoders of the local pdfjs-dist', async () => {
+  it.skipIf(isWorkerd)('extracts CCITT and JPEG 2000 images', async () => {
     const images = await extractImages(await getPDF('image-decoders.pdf'), 1)
 
     expect(images.map(({ width, height, data }) => ({ width, height, data: Array.from(data) }))).toEqual([

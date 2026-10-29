@@ -92,14 +92,14 @@ function buildDocument(): Uint8Array {
 }
 
 function buildImageDecoders(): Uint8Array {
-  // Two image filters PDF.js decodes with WASM modules. CCITT Group 4 data of a 16×4 image whose
-  // left half is black in the top two rows and right half in the bottom two, written by libtiff.
+  // Black on the left in the top two rows, on the right in the bottom two – encoded by libtiff.
   const ccitt = '\x33\x17\x26\xA2\xF8\x00\x80\x08'
-  // A lossless JPEG 2000 codestream of a 2×1 RGB image – red, blue – written by OpenJPEG.
-  const jpx = fromHex(
-    'ff4fff51002f000000000002000000010000000000000000000000020000000100000000000000000003070101070101070101'
-    + 'ff52000c00000001010004040001ff5c00044040ff90000a00000000001e0001ff93cfb40c09371fdf80100b1bdf80100427ffd9',
-  )
+  // Red, blue – a lossless codestream encoded by OpenJPEG.
+  const jpx = '\xFF\x4F\xFF\x51\x00\x2F\x00\x00\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00'
+    + '\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x03\x07\x01\x01\x07\x01\x01'
+    + '\x07\x01\x01\xFF\x52\x00\x0C\x00\x00\x00\x01\x01\x00\x04\x04\x00\x01\xFF\x5C\x00\x04\x40\x40\xFF'
+    + '\x90\x00\x0A\x00\x00\x00\x00\x00\x1E\x00\x01\xFF\x93\xCF\xB4\x0C\x09\x37\x1F\xDF\x80\x10\x0B\x1B'
+    + '\xDF\x80\x10\x04\x27\xFF\xD9'
 
   return serializePDF([
     '<< /Type /Catalog /Pages 2 0 R >>',
@@ -225,10 +225,6 @@ function buildUnpaintedImages(): Uint8Array {
     objects.push(body)
     return objects.length
   }
-}
-
-function fromHex(hex: string): string {
-  return hex.replace(/../g, byte => String.fromCharCode(Number.parseInt(byte, 16)))
 }
 
 function stream(dictionary: string, data: string): string {

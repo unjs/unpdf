@@ -12,7 +12,7 @@ PDF files have been added to the repository for testing purposes. These files ar
 - `document.pdf`: two pages of non-embedded `Helvetica` text with runs of spaces; three link annotations with distinct URI actions and one internal link to the first page; `/Info` and XMP dates
 - `transparency.pdf`: page content that applies a luminosity soft mask (`/SMask` in `/ExtGState`), forcing PDF.js to request an intermediate canvas from the document-level canvas factory
 - `cjk-predefined-cmap.pdf`: a non-embedded CID font encoded via the predefined `UniJIS-UCS2-H` CMap and no `/ToUnicode`, so its text only extracts once PDF.js can load the CMap data
-- `image-decoders.pdf`: a 16×4 CCITT Group 4 image and a 2×1 lossless JPEG 2000 image, the two image filters PDF.js decodes with its WASM modules, each with known pixel values
+- `image-decoders.pdf`: a 16×4 CCITT Group 4 image and a 2×1 lossless JPEG 2000 image with known pixel values, one for each WASM module PDF.js decodes images with – JBIG2 shares the CCITT module
 - `standard-font.pdf`: the non-embedded standard 14 font `Helvetica`
 - `images.pdf`: one image per PDF.js paint operation – a 2×1 RGB image XObject, a 2×2 RGB inline image drawn rotated by 90°, a 3×2 image mask inside a form XObject with a translating `/Matrix`, and a 10×2 1-bit gray image XObject – each with known pixel values
 - `scanned-pages.pdf`: four 200×100 pages – a scan in four overlapping strips, the last running off the page; a half-page scan under an OCR layer drawn with text render modes 3 and 7 next to visible text; a blank page; and a page-sized image inside a half-scale form XObject beside an inline image and an image mask sharing one eighth of the page

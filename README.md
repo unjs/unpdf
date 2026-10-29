@@ -57,6 +57,8 @@ for (const [index, image] of images.entries())
 
 Without `format`, `data` holds raw RGBA pixels. Each image carries its `bounds` on the page.
 
+Images compressed with CCITT, JBIG2, or JPEG 2000 need PDF.js' WASM decoders, which Node.js loads from an installed `pdfjs-dist`. Without it, as in Cloudflare Workers, `extractImages` skips them.
+
 In browsers, a document proxy decodes some images into bitmaps, which `extractImages` skips. Pass binary data instead, or create the proxy with `isOffscreenCanvasSupported: false` and `isImageDecoderSupported: false`.
 
 ### Render a Page as an Image
@@ -104,7 +106,7 @@ PDF.js does not execute scripts embedded in PDFs, but resource limits are your j
 
 ### `getDocumentProxy`
 
-Creates a `PDFDocumentProxy` with `useSystemFonts: true`. In Node.js with `pdfjs-dist` installed, it uses that package's standard fonts instead of system fonts, and its CJK character maps (`cMapUrl`). Cloudflare Workers have no local `pdfjs-dist` – to extract text from CJK fonts without embedded mappings, pass `cMapUrl: 'https://unpkg.com/pdfjs-dist@6.4.299/cmaps/'`, `cMapPacked: true`, and `useWorkerFetch: true`. Your options override the defaults.
+Creates a `PDFDocumentProxy` with `useSystemFonts: true`. In Node.js with `pdfjs-dist` installed, it uses that package's standard fonts instead of system fonts, its CJK character maps (`cMapUrl`), and its WASM image decoders (`wasmUrl`). Cloudflare Workers have no local `pdfjs-dist` – to extract text from CJK fonts without embedded mappings, pass `cMapUrl: 'https://unpkg.com/pdfjs-dist@6.4.299/cmaps/'`, `cMapPacked: true`, and `useWorkerFetch: true`. Your options override the defaults.
 
 ```ts
 function getDocumentProxy(data: Uint8Array | ArrayBuffer, options?: DocumentInitParameters): Promise<PDFDocumentProxy>
