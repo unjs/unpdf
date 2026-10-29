@@ -4,6 +4,7 @@ import { polyfillDOMMatrix } from './_internal/dommatrix-polyfill'
 
 let pdfjsLoader: (() => Promise<any>) | undefined
 let resolvedModule: Promise<typeof PDFJS> | undefined
+let isWasmCompilable: boolean | undefined
 
 /**
  * Whether PDF.js takes its Node.js code paths, by PDF.js' own rule: a
@@ -51,6 +52,9 @@ export async function getDocumentProxy(
     data,
     // See: https://github.com/mozilla/pdf.js/issues/4244#issuecomment-1479534301
     useSystemFonts: true,
+    // Where the runtime forbids compiling WASM, as workerd does, PDF.js would
+    // warn once per image decoder before falling back to its JS decoders.
+    useWasm: canCompileWasm(),
     ...nodeDefaults,
     ...options,
   }).promise
@@ -126,6 +130,22 @@ async function loadPDFJS(loader?: () => Promise<any>): Promise<typeof PDFJS> {
   catch (error) {
     throw new Error(`PDF.js could not be resolved: ${error}`, { cause: error })
   }
+}
+
+function canCompileWasm(): boolean {
+  if (isWasmCompilable === undefined) {
+    try {
+      // The smallest valid module: the magic number and version 1.
+      // eslint-disable-next-line no-new -- Compiling is the probe.
+      new WebAssembly.Module(new Uint8Array([0x00, 0x61, 0x73, 0x6D, 0x01, 0x00, 0x00, 0x00]))
+      isWasmCompilable = true
+    }
+    catch {
+      isWasmCompilable = false
+    }
+  }
+
+  return isWasmCompilable
 }
 
 type NodeProcess = NodeJS.Process & { type?: string }

@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { extractImages, getDocumentProxy } from '../src/index'
 import { getPDF, isWorkerd } from './utils'
 
@@ -82,8 +82,11 @@ describe('extractImages', () => {
     )
   })
 
-  it('extracts CCITT and JPEG 2000 images', async () => {
+  it('extracts CCITT and JPEG 2000 images without warnings', async () => {
+    const consoleWarnSpy = vi.spyOn(console, 'warn')
     const images = await extractImages(await getPDF('image-decoders.pdf'), 1)
+
+    expect(consoleWarnSpy).not.toHaveBeenCalled()
 
     expect(images.map(({ width, height, data }) => ({ width, height, data: Array.from(data) }))).toEqual([
       { width: 16, height: 4, data: pixels('KKKKKKKKWWWWWWWW'.repeat(2) + 'WWWWWWWWKKKKKKKK'.repeat(2)) },
