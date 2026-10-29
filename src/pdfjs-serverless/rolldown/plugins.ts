@@ -24,8 +24,8 @@ new Proxy({}, {
 // bundler or runtime picks the decoder variant by condition.
 export const decodersModuleSpecifier = '#pdfjs-decoders'
 
-// Anchors match verbatim, so the worker anchor carries the exact multi-line
-// indentation of the PDF.js source.
+// Anchors match verbatim, so multi-line anchors carry the exact indentation of
+// the PDF.js source.
 const patches: Record<string, string> = {
   // Take the inlined worker from its global instead of importing it at runtime.
   'await import(\n      /*webpackIgnore: true*/\n      /*@vite-ignore*/\n      this.workerSrc)': 'globalThis.pdfjsWorker',
