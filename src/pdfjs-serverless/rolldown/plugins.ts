@@ -39,10 +39,11 @@ const patches: Record<string, string> = {
   'if (WasmImage.#useWorkerFetch) {\n          this.#buffer = await fetchBinaryData(`${WasmImage.#wasmUrl}${this._filename}`);\n        } else {\n          this.#buffer = await WasmImage.#handler.sendWithPromise("FetchBinaryData", {\n            kind: "wasmUrl",\n            filename: this._filename\n          });\n        }': `this.#buffer = await ${loadImageDecoder}(this._filename);`,
   'await import(\n      /*webpackIgnore: true*/\n      /*@vite-ignore*/\n      `${WasmImage.#wasmUrl}${this._noWasmFilename}`)': `{ default: await ${loadImageDecoder}(this._noWasmFilename) }`,
   /* eslint-enable no-template-curly-in-string */
-  // Forget a decoder that failed to load for lack of a registered loader, so
-  // images decoded after registration don't wait for the next `cleanup` to get
-  // it. A newer module promise or a loader that failed for real stays cached.
-  'this.#modulePromise = Promise.race(promises);': `{ const modulePromise = Promise.race(promises).then(module => { if (!module && this.#modulePromise === modulePromise && !globalThis[Symbol.for("unpdf.loadImageDecoder")]) this.#modulePromise = null; return module; }); this.#modulePromise = modulePromise; }`,
+  // Forget a decoder that failed to load because no loader was registered when
+  // the attempt started, so images decoded after registration don't wait for the
+  // next `cleanup` to get it. A newer module promise or a loader that failed for
+  // real stays cached.
+  'this.#modulePromise = Promise.race(promises);': `{ const hasLoader = Boolean(globalThis[Symbol.for("unpdf.loadImageDecoder")]); const modulePromise = Promise.race(promises).then(module => { if (!module && !hasLoader && this.#modulePromise === modulePromise) this.#modulePromise = null; return module; }); this.#modulePromise = modulePromise; }`,
   'warn("Please use the `legacy` build in Node.js environments.")': '',
 }
 
