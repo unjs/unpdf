@@ -3,9 +3,9 @@ import type * as PDFJS from 'pdfjs-dist/types/src/pdf'
 import type { PDFCanvasFactory } from './_internal/canvas'
 import type { Bounds } from './_internal/operator-list'
 import { injectCanvasConstructors, resolveCanvasModule } from './_internal/canvas'
-import { registerImageDecoders } from './_internal/image-decoders'
 import { getUnitSquareBounds, walkOperatorList } from './_internal/operator-list'
 import { encodePNG } from './_internal/png'
+import { registerImageDecoders } from './image-decoders'
 import { getResolvedPDFJS, isNode, withDocument } from './utils'
 
 export interface ExtractImagesOptions {

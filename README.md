@@ -190,6 +190,14 @@ Returns the resolved PDF.js module – the serverless build, unless `definePDFJS
 function getResolvedPDFJS(): Promise<PDFJS>
 ```
 
+### `registerImageDecoders`
+
+Registers PDF.js' JBIG2 and OpenJPEG decoders with the serverless PDF.js build, which CCITT, JBIG2, and JPEG 2000 images need. `extractImages`, `renderPageAsImage`, and `inspectPages` call it themselves – call it before decoding these images through PDF.js directly, such as on the pages of a `getDocumentProxy` document. A custom build from `definePDFJSModule` loads its decoders from its own `wasmUrl` instead.
+
+```ts
+function registerImageDecoders(): void
+```
+
 ## Custom PDF.js Build
 
 `unpdf` uses its serverless build unless you define another one, e.g. to pin a different PDF.js version. Install `pdfjs-dist` and call `definePDFJSModule` before any other method:
@@ -211,7 +219,7 @@ Heart and soul of this package is the [`pdfjs.rolldown.config.ts`](./pdfjs.rolld
 
 - **String replacements** strip browser-specific references from the PDF.js source.
 - **Worker inlining** embeds the PDF.js worker directly into the main bundle, since serverless runtimes can't load separate worker files.
-- **Bundled image decoders** ship PDF.js' JBIG2 and OpenJPEG decoders, WASM and JS fallback, as lazy chunks, so CCITT, JBIG2, and JPEG 2000 images decode without `pdfjs-dist` or a `wasmUrl`. Only `extractImages`, `renderPageAsImage`, and `inspectPages` load them, so a bundle that only extracts text leaves them out. PDF.js called directly, through `getResolvedPDFJS` or `unpdf/pdfjs`, skips these images until one of those functions has been called. Bundlers that resolve the `workerd` condition, like Wrangler, ship only the JS fallbacks, since workerd can't compile WASM at runtime.
+- **Bundled image decoders** ship PDF.js' JBIG2 and OpenJPEG decoders, WASM and JS fallback, as lazy chunks, so CCITT, JBIG2, and JPEG 2000 images decode without `pdfjs-dist` or a `wasmUrl`. `extractImages`, `renderPageAsImage`, and `inspectPages` load them, so a bundle that only extracts text leaves them out. PDF.js called directly, through `getResolvedPDFJS` or `unpdf/pdfjs`, skips these images with a warning until [`registerImageDecoders`](#registerimagedecoders) has run. Bundlers that resolve the `workerd` condition, like Wrangler, ship only the JS fallbacks, since workerd can't compile WASM at runtime.
 - **Global polyfills** fill in newer APIs like `Promise.try` and `Map.prototype.getOrInsert` for runtimes that lack them, plus `FinalizationRegistry` for Cloudflare Workers.
 
 ## License

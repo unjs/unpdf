@@ -2,8 +2,8 @@ import type { DocumentInitParameters, PDFDocumentProxy } from 'pdfjs-dist/types/
 import type { OptionalContentConfig } from 'pdfjs-dist/types/src/display/optional_content_config'
 import type * as PDFJS from 'pdfjs-dist/types/src/pdf'
 import type { Bounds } from './_internal/operator-list'
-import { registerImageDecoders } from './_internal/image-decoders'
 import { getUnitSquareBounds, walkOperatorList } from './_internal/operator-list'
+import { registerImageDecoders } from './image-decoders'
 import { getResolvedPDFJS, isPDFDocumentProxy, withDocument } from './utils'
 
 const WHITESPACE_PATTERN = /\s/g

@@ -1,6 +1,7 @@
 export type { Bounds } from './_internal/operator-list'
 export { extractImages, renderPageAsImage } from './image'
 export type { ExtractedImage, ExtractImagesOptions, RenderPageAsImageOptions } from './image'
+export { registerImageDecoders } from './image-decoders'
 export { inspectPages } from './inspect'
 export type { PageInspection } from './inspect'
 export { extractLinks } from './links'
