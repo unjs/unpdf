@@ -104,7 +104,7 @@ PDF.js does not execute scripts embedded in PDFs, but resource limits are your j
 
 ### `getDocumentProxy`
 
-Creates a `PDFDocumentProxy` with `useSystemFonts: true`. In Node.js with `pdfjs-dist` installed, it uses that package's standard fonts instead of system fonts, and its CJK character maps (`cMapUrl`). Cloudflare Workers have no local `pdfjs-dist` – to extract text from CJK fonts without embedded mappings, pass `cMapUrl: 'https://unpkg.com/pdfjs-dist@6.4.299/cmaps/'`, `cMapPacked: true`, and `useWorkerFetch: true`. Your options override the defaults.
+Creates a `PDFDocumentProxy` with `useSystemFonts: true`. In Node.js with `pdfjs-dist` installed, it uses that package's standard fonts instead of system fonts and its CJK character maps (`cMapUrl`). A PDF.js build other than the serverless one also gets that package's image decoders (`wasmUrl`). Cloudflare Workers have no local `pdfjs-dist` – to extract text from CJK fonts without embedded mappings, pass `cMapUrl: 'https://unpkg.com/pdfjs-dist@6.4.299/cmaps/'`, `cMapPacked: true`, and `useWorkerFetch: true`. Your options override the defaults.
 
 ```ts
 function getDocumentProxy(data: Uint8Array | ArrayBuffer, options?: DocumentInitParameters): Promise<PDFDocumentProxy>
@@ -192,7 +192,7 @@ function getResolvedPDFJS(): Promise<PDFJS>
 
 ### `registerImageDecoders`
 
-Registers PDF.js' JBIG2 and OpenJPEG decoders, which CCITT, JBIG2, and JPEG 2000 images need, with the serverless PDF.js build. `extractImages`, `renderPageAsImage`, and `inspectPages` call it themselves – call it before decoding these images through PDF.js directly, such as on the pages of a `getDocumentProxy` document. Another build set through `definePDFJSModule`, such as `pdfjs-dist`, ignores it and loads its decoders from the `wasmUrl` option passed to `getDocumentProxy`.
+Registers PDF.js' JBIG2 and OpenJPEG decoders, which CCITT, JBIG2, and JPEG 2000 images need, with the serverless PDF.js build. `extractImages`, `renderPageAsImage`, and `inspectPages` call it themselves – call it before decoding these images through PDF.js directly, such as on the pages of a `getDocumentProxy` document. Another build set through `definePDFJSModule`, such as `pdfjs-dist`, ignores it and loads its decoders from `wasmUrl`, which [`getDocumentProxy`](#getdocumentproxy) sets in Node.js.
 
 ```ts
 function registerImageDecoders(): void

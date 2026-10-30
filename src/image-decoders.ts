@@ -5,8 +5,8 @@
  * only extracts text leaves the decoders out. Call it before decoding these
  * images through PDF.js directly; the decoders load on the first such image.
  * Another build set through `definePDFJSModule`, such as `pdfjs-dist`, ignores
- * it and loads its decoders from the `wasmUrl` option passed to
- * `getDocumentProxy`.
+ * it and loads its decoders from `wasmUrl`, which `getDocumentProxy` sets in
+ * Node.js.
  */
 export function registerImageDecoders(): void {
   ;(globalThis as Record<PropertyKey, unknown>)[Symbol.for('unpdf.loadImageDecoder')] ??= async (fileName: string) => {

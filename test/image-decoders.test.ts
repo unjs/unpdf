@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { extractImages, extractText, getDocumentProxy, inspectPages, registerImageDecoders, renderPageAsImage } from '../src/index'
+import { definePDFJSModule, extractImages, extractText, getDocumentProxy, inspectPages, registerImageDecoders, renderPageAsImage } from '../src/index'
 import { getPDF, isWorkerd } from './utils'
 
 const LOAD_IMAGE_DECODER_KEY = Symbol.for('unpdf.loadImageDecoder')
@@ -63,5 +63,24 @@ describe('image decoders', () => {
     await pdf.loadingTask.destroy()
 
     expect(images.map(({ width }) => width)).toEqual([16, 2])
+  })
+
+  it.skipIf(isWorkerd)('extractImages decodes CCITT and JPEG 2000 images through pdfjs-dist without warnings', async () => {
+    const consoleWarnSpy = vi.spyOn(console, 'warn')
+    // `pdfjs-dist` would otherwise run on the worker the serverless build leaves
+    // under this global, which decodes through the registered loader.
+    vi.stubGlobal('pdfjsWorker', undefined)
+    definePDFJSModule(() => import('pdfjs-dist/legacy/build/pdf.mjs'))
+
+    try {
+      const images = await extractImages(await getPDF('image-decoders.pdf'), 1)
+
+      expect(consoleWarnSpy).not.toHaveBeenCalled()
+      expect(images.map(({ width }) => width)).toEqual([16, 2])
+    }
+    finally {
+      // @ts-expect-error: Dynamic import from package build.
+      definePDFJSModule(() => import('../dist/pdfjs'))
+    }
   })
 })
