@@ -20,8 +20,8 @@ new Proxy({}, {
 })
 `.trim()
 
-// `registerImageDecoders` sets the loader under this symbol; until it runs, the
-// fallback throws and PDF.js skips the image with a warning.
+// `registerImageDecoders` sets the loader under this symbol; until it runs,
+// PDF.js skips these images with warnings.
 const loadImageDecoder = `(globalThis[Symbol.for("unpdf.loadImageDecoder")] ?? (fileName => { throw new Error(\`No image decoder registered for \${fileName}: call registerImageDecoders() from unpdf first\`) }))`
 
 // Anchors match verbatim, so multi-line anchors carry the exact indentation of

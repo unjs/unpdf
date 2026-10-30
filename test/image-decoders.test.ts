@@ -30,8 +30,7 @@ describe('image decoders', () => {
   })
 
   // Node.js shares PDF.js across files and keeps the WASM bytes an earlier test
-  // loaded, so only workerd decodes through the registered loader here; the
-  // `typeof` check guards the registration in Node.js.
+  // loaded, so only workerd decodes through the registered loader here.
   it('registerImageDecoders lets PDF.js decode CCITT and JPEG 2000 images directly', async () => {
     const consoleWarnSpy = vi.spyOn(console, 'warn')
     registerImageDecoders()
