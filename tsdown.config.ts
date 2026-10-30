@@ -10,6 +10,8 @@ const config: UserConfig = defineConfig({
   deps: {
     neverBundle: [
       'unpdf/pdfjs',
+      // Resolved by the consumer, which picks the decoder variant by condition.
+      '#pdfjs-decoders',
       '@napi-rs/canvas',
       // Keep type imports as `pdfjs-dist/types/...` in the declarations –
       // post-build rewrites them to `./types/...` instead of inlining them.

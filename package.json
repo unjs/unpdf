@@ -28,6 +28,12 @@
     "workers"
   ],
   "sideEffects": false,
+  "imports": {
+    "#pdfjs-decoders": {
+      "workerd": "./dist/pdfjs-decoders-workerd.mjs",
+      "default": "./dist/pdfjs-decoders.mjs"
+    }
+  },
   "exports": {
     ".": {
       "types": "./dist/index.d.mts",

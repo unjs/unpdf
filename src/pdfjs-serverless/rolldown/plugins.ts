@@ -1,6 +1,5 @@
-import type { OutputChunk, Plugin } from 'rolldown'
+import type { OutputBundle, OutputChunk, Plugin } from 'rolldown'
 import { writeFile } from 'node:fs/promises'
-import { join } from 'node:path'
 
 // PDF.js' built-in `NodeCanvasFactory` becomes the document-level canvas
 // factory when no `CanvasFactory` option is passed to `getDocument` and is
@@ -21,22 +20,30 @@ new Proxy({}, {
 })
 `.trim()
 
-const decodersModuleSpecifier = JSON.stringify(join(import.meta.dirname, '../decoders.mjs'))
+// `registerImageDecoders` sets the loader under this symbol; until it runs,
+// PDF.js skips these images with warnings.
+const loadImageDecoder = `(globalThis[Symbol.for("unpdf.loadImageDecoder")] ?? (fileName => { throw new Error(\`No image decoder registered for \${fileName}: call registerImageDecoders() from unpdf first\`) }))`
 
-// Anchors match verbatim, so the worker anchor carries the exact multi-line
-// indentation of the PDF.js source.
+// Anchors match verbatim, so multi-line anchors carry the exact indentation of
+// the PDF.js source.
 const patches: Record<string, string> = {
   // Take the inlined worker from its global instead of importing it at runtime.
   'await import(\n      /*webpackIgnore: true*/\n      /*@vite-ignore*/\n      this.workerSrc)': 'globalThis.pdfjsWorker',
   // Force setting up fake PDF.js worker.
   '#isWorkerDisabled = false': '#isWorkerDisabled = true',
   'require("@napi-rs/canvas")': canvasMock,
-  // Load the image decoders from the bundle instead of `wasmUrl`. PDF.js still
-  // falls back to the JS decoders where WASM can't compile, as in workerd.
+  // Load the image decoders through the registered loader instead of `wasmUrl`.
+  // PDF.js still falls back to the JS decoders when a WASM decoder fails to load
+  // or compile, as in workerd.
   /* eslint-disable no-template-curly-in-string -- The anchors match template literals in the PDF.js source. */
-  'if (WasmImage.#useWorkerFetch) {\n          this.#buffer = await fetchBinaryData(`${WasmImage.#wasmUrl}${this._filename}`);\n        } else {\n          this.#buffer = await WasmImage.#handler.sendWithPromise("FetchBinaryData", {\n            kind: "wasmUrl",\n            filename: this._filename\n          });\n        }': `this.#buffer = await (await import(${decodersModuleSpecifier})).loadDecoder(this._filename);`,
-  'await import(\n      /*webpackIgnore: true*/\n      /*@vite-ignore*/\n      `${WasmImage.#wasmUrl}${this._noWasmFilename}`)': `{ default: await (await import(${decodersModuleSpecifier})).loadDecoder(this._noWasmFilename) }`,
+  'if (WasmImage.#useWorkerFetch) {\n          this.#buffer = await fetchBinaryData(`${WasmImage.#wasmUrl}${this._filename}`);\n        } else {\n          this.#buffer = await WasmImage.#handler.sendWithPromise("FetchBinaryData", {\n            kind: "wasmUrl",\n            filename: this._filename\n          });\n        }': `this.#buffer = await ${loadImageDecoder}(this._filename);`,
+  'await import(\n      /*webpackIgnore: true*/\n      /*@vite-ignore*/\n      `${WasmImage.#wasmUrl}${this._noWasmFilename}`)': `{ default: await ${loadImageDecoder}(this._noWasmFilename) }`,
   /* eslint-enable no-template-curly-in-string */
+  // Forget a decoder that failed to load while no loader was registered at the
+  // attempt's start, so images decoded after registration don't wait for the
+  // next `cleanup` to get it. A newer module promise, or a failure from a loader
+  // registered before the attempt, stays cached.
+  'this.#modulePromise = Promise.race(promises);': `{ const hasLoader = Boolean(globalThis[Symbol.for("unpdf.loadImageDecoder")]); const modulePromise = Promise.race(promises).then(module => { if (!module && !hasLoader && this.#modulePromise === modulePromise) this.#modulePromise = null; return module; }); this.#modulePromise = modulePromise; }`,
   'warn("Please use the `legacy` build in Node.js environments.")': '',
 }
 
@@ -99,11 +106,14 @@ export function assertRuntimePatchesFirst(): Plugin {
   return {
     name: 'pdfjs-serverless:assert-runtime-patches-first',
     generateBundle(_options, bundle) {
-      // Rolldown lists a chunk's modules in evaluation order, after the chunks
-      // it imports statically. The lazy decoder chunks hold `pdfjs-dist`
-      // modules too, but never evaluate eagerly.
-      const entryChunk = Object.values(bundle).find(output => output.type === 'chunk' && output.isEntry) as OutputChunk
-      const moduleIds = [...entryChunk.imports.map(fileName => bundle[fileName] as OutputChunk), entryChunk]
+      // Rolldown lists a chunk's modules in evaluation order, and the chunks
+      // a chunk imports statically evaluate before it. The lazy decoder chunks
+      // hold `pdfjs-dist` modules too, but never evaluate eagerly.
+      const entryChunk = Object.values(bundle).find((output): output is OutputChunk => output.type === 'chunk' && output.isEntry && output.name === 'pdfjs')
+      if (!entryChunk)
+        throw new Error(`[pdfjs-serverless] The bundle has no \`pdfjs\` entry chunk to check.`)
+
+      const moduleIds = collectStaticChunks(entryChunk, bundle)
         .flatMap(chunk => chunk.moduleIds)
         .map(id => id.replaceAll('\\', '/'))
       const firstPDFJSIndex = moduleIds.findIndex(id => id.includes('/pdfjs-dist/'))
@@ -142,4 +152,27 @@ export * from './types/src/pdf.js'
       await writeFile('dist/pdfjs.d.mts', typeExports, 'utf8')
     },
   }
+}
+
+/**
+ * Collects a chunk and every chunk it reaches through static imports, in
+ * evaluation order. External imports have no chunk in the bundle and are
+ * skipped.
+ */
+function collectStaticChunks(entryChunk: OutputChunk, bundle: OutputBundle): OutputChunk[] {
+  const visitedChunks = new Set<OutputChunk>()
+  const orderedChunks: OutputChunk[] = []
+
+  const visit = (chunk: OutputChunk) => {
+    visitedChunks.add(chunk)
+    for (const fileName of chunk.imports) {
+      const importedChunk = bundle[fileName]
+      if (importedChunk?.type === 'chunk' && !visitedChunks.has(importedChunk))
+        visit(importedChunk)
+    }
+    orderedChunks.push(chunk)
+  }
+
+  visit(entryChunk)
+  return orderedChunks
 }

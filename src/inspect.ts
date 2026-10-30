@@ -3,6 +3,7 @@ import type { OptionalContentConfig } from 'pdfjs-dist/types/src/display/optiona
 import type * as PDFJS from 'pdfjs-dist/types/src/pdf'
 import type { Bounds } from './_internal/operator-list'
 import { getUnitSquareBounds, walkOperatorList } from './_internal/operator-list'
+import { registerImageDecoders } from './image-decoders'
 import { getResolvedPDFJS, isPDFDocumentProxy, withDocument } from './utils'
 
 const WHITESPACE_PATTERN = /\s/g
@@ -33,6 +34,8 @@ export interface PageInspection {
 export async function inspectPages(
   data: DocumentInitParameters['data'] | PDFDocumentProxy,
 ): Promise<{ totalPages: number, pages: PageInspection[] }> {
+  registerImageDecoders()
+
   return await withDocument(data, async (pdf) => {
     const { OPS } = await getResolvedPDFJS()
     const optionalContentConfig = await pdf.getOptionalContentConfig()

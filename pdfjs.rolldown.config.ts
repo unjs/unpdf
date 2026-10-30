@@ -3,7 +3,11 @@ import { defineConfig } from 'rolldown'
 import { assertRuntimePatchesFirst, patchPDFJSSource, pdfjsTypes } from './src/pdfjs-serverless/rolldown/plugins'
 
 const config: RolldownOptions = defineConfig({
-  input: 'src/pdfjs-serverless/index.mjs',
+  input: {
+    'pdfjs': 'src/pdfjs-serverless/index.mjs',
+    'pdfjs-decoders': 'src/pdfjs-serverless/decoders/default.mjs',
+    'pdfjs-decoders-workerd': 'src/pdfjs-serverless/decoders/workerd.mjs',
+  },
   // The root `"sideEffects": false` applies to the sources read here too, which
   // would drop the mock and polyfill modules whose only job is to mutate
   // globals. Only an explicit rule outranks the manifest – a blanket
@@ -18,7 +22,7 @@ const config: RolldownOptions = defineConfig({
   },
   output: {
     dir: 'dist',
-    entryFileNames: 'pdfjs.mjs',
+    entryFileNames: '[name].mjs',
     chunkFileNames: 'pdfjs-[name].mjs',
     format: 'esm',
     exports: 'auto',
