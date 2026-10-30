@@ -3,6 +3,7 @@ import type * as PDFJS from 'pdfjs-dist/types/src/pdf'
 import type { PDFCanvasFactory } from './_internal/canvas'
 import type { Bounds } from './_internal/operator-list'
 import { injectCanvasConstructors, resolveCanvasModule } from './_internal/canvas'
+import { registerImageDecoders } from './_internal/image-decoders'
 import { getUnitSquareBounds, walkOperatorList } from './_internal/operator-list'
 import { encodePNG } from './_internal/png'
 import { getResolvedPDFJS, isNode, withDocument } from './utils'
@@ -52,6 +53,8 @@ export async function extractImages(
   pageNumber: number,
   options: ExtractImagesOptions = {},
 ): Promise<ExtractedImage[]> {
+  registerImageDecoders()
+
   return await withDocument(data, async (pdf) => {
     if (pageNumber < 1 || pageNumber > pdf.numPages) {
       throw new Error(`Invalid page number. Must be between 1 and ${pdf.numPages}.`)
@@ -149,6 +152,7 @@ export async function renderPageAsImage(
   pageNumber: number,
   options: RenderPageAsImageOptions = {},
 ): Promise<Uint8Array | string> {
+  registerImageDecoders()
   await prepareCanvasEnvironment(options.canvasImport)
 
   return await withDocument(data, async (pdf) => {

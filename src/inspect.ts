@@ -2,6 +2,7 @@ import type { DocumentInitParameters, PDFDocumentProxy } from 'pdfjs-dist/types/
 import type { OptionalContentConfig } from 'pdfjs-dist/types/src/display/optional_content_config'
 import type * as PDFJS from 'pdfjs-dist/types/src/pdf'
 import type { Bounds } from './_internal/operator-list'
+import { registerImageDecoders } from './_internal/image-decoders'
 import { getUnitSquareBounds, walkOperatorList } from './_internal/operator-list'
 import { getResolvedPDFJS, isPDFDocumentProxy, withDocument } from './utils'
 
@@ -33,6 +34,8 @@ export interface PageInspection {
 export async function inspectPages(
   data: DocumentInitParameters['data'] | PDFDocumentProxy,
 ): Promise<{ totalPages: number, pages: PageInspection[] }> {
+  registerImageDecoders()
+
   return await withDocument(data, async (pdf) => {
     const { OPS } = await getResolvedPDFJS()
     const optionalContentConfig = await pdf.getOptionalContentConfig()

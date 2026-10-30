@@ -20,9 +20,9 @@ new Proxy({}, {
 })
 `.trim()
 
-// Resolved through the `imports` field of `package.json`, so the consumer's
-// bundler or runtime picks the decoder variant by condition.
-export const decodersModuleSpecifier = '#pdfjs-decoders'
+// `registerImageDecoders` sets the loader under this symbol; until it runs, the
+// fallback throws and PDF.js skips the image with a warning.
+const loadImageDecoder = `(globalThis[Symbol.for("unpdf.loadImageDecoder")] ?? (fileName => { throw new Error(\`No image decoder registered for \${fileName}: call extractImages, renderPageAsImage, or inspectPages first\`) }))`
 
 // Anchors match verbatim, so multi-line anchors carry the exact indentation of
 // the PDF.js source.
@@ -32,12 +32,17 @@ const patches: Record<string, string> = {
   // Force setting up fake PDF.js worker.
   '#isWorkerDisabled = false': '#isWorkerDisabled = true',
   'require("@napi-rs/canvas")': canvasMock,
-  // Load the image decoders from the bundle instead of `wasmUrl`. PDF.js still
-  // falls back to the JS decoders where WASM can't compile, as in workerd.
+  // Load the image decoders through the registered loader instead of `wasmUrl`.
+  // PDF.js still falls back to the JS decoders when a WASM decoder fails to load
+  // or compile, as in workerd.
   /* eslint-disable no-template-curly-in-string -- The anchors match template literals in the PDF.js source. */
-  'if (WasmImage.#useWorkerFetch) {\n          this.#buffer = await fetchBinaryData(`${WasmImage.#wasmUrl}${this._filename}`);\n        } else {\n          this.#buffer = await WasmImage.#handler.sendWithPromise("FetchBinaryData", {\n            kind: "wasmUrl",\n            filename: this._filename\n          });\n        }': `this.#buffer = await (await import("${decodersModuleSpecifier}")).loadDecoder(this._filename);`,
-  'await import(\n      /*webpackIgnore: true*/\n      /*@vite-ignore*/\n      `${WasmImage.#wasmUrl}${this._noWasmFilename}`)': `{ default: await (await import("${decodersModuleSpecifier}")).loadDecoder(this._noWasmFilename) }`,
+  'if (WasmImage.#useWorkerFetch) {\n          this.#buffer = await fetchBinaryData(`${WasmImage.#wasmUrl}${this._filename}`);\n        } else {\n          this.#buffer = await WasmImage.#handler.sendWithPromise("FetchBinaryData", {\n            kind: "wasmUrl",\n            filename: this._filename\n          });\n        }': `this.#buffer = await ${loadImageDecoder}(this._filename);`,
+  'await import(\n      /*webpackIgnore: true*/\n      /*@vite-ignore*/\n      `${WasmImage.#wasmUrl}${this._noWasmFilename}`)': `{ default: await ${loadImageDecoder}(this._noWasmFilename) }`,
   /* eslint-enable no-template-curly-in-string */
+  // Forget a decoder that failed to load for lack of a registered loader, so
+  // images decoded after registration don't wait for the next `cleanup` to get
+  // it. A newer module promise or a loader that failed for real stays cached.
+  'this.#modulePromise = Promise.race(promises);': `{ const modulePromise = Promise.race(promises).then(module => { if (!module && this.#modulePromise === modulePromise && !globalThis[Symbol.for("unpdf.loadImageDecoder")]) this.#modulePromise = null; return module; }); this.#modulePromise = modulePromise; }`,
   'warn("Please use the `legacy` build in Node.js environments.")': '',
 }
 
