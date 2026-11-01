@@ -13,24 +13,23 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
-      - uses: pnpm/action-setup@v6
-      - uses: actions/setup-node@v7
+          persist-credentials: false
+      - uses: pnpm/setup@fa36a5ef7dcdefc3a7cb25655c122e00cf6e636e # v3.1.2
         with:
-          node-version: 24
-          registry-url: https://registry.npmjs.org/
-          cache: pnpm
+          runtime: node@24
 
-      - run: pnpm install
       - run: pnpm run build:pdfjs
       - run: pnpm run build
 
       - name: Publish changelog
-        run: npx changelogithub
+        run: pnpm dlx changelogithub
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish to npm
-        run: npm install -g npm@latest && npm publish --access public --tag ${{ contains(github.ref_name, '-') && 'next' || 'latest' }}
+        run: pnpm publish --access public --no-git-checks --tag "$NPM_TAG"
+        env:
+          NPM_TAG: ${{ contains(github.ref_name, '-') && 'next' || 'latest' }}
