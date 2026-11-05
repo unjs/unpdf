@@ -1,12 +1,13 @@
+import { version as installedPDFJSVersion } from 'pdfjs-dist/package.json'
 import { describe, expect, it, vi } from 'vitest'
 import { definePDFJSModule, getResolvedPDFJS } from '../src/index'
 import { isWorkerd } from './utils'
 
 describe('pdfjs resolution', () => {
-  it('provides the PDF.js module', async () => {
+  it('resolves the bundled build of the installed pdfjs-dist', async () => {
     const { version } = await getResolvedPDFJS()
 
-    expect(version).toMatchInlineSnapshot(`"6.4.299"`)
+    expect(version).toBe(installedPDFJSVersion)
   })
 
   it('defers loading a defined PDF.js module until first use', async () => {
