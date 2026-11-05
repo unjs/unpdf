@@ -7,5 +7,7 @@ updates:
       interval: daily
     allow:
       - dependency-name: pdfjs-dist
+    # A published package defaults to `widen`, which keeps the old version inside the range.
+    versioning-strategy: increase
     commit-message:
       prefix: feat
