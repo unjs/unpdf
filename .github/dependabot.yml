@@ -1,0 +1,13 @@
+version: 2
+updates:
+  # Only PDF.js: the bundled copy is invisible to downstream dependency tools.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: daily
+    allow:
+      - dependency-name: pdfjs-dist
+    # A published package defaults to `widen`, which keeps the old version inside the range.
+    versioning-strategy: increase
+    commit-message:
+      prefix: feat
