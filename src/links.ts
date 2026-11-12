@@ -8,9 +8,12 @@ export async function extractLinks(
   links: string[][]
 }> {
   return await withDocument(data, async (pdf) => {
-    const links = await Promise.all(
-      Array.from({ length: pdf.numPages }, (_, i) => getPageLinks(pdf, i + 1)),
-    )
+    const links: string[][] = []
+
+    // Fetching every page at once multiplies peak memory without finishing sooner.
+    for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
+      links.push(await getPageLinks(pdf, pageNumber))
+    }
 
     return { totalPages: pdf.numPages, links }
   })
