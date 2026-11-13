@@ -10,6 +10,7 @@ PDF files have been added to the repository for testing purposes. These files ar
 **Handcrafted**: minimal PDFs written by [`generate-fixtures.ts`](../../scripts/generate-fixtures.ts) – regenerate them with `node scripts/generate-fixtures.ts`.
 
 - `document.pdf`: two pages of non-embedded `Helvetica` text with runs of spaces; three link annotations with distinct URI actions and one internal link to the first page; `/Info` and XMP dates
+- `tiling-pattern.pdf`: a 20×20 page filled with a colored tiling pattern whose 10×10 cell is red, so rendering it transforms the pattern with a full `DOMMatrix`
 - `transparency.pdf`: page content that applies a luminosity soft mask (`/SMask` in `/ExtGState`), forcing PDF.js to request an intermediate canvas from the document-level canvas factory
 - `cjk-predefined-cmap.pdf`: a non-embedded CID font encoded via the predefined `UniJIS-UCS2-H` CMap and no `/ToUnicode`, so its text only extracts once PDF.js can load the CMap data
 - `image-decoders.pdf`: a 16×4 CCITT Group 4 image and a 2×1 lossless JPEG 2000 image with known pixel values, one for each WASM module PDF.js decodes images with – JBIG2 shares the CCITT module

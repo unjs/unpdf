@@ -8,6 +8,7 @@ import pdflatexImagePDF from './fixtures/pdflatex-image.pdf?bytes'
 import samplePDF from './fixtures/sample.pdf?bytes'
 import scannedPagesPDF from './fixtures/scanned-pages.pdf?bytes'
 import standardFontPDF from './fixtures/standard-font.pdf?bytes'
+import tilingPatternPDF from './fixtures/tiling-pattern.pdf?bytes'
 import transparencyPDF from './fixtures/transparency.pdf?bytes'
 import unpaintedImagesPDF from './fixtures/unpainted-images.pdf?bytes'
 
@@ -21,6 +22,7 @@ type FixtureName
     | 'sample.pdf'
     | 'scanned-pages.pdf'
     | 'standard-font.pdf'
+    | 'tiling-pattern.pdf'
     | 'transparency.pdf'
     | 'unpainted-images.pdf'
 
@@ -34,6 +36,7 @@ const fixtures: Record<FixtureName, Uint8Array> = {
   'sample.pdf': samplePDF,
   'scanned-pages.pdf': scannedPagesPDF,
   'standard-font.pdf': standardFontPDF,
+  'tiling-pattern.pdf': tilingPatternPDF,
   'transparency.pdf': transparencyPDF,
   'unpainted-images.pdf': unpaintedImagesPDF,
 }

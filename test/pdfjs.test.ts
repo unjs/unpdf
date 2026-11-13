@@ -33,6 +33,22 @@ describe('pdfjs resolution', () => {
     await expect(getResolvedPDFJS()).resolves.toHaveProperty('version')
   })
 
+  it('stubs DOMMatrix for a defined PDF.js module that leaves it unset', async () => {
+    vi.stubGlobal('DOMMatrix', undefined)
+    definePDFJSModule(async () => ({ version: 'custom' }))
+
+    try {
+      await getResolvedPDFJS()
+
+      expect(typeof globalThis.DOMMatrix).toBe('function')
+    }
+    finally {
+      vi.unstubAllGlobals()
+      // @ts-expect-error: Dynamic import from package build.
+      definePDFJSModule(() => import('../dist/pdfjs'))
+    }
+  })
+
   it.runIf(isWorkerd)('leaves jbig2.wasm and openjpeg.wasm out of #pdfjs-decoders under the workerd condition', async () => {
     const { loadDecoder } = await import('#pdfjs-decoders')
 

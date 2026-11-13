@@ -124,10 +124,13 @@ export async function interopDefault<T>(
 }
 
 async function loadPDFJS(loader?: () => Promise<any>): Promise<typeof PDFJS> {
-  polyfillDOMMatrix()
-
   try {
-    return await interopDefault(loader ? loader() : import('unpdf/pdfjs'))
+    const pdfjs = await interopDefault(loader ? loader() : import('unpdf/pdfjs'))
+    // After the import, so the legacy `pdfjs-dist` build installs the `DOMMatrix`
+    // of `@napi-rs/canvas` first. Without a `DOMMatrix`, the worker still needs a
+    // stub for Type 3 glyphs.
+    polyfillDOMMatrix()
+    return pdfjs
   }
   catch (error) {
     throw new Error(`PDF.js could not be resolved: ${error}`, { cause: error })

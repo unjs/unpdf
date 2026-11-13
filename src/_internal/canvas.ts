@@ -30,8 +30,8 @@ export async function resolveCanvasModule(canvasImport: () => Promise<typeof imp
  *
  * @remarks
  * `DOMMatrix` is always set because {@link polyfillDOMMatrix} may have
- * installed a minimal stub to allow PDF.js to import – the real
- * `@napi-rs/canvas` implementation must take precedence for rendering.
+ * installed a minimal stub – the real `@napi-rs/canvas` implementation must
+ * take precedence for rendering.
  */
 export function injectCanvasConstructors(): void {
   if (!resolvedCanvasModule)

@@ -1,7 +1,3 @@
-/**
- * Stubs `DOMMatrix`, which PDF.js reads while its modules evaluate, so it must
- * run before any PDF.js module is imported.
- */
 export function polyfillDOMMatrix(): void {
   if (typeof globalThis.DOMMatrix !== 'undefined')
     return

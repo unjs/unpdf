@@ -1,5 +1,6 @@
+import * as canvas from '@napi-rs/canvas'
 import { describe, expect, it, vi } from 'vitest'
-import { getDocumentProxy, renderPageAsImage } from '../src/index'
+import { definePDFJSModule, getDocumentProxy, renderPageAsImage } from '../src/index'
 import { getPDF } from './utils'
 
 const PNG_SIGNATURE = [137, 80, 78, 71, 13, 10, 26, 10]
@@ -80,5 +81,37 @@ describe('renderPageAsImage', () => {
     })
 
     expect(Array.from(result.subarray(0, 8))).toEqual(PNG_SIGNATURE)
+  })
+})
+
+describe('page.render', () => {
+  it('paints a tiling pattern through the legacy pdfjs-dist build', async () => {
+    // A fresh module instance, so the build's top-level `DOMMatrix` polyfill
+    // runs again in the shared test process.
+    const legacyBuildURL = `${import.meta.resolve('pdfjs-dist/legacy/build/pdf.mjs')}?direct-render`
+    vi.stubGlobal('DOMMatrix', undefined)
+    // `pdfjs-dist` would otherwise run on the worker the serverless build leaves
+    // under this global.
+    vi.stubGlobal('pdfjsWorker', undefined)
+    definePDFJSModule(() => import(/* @vite-ignore */ legacyBuildURL))
+
+    let pdf: Awaited<ReturnType<typeof getDocumentProxy>> | undefined
+
+    try {
+      pdf = await getDocumentProxy(await getPDF('tiling-pattern.pdf'))
+      const page = await pdf.getPage(1)
+      const viewport = page.getViewport({ scale: 1 })
+      const target = canvas.createCanvas(viewport.width, viewport.height)
+
+      await page.render({ canvas: target as unknown as HTMLCanvasElement, viewport }).promise
+
+      expect(Array.from(target.getContext('2d').getImageData(10, 10, 1, 1).data)).toEqual([255, 0, 0, 255])
+    }
+    finally {
+      vi.unstubAllGlobals()
+      // @ts-expect-error: Dynamic import from package build.
+      definePDFJSModule(() => import('../dist/pdfjs'))
+      await pdf?.loadingTask.destroy()
+    }
   })
 })

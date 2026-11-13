@@ -9,6 +9,7 @@ const fixtures: Record<string, () => Uint8Array> = {
   'images.pdf': buildImages,
   'scanned-pages.pdf': buildScannedPages,
   'standard-font.pdf': buildStandardFont,
+  'tiling-pattern.pdf': buildTilingPattern,
   'transparency.pdf': buildTransparency,
   'unpainted-images.pdf': buildUnpaintedImages,
 }
@@ -184,6 +185,16 @@ function buildStandardFont(): Uint8Array {
     '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 400 200] /Resources << /Font << /F1 5 0 R >> >> /Contents 4 0 R >>',
     stream('', 'BT /F1 24 Tf 20 100 Td (Hello Helvetica) Tj ET'),
     '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>',
+  ])
+}
+
+function buildTilingPattern(): Uint8Array {
+  return serializePDF([
+    '<< /Type /Catalog /Pages 2 0 R >>',
+    '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
+    '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 20 20] /Resources << /Pattern << /P1 5 0 R >> >> /Contents 4 0 R >>',
+    stream('', '/Pattern cs /P1 scn 0 0 20 20 re f'),
+    stream('/Type /Pattern /PatternType 1 /PaintType 1 /TilingType 1 /BBox [0 0 10 10] /XStep 10 /YStep 10 /Resources << >>', '1 0 0 rg 0 0 10 10 re f'),
   ])
 }
 
