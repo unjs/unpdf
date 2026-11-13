@@ -1,3 +1,4 @@
+import { Buffer } from 'node:buffer'
 import { describe, expect, it, vi } from 'vitest'
 import { extractImages, extractText, getDocumentProxy, getMeta } from '../src/index'
 import { getPDF } from './utils'
@@ -39,5 +40,14 @@ describe('document lifecycle', () => {
     expect({ width, height }).toEqual({ width: 300, height: 200 })
     expect(Array.from(data.subarray(0, 4))).toEqual([1, 0, 0, 255])
     expect(Array.from(data.subarray(centerOffset, centerOffset + 4))).toEqual([202, 158, 113, 255])
+  })
+})
+
+describe('getDocumentProxy', () => {
+  it('opens a Buffer', async () => {
+    const pdf = await getDocumentProxy(Buffer.from(await getPDF()))
+
+    expect(pdf.numPages).toBe(1)
+    await pdf.loadingTask.destroy()
   })
 })

@@ -26,6 +26,11 @@ export async function getDocumentProxy(
 ): Promise<PDFDocumentProxy> {
   const { getDocument } = await getResolvedPDFJS()
 
+  // PDF.js rejects a Node.js `Buffer`, although it is a `Uint8Array`.
+  // eslint-disable-next-line node/prefer-global/buffer -- Browsers have no `node:buffer` to import.
+  if (globalThis.Buffer?.isBuffer(data))
+    data = new Uint8Array(data.buffer, data.byteOffset, data.byteLength)
+
   let nodeDefaults: Partial<DocumentInitParameters> = {}
   if (isNode) {
     try {
