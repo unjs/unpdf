@@ -25,7 +25,7 @@ npm install unpdf
 
 ## Use Cases
 
-Every method takes binary PDF data (`Uint8Array`, `ArrayBuffer`) or a document proxy from [`getDocumentProxy`](#getdocumentproxy). Pass a proxy to run several methods on one document without parsing it again.
+Every method takes binary PDF data (`Uint8Array`, `ArrayBuffer`) or a document proxy from [`getDocumentProxy`](#getdocumentproxy). PDF.js takes ownership of binary data, so it works for one call only. Pass a proxy to run several methods on one document without parsing it again.
 
 ### Extract Text
 
@@ -94,13 +94,13 @@ const scannedPageNumbers = pages
 
 PDF.js does not execute scripts embedded in PDFs, but resource limits are your job:
 
-- **Image decoding:** `maxImageSize` is unlimited by default – pass e.g. `getDocumentProxy(data, { maxImageSize: 16_777_216 })` (~16 MP) so a single declared image can't allocate gigabytes.
+- **Image decoding:** `maxImageSize` is unlimited by default – pass e.g. `getDocumentProxy(data, { maxImageSize: 16_777_216 })` (~16 MP) so a single declared image cannot allocate gigabytes.
 - **Page fan-out:** `extractText`, `extractTextItems`, `extractLinks`, and `inspectPages` process all pages in one call – check `pdf.numPages` against a limit first.
 - **Timeouts:** with the serverless build, parsing runs on your event loop (no worker) – race extraction calls against a timeout.
 
 ## API
 
-`data` is binary PDF data or a `PDFDocumentProxy` throughout.
+`data` is binary PDF data or a `PDFDocumentProxy` throughout. `pageNumber` counts from 1.
 
 ### `getDocumentProxy`
 
@@ -136,7 +136,7 @@ function extractLinks(data): Promise<{ totalPages: number, links: string[][] }>
 
 ### `extractImages`
 
-Extracts the images painted on a page – image XObjects, inline images, and image masks – as RGBA pixels or PNG bytes, each with `width`, `height`, and `bounds` in PDF space.
+Extracts the images painted on a page – image XObjects, inline images, and image masks – as RGBA pixels or PNG bytes, each with its `width` and `height` in pixels and its `bounds` in PDF space.
 
 ```ts
 function extractImages(data, pageNumber: number, options?: { format?: 'rgba' | 'png' }): Promise<ExtractedImage[]>
@@ -217,9 +217,9 @@ In Node.js, import the legacy build as shown. The default `pdfjs-dist` entry tar
 
 Heart and soul of this package is the [`pdfjs.rolldown.config.ts`](./pdfjs.rolldown.config.ts) file. It uses [Rolldown](https://rolldown.rs/) to bundle PDF.js for serverless environments. The key techniques:
 
-- **String replacements** strip browser-specific references from the PDF.js source.
-- **Worker inlining** embeds the PDF.js worker directly into the main bundle, since serverless runtimes can't load separate worker files.
-- **Bundled image decoders** ship PDF.js' JBIG2 and OpenJPEG decoders, WASM and JS fallback, as lazy chunks, so CCITT, JBIG2, and JPEG 2000 images decode without `pdfjs-dist` or a `wasmUrl`. `extractImages`, `renderPageAsImage`, and `inspectPages` load them, so a bundle that only extracts text leaves them out. PDF.js called directly, through `getResolvedPDFJS` or `unpdf/pdfjs`, skips these images with warnings until [`registerImageDecoders`](#registerimagedecoders) has run. Bundlers that resolve the `workerd` condition, like Wrangler, ship only the JS fallbacks, since workerd can't compile WASM at runtime.
+- **Source patches** make PDF.js use what the bundle provides: the inlined worker, the bundled image decoders, and the `@napi-rs/canvas` module passed as `canvasImport`.
+- **Worker inlining** embeds the PDF.js worker directly into the main bundle, since serverless runtimes cannot load separate worker files.
+- **Bundled image decoders** ship PDF.js' JBIG2 and OpenJPEG decoders, WASM and JS fallback, as lazy chunks, so CCITT, JBIG2, and JPEG 2000 images decode without `pdfjs-dist` or a `wasmUrl`. `extractImages`, `renderPageAsImage`, and `inspectPages` load them, so a bundle that only extracts text leaves them out. PDF.js called directly, through `getResolvedPDFJS` or `unpdf/pdfjs`, skips these images with warnings until [`registerImageDecoders`](#registerimagedecoders) has run. Bundlers that resolve the `workerd` condition, like Wrangler, ship only the JS fallbacks, since workerd cannot compile WASM at runtime.
 - **Global polyfills** fill in newer APIs like `Promise.try` and `Map.prototype.getOrInsert` for runtimes that lack them, plus `FinalizationRegistry` for Cloudflare Workers.
 
 ## License
