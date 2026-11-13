@@ -54,7 +54,7 @@ if (typeof Map.prototype.getOrInsert === 'undefined') {
 }
 
 // `Uint8Array.prototype.toHex` is used by PDF.js v5.6+ for document fingerprints.
-// Not yet available in Node.js < 26.
+// Not yet available in Node.js < 25.
 if (typeof Uint8Array.prototype.toHex === 'undefined') {
   // eslint-disable-next-line no-extend-native
   Object.defineProperty(Uint8Array.prototype, 'toHex', {
@@ -64,6 +64,35 @@ if (typeof Uint8Array.prototype.toHex === 'undefined') {
         hex += this[i].toString(16).padStart(2, '0')
       }
       return hex
+    },
+    writable: true,
+    configurable: true,
+  })
+}
+
+// `Uint8Array.fromBase64` and `Uint8Array.prototype.toBase64` are not yet
+// available in Node.js < 25. PDF.js passes no options, so these cover the
+// defaults only, whose decoding matches `atob`.
+if (typeof Uint8Array.fromBase64 === 'undefined') {
+  Object.defineProperty(Uint8Array, 'fromBase64', {
+    value(string) {
+      return Uint8Array.from(atob(string), char => char.charCodeAt(0))
+    },
+    writable: true,
+    configurable: true,
+  })
+}
+
+if (typeof Uint8Array.prototype.toBase64 === 'undefined') {
+  // eslint-disable-next-line no-extend-native
+  Object.defineProperty(Uint8Array.prototype, 'toBase64', {
+    value() {
+      let binary = ''
+      // Chunked, so the spread stays below the engine's argument limit.
+      for (let i = 0; i < this.length; i += 0x8000) {
+        binary += String.fromCharCode(...this.subarray(i, i + 0x8000))
+      }
+      return btoa(binary)
     },
     writable: true,
     configurable: true,

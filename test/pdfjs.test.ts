@@ -40,3 +40,29 @@ describe('pdfjs resolution', () => {
     await expect(loadDecoder('openjpeg.wasm')).rejects.toThrow('No bundled decoder for openjpeg.wasm')
   })
 })
+
+describe('base64 polyfills', () => {
+  it('toBase64 encodes [104, 105] as aGk= and fromBase64 decodes it back where the runtime lacks both', async () => {
+    const fromBase64 = Object.getOwnPropertyDescriptor(Uint8Array, 'fromBase64')
+    const toBase64 = Object.getOwnPropertyDescriptor(Uint8Array.prototype, 'toBase64')
+    // @ts-expect-error: The lib types declare it as required.
+    delete Uint8Array.fromBase64
+    // @ts-expect-error: The lib types declare it as required.
+    delete Uint8Array.prototype.toBase64
+
+    try {
+      // @ts-expect-error: TypeScript cannot resolve the `?base64` query.
+      await import('../src/pdfjs-serverless/polyfills.mjs?base64')
+
+      expect(new Uint8Array([104, 105]).toBase64()).toBe('aGk=')
+      expect(Uint8Array.fromBase64('aGk=')).toEqual(new Uint8Array([104, 105]))
+    }
+    finally {
+      if (fromBase64)
+        Object.defineProperty(Uint8Array, 'fromBase64', fromBase64)
+      if (toBase64)
+        // eslint-disable-next-line no-extend-native
+        Object.defineProperty(Uint8Array.prototype, 'toBase64', toBase64)
+    }
+  })
+})
