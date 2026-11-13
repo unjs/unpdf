@@ -283,7 +283,11 @@ function toRGBA(
 async function prepareCanvasEnvironment(
   canvasImport?: () => Promise<typeof import('@napi-rs/canvas')>,
 ): Promise<void> {
-  if (isNode) {
+  // workerd with `nodejs_compat` passes the Node.js check, but can't load the
+  // native `@napi-rs/canvas`.
+  const isWorkerd = globalThis.navigator?.userAgent === 'Cloudflare-Workers'
+
+  if (isNode && !isWorkerd) {
     if (!canvasImport) {
       throw new Error('Parameter "canvasImport" is required in Node.js environment.')
     }
