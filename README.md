@@ -107,7 +107,7 @@ PDF.js does not execute scripts embedded in PDFs, but resource limits are your j
 Creates a `PDFDocumentProxy` with `useSystemFonts: true`. In Node.js with `pdfjs-dist` installed, it uses that package's standard fonts instead of system fonts and its CJK character maps (`cMapUrl`). A PDF.js build other than the serverless one also gets that package's image decoders (`wasmUrl`). Cloudflare Workers have no local `pdfjs-dist` – to extract text from CJK fonts without embedded mappings, pass `cMapUrl: 'https://unpkg.com/pdfjs-dist@6.4.299/cmaps/'`, `cMapPacked: true`, and `useWorkerFetch: true`. Your options override the defaults.
 
 ```ts
-function getDocumentProxy(data: Uint8Array | ArrayBuffer, options?: DocumentInitParameters): Promise<PDFDocumentProxy>
+function getDocumentProxy(data: Uint8Array | ArrayBuffer, options?: Parameters<typeof import('unpdf/pdfjs').getDocument>[0]): Promise<PDFDocumentProxy>
 ```
 
 ### `extractText`
@@ -179,7 +179,7 @@ function getMeta(data, options?: { parseDates?: boolean }): Promise<{ info: PDFI
 Sets the PDF.js build every other method uses. It loads on first use.
 
 ```ts
-function definePDFJSModule(pdfjs: () => Promise<PDFJS>): void
+function definePDFJSModule(pdfjs: () => Promise<typeof import('unpdf/pdfjs')>): void
 ```
 
 ### `getResolvedPDFJS`
@@ -187,7 +187,7 @@ function definePDFJSModule(pdfjs: () => Promise<PDFJS>): void
 Returns the resolved PDF.js module – the serverless build, unless `definePDFJSModule` set another – to call the PDF.js API directly.
 
 ```ts
-function getResolvedPDFJS(): Promise<PDFJS>
+function getResolvedPDFJS(): Promise<typeof import('unpdf/pdfjs')>
 ```
 
 ### `registerImageDecoders`
