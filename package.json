@@ -63,10 +63,14 @@
     "test:types:dist": "tsc -p test/types/tsconfig.json"
   },
   "peerDependencies": {
-    "@napi-rs/canvas": "^0.1.69 || ^1.0.0"
+    "@napi-rs/canvas": "^0.1.69 || ^1.0.0",
+    "pdfjs-dist": "*"
   },
   "peerDependenciesMeta": {
     "@napi-rs/canvas": {
+      "optional": true
+    },
+    "pdfjs-dist": {
       "optional": true
     }
   },
