@@ -1,7 +1,7 @@
 {
   "name": "unpdf",
   "type": "module",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "packageManager": "pnpm@12.18.0",
   "description": "PDF extraction and rendering across all JavaScript runtimes",
   "author": "Johann Schopplich <hello@johannschopplich.com>",
