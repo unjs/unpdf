@@ -36,6 +36,24 @@ if (typeof Map.prototype.getOrInsertComputed === 'undefined') {
   })
 }
 
+// `WeakMap.prototype.getOrInsertComputed` is used by PDF.js.
+// Not yet available in Safari < 26.2 and Node.js < 26.
+if (typeof WeakMap.prototype.getOrInsertComputed === 'undefined') {
+  // eslint-disable-next-line no-extend-native
+  Object.defineProperty(WeakMap.prototype, 'getOrInsertComputed', {
+    value(key, callbackFn) {
+      if (this.has(key)) {
+        return this.get(key)
+      }
+      const value = callbackFn(key)
+      this.set(key, value)
+      return value
+    },
+    writable: true,
+    configurable: true,
+  })
+}
+
 // `Map.prototype.getOrInsert` is used by PDF.js v6.4+.
 // Not yet available in Safari < 26.2 and Node.js < 26.
 if (typeof Map.prototype.getOrInsert === 'undefined') {
@@ -119,8 +137,8 @@ if (typeof Math.sumPrecise === 'undefined') {
   })
 }
 
-// `ReadableStream` async iteration is used by PDF.js v5.6+ in `getTextContent`
-// and `decompressSignature`. Not yet supported in Safari (all versions).
+// `ReadableStream` async iteration is used by PDF.js v5.6+.
+// Not yet supported in Safari (all versions).
 if (
   typeof ReadableStream !== 'undefined'
   && typeof ReadableStream.prototype[Symbol.asyncIterator] === 'undefined'
