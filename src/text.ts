@@ -1,5 +1,5 @@
 import type { DocumentInitParameters, PDFDocumentProxy, TextItem, TextStyle } from 'pdfjs-dist/types/src/display/api'
-import { withDocument } from './utils'
+import { isPDFDocumentProxy, withDocument } from './utils'
 
 export interface StructuredTextItem {
   str: string
@@ -23,9 +23,16 @@ export async function extractTextItems(
   data: DocumentInitParameters['data'] | PDFDocumentProxy,
 ): Promise<{ totalPages: number, items: StructuredTextItem[][] }> {
   return await withDocument(data, async (pdf) => {
-    const items = await Promise.all(
-      Array.from({ length: pdf.numPages }, (_, i) => getPageTextItems(pdf, i + 1)),
-    )
+    // Releasing a page drops objects that concurrent work on a caller-owned
+    // proxy may still wait for, so only pages of own documents are released.
+    const shouldReleasePages = !isPDFDocumentProxy(data)
+    const items: StructuredTextItem[][] = []
+
+    // One page at a time, so the parsed pages of a large document opened here
+    // never pile up.
+    for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
+      items.push(await getPageTextItems(pdf, pageNumber, shouldReleasePages))
+    }
 
     return { totalPages: pdf.numPages, items }
   })
@@ -34,10 +41,15 @@ export async function extractTextItems(
 async function getPageTextItems(
   document: PDFDocumentProxy,
   pageNumber: number,
+  shouldReleasePage: boolean,
 ): Promise<StructuredTextItem[]> {
   const page = await document.getPage(pageNumber)
   const content = await page.getTextContent()
   const styles = content.styles as Record<string, TextStyle>
+
+  if (shouldReleasePage) {
+    page.cleanup()
+  }
 
   return (content.items as TextItem[])
     .filter(item => item.str != null)
@@ -84,9 +96,12 @@ export async function extractText(
 ) {
   const { mergePages = false } = options
   return await withDocument(data, async (pdf) => {
-    const texts = await Promise.all(
-      Array.from({ length: pdf.numPages }, (_, i) => getPageText(pdf, i + 1)),
-    )
+    const shouldReleasePages = !isPDFDocumentProxy(data)
+    const texts: string[] = []
+
+    for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
+      texts.push(await getPageText(pdf, pageNumber, shouldReleasePages))
+    }
 
     return {
       totalPages: pdf.numPages,
@@ -95,9 +110,17 @@ export async function extractText(
   })
 }
 
-async function getPageText(document: PDFDocumentProxy, pageNumber: number) {
+async function getPageText(
+  document: PDFDocumentProxy,
+  pageNumber: number,
+  shouldReleasePage: boolean,
+) {
   const page = await document.getPage(pageNumber)
   const content = await page.getTextContent()
+
+  if (shouldReleasePage) {
+    page.cleanup()
+  }
 
   return (
     (content.items as TextItem[])

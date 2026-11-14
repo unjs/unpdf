@@ -1,4 +1,4 @@
-import { describe, expect, expectTypeOf, it } from 'vitest'
+import { describe, expect, expectTypeOf, it, vi } from 'vitest'
 import { extractText, extractTextItems, getDocumentProxy, getResolvedPDFJS } from '../src/index'
 import { getPDF, isWorkerd } from './utils'
 
@@ -55,5 +55,28 @@ describe('text', () => {
         "y": 758.1,
       }
     `)
+  })
+
+  it('releases the pages of documents it opens, but not of caller-owned proxies', async () => {
+    const pdf = await getDocumentProxy(await getPDF('scanned-pages.pdf'))
+    const cleanupSpy = vi.spyOn(Object.getPrototypeOf(await pdf.getPage(1)), 'cleanup')
+
+    try {
+      const { totalPages } = await extractText(await getPDF('scanned-pages.pdf'))
+      expect(cleanupSpy).toHaveBeenCalledTimes(totalPages)
+
+      cleanupSpy.mockClear()
+      await extractTextItems(await getPDF('scanned-pages.pdf'))
+      expect(cleanupSpy).toHaveBeenCalledTimes(totalPages)
+
+      cleanupSpy.mockClear()
+      await extractText(pdf)
+      await extractTextItems(pdf)
+      expect(cleanupSpy).not.toHaveBeenCalled()
+    }
+    finally {
+      cleanupSpy.mockRestore()
+      await pdf.loadingTask.destroy()
+    }
   })
 })

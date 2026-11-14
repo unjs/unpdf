@@ -1,5 +1,5 @@
 import type { DocumentInitParameters, PDFDocumentProxy } from 'pdfjs-dist/types/src/display/api'
-import { withDocument } from './utils'
+import { isPDFDocumentProxy, withDocument } from './utils'
 
 export async function extractLinks(
   data: DocumentInitParameters['data'] | PDFDocumentProxy,
@@ -8,17 +8,29 @@ export async function extractLinks(
   links: string[][]
 }> {
   return await withDocument(data, async (pdf) => {
-    const links = await Promise.all(
-      Array.from({ length: pdf.numPages }, (_, i) => getPageLinks(pdf, i + 1)),
-    )
+    // Only pages of documents opened here are released, see `inspectPages`.
+    const shouldReleasePages = !isPDFDocumentProxy(data)
+    const links: string[][] = []
+
+    for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
+      links.push(await getPageLinks(pdf, pageNumber, shouldReleasePages))
+    }
 
     return { totalPages: pdf.numPages, links }
   })
 }
 
-async function getPageLinks(document: PDFDocumentProxy, pageNumber: number) {
+async function getPageLinks(
+  document: PDFDocumentProxy,
+  pageNumber: number,
+  shouldReleasePage: boolean,
+) {
   const page = await document.getPage(pageNumber)
   const annotations = await page.getAnnotations()
+
+  if (shouldReleasePage) {
+    page.cleanup()
+  }
   const links: string[] = []
 
   for (const annotation of annotations) {
