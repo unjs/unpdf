@@ -23,9 +23,12 @@ export async function extractTextItems(
   data: DocumentInitParameters['data'] | PDFDocumentProxy,
 ): Promise<{ totalPages: number, items: StructuredTextItem[][] }> {
   return await withDocument(data, async (pdf) => {
-    const items = await Promise.all(
-      Array.from({ length: pdf.numPages }, (_, i) => getPageTextItems(pdf, i + 1)),
-    )
+    const items: StructuredTextItem[][] = []
+
+    // Fetching every page at once multiplies peak memory without finishing sooner.
+    for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
+      items.push(await getPageTextItems(pdf, pageNumber))
+    }
 
     return { totalPages: pdf.numPages, items }
   })
@@ -84,9 +87,12 @@ export async function extractText(
 ) {
   const { mergePages = false } = options
   return await withDocument(data, async (pdf) => {
-    const texts = await Promise.all(
-      Array.from({ length: pdf.numPages }, (_, i) => getPageText(pdf, i + 1)),
-    )
+    const texts: string[] = []
+
+    // Fetching every page at once multiplies peak memory without finishing sooner.
+    for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
+      texts.push(await getPageText(pdf, pageNumber))
+    }
 
     return {
       totalPages: pdf.numPages,
