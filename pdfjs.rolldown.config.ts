@@ -1,6 +1,6 @@
 import type { RolldownOptions } from 'rolldown'
 import { defineConfig } from 'rolldown'
-import { assertRuntimePatchesFirst, patchPDFJSSource, pdfjsTypes } from './src/pdfjs-serverless/rolldown/plugins'
+import { assertRuntimePatchesFirst, patchPDFJSSource, pdfjsTypes, routeToPonyfills } from './src/pdfjs-serverless/rolldown/plugins'
 
 const config: RolldownOptions = defineConfig({
   input: {
@@ -43,6 +43,7 @@ const config: RolldownOptions = defineConfig({
   },
   plugins: [
     patchPDFJSSource(),
+    routeToPonyfills(),
     assertRuntimePatchesFirst(),
     pdfjsTypes(),
   ],

@@ -221,6 +221,7 @@ Heart and soul of this package is the [`pdfjs.rolldown.config.ts`](./pdfjs.rolld
 - **Worker inlining** embeds the PDF.js worker directly into the main bundle, since serverless runtimes cannot load separate worker files.
 - **Bundled image decoders** ship PDF.js' JBIG2 and OpenJPEG decoders, WASM and JS fallback, as lazy chunks, so CCITT, JBIG2, and JPEG 2000 images decode without `pdfjs-dist`, and a bundle that only extracts text leaves them out. Bundlers that resolve the `workerd` condition, like Wrangler, ship only the JS fallbacks.
 - **Global polyfills** fill in newer APIs like `Promise.try` and `Map.prototype.getOrInsert` for runtimes that lack them, plus `FinalizationRegistry` for Cloudflare Workers.
+- **Scoped ponyfills** cover built-ins like `Uint8Array.prototype.toBase64` and `Math.sumPrecise` only as far as PDF.js uses them, so the bundle routes PDF.js' calls to them instead of installing a partial global that other code in the process would feature-detect.
 
 ## License
 

@@ -1,5 +1,6 @@
 import type { OutputBundle, OutputChunk, Plugin } from 'rolldown'
 import { writeFile } from 'node:fs/promises'
+import { fileURLToPath } from 'node:url'
 
 // PDF.js' built-in `NodeCanvasFactory` becomes the document-level canvas
 // factory when no `CanvasFactory` option is passed to `getDocument` and is
@@ -45,7 +46,28 @@ const patches: Record<string, string> = {
   // registered before the attempt, stays cached.
   'this.#modulePromise = Promise.race([promise, ImageDecoder({\n        warn: warn,\n        instantiateWasm: this.#instantiateWasm.bind(this, resolve)\n      })]);': `{ const hasLoader = Boolean(globalThis[Symbol.for("unpdf.loadImageDecoder")]); const modulePromise = Promise.race([promise, ImageDecoder({ warn, instantiateWasm: this.#instantiateWasm.bind(this, resolve) })]).then(module => { if (!module && !hasLoader && this.#modulePromise === modulePromise) this.#modulePromise = null; return module; }); this.#modulePromise = modulePromise; }`,
   'warn("Please use the `legacy` build in Node.js environments.")': '',
+  // Route the `Uint8Array` method calls to the ponyfills `routeToPonyfills` injects.
+  'data.toBase64()': 'unpdfToBase64(data)',
+  'bytes.toBase64()': 'unpdfToBase64(bytes)',
+  '[hashOriginal.toHex(), hashModified?.toHex() ?? null]': '[unpdfToHex(hashOriginal), hashModified ? unpdfToHex(hashModified) : null]',
 }
+
+const ponyfillsPath = fileURLToPath(new URL('../ponyfills.mjs', import.meta.url))
+
+const ponyfillInjections: Record<string, [string, string]> = {
+  'Math.sumPrecise': [ponyfillsPath, 'sumPrecise'],
+  'Uint8Array.fromBase64': [ponyfillsPath, 'fromBase64'],
+  'unpdfToBase64': [ponyfillsPath, 'toBase64'],
+  'unpdfToHex': [ponyfillsPath, 'toHex'],
+}
+
+const ponyfilledStatics = Object.keys(ponyfillInjections)
+  .filter(key => key.includes('.'))
+  .map(key => key.replaceAll('.', '\\.'))
+const ponyfilledMethods = Object.entries(ponyfillInjections)
+  .filter(([key]) => !key.includes('.'))
+  .map(([, [, exportName]]) => exportName)
+const UNROUTED_BUILTIN_PATTERN = new RegExp(`\\.(${ponyfilledMethods.join('|')})\\b|\\b(${ponyfilledStatics.join('|')})\\b`)
 
 /**
  * Applies the PDF.js source patches as raw literal substitutions and asserts
@@ -87,6 +109,42 @@ export function patchPDFJSSource(): Plugin {
           + `so the PDF.js source has likely drifted:\n${
             missedAnchors.map(anchor => `  - ${JSON.stringify(anchor)}`).join('\n')}`,
         )
+      }
+    },
+  }
+}
+
+/**
+ * Points PDF.js' calls to built-ins that not every runtime has at the
+ * ponyfills in `ponyfills.mjs`. Static members are injected wherever they
+ * appear, method calls are rewritten by the source patches, and the build
+ * fails on any reference left over.
+ */
+export function routeToPonyfills(): Plugin {
+  return {
+    name: 'pdfjs-serverless:route-to-ponyfills',
+    options(inputOptions) {
+      return {
+        ...inputOptions,
+        transform: {
+          ...inputOptions.transform,
+          inject: { ...inputOptions.transform?.inject, ...ponyfillInjections },
+        },
+      }
+    },
+    generateBundle(_options, bundle) {
+      for (const output of Object.values(bundle)) {
+        if (output.type !== 'chunk')
+          continue
+
+        const match = UNROUTED_BUILTIN_PATTERN.exec(output.code)
+        if (match) {
+          const excerpt = output.code.slice(Math.max(0, match.index - 80), match.index + 80)
+          throw new Error(
+            `[pdfjs-serverless] ${output.fileName} still references \`${match[1] ?? match[2]}\`, so PDF.js has `
+            + `likely added a call site no patch or injection routes to \`ponyfills.mjs\`:\n  ${excerpt}`,
+          )
+        }
       }
     },
   }
