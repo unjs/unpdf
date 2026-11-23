@@ -115,13 +115,34 @@ describe('ponyfills', () => {
     expect(builtins.map(([target, key]) => Object.hasOwn(target, key))).toEqual([false, false, false, false])
   })
 
-  it('getDocument fingerprints sample.pdf', async () => {
+  // PDF.js fingerprints every document through `toHex`.
+  it.each([
+    [
+      'sample.pdf',
+      ['f7d77b3d22b9f92829d49ff5d78b8f28', null],
+      undefined,
+    ],
+    [
+      'sample.pdf with a changed second ID',
+      ['f7d77b3d22b9f92829d49ff5d78b8f28', '00112233445566778899aabbccddeeff'],
+      '00112233445566778899AABBCCDDEEFF',
+    ],
+  ] as const)('getDocument fingerprints %s as %j', async (_name, fingerprints, secondID) => {
     // @ts-expect-error: Dynamic import from package build.
     const { getDocument } = await import('../dist/pdfjs.mjs?ponyfills')
+    const data = await getPDF('sample.pdf')
 
-    // PDF.js fingerprints every document through `toHex`.
-    const pdf = await getDocument({ data: await getPDF('sample.pdf') }).promise
-    expect(pdf.fingerprints[0]).toMatch(/^[\da-f]{32}$/)
+    const pdf = await getDocument({ data: secondID ? withSecondID(data, secondID) : data }).promise
+    expect(pdf.fingerprints).toEqual(fingerprints)
     await pdf.loadingTask.destroy()
   })
 })
+
+/** Overwrites the second trailer ID in place, so the cross-reference offsets stay valid. */
+function withSecondID(pdf: Uint8Array, hexID: string): Uint8Array {
+  const copy = pdf.slice()
+  const text = new TextDecoder('latin1').decode(copy)
+  const idStart = text.indexOf('<', text.indexOf('>', text.indexOf('/ID')))
+  copy.set(new TextEncoder().encode(hexID), idStart + 1)
+  return copy
+}
