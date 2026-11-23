@@ -117,8 +117,8 @@ export function patchPDFJSSource(): Plugin {
 /**
  * Points PDF.js' calls to built-ins that not every runtime has at the
  * ponyfills in `ponyfills.mjs`. Static members are injected wherever they
- * appear, method calls are rewritten by the source patches, and the build
- * fails on any reference left over.
+ * appear, method calls are rewritten by the source patches, and a leftover
+ * member access fails the build.
  */
 export function routeToPonyfills(): Plugin {
   return {

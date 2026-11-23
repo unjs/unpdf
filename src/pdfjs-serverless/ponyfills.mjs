@@ -3,8 +3,8 @@
 // fallback covers only what PDF.js uses, and as a global it would mislead
 // code that feature-detects the built-in.
 
-// Destructured, so neither `inject` nor the source patches rewrite these
-// references to the ponyfills themselves.
+// Destructured, so `inject` leaves these references alone and the
+// `routeToPonyfills` guard passes them.
 const { fromBase64: nativeFromBase64 } = Uint8Array
 const { toBase64: nativeToBase64, toHex: nativeToHex } = Uint8Array.prototype
 const { sumPrecise: nativeSumPrecise } = Math
